@@ -39,6 +39,31 @@ test('watcher streams changesets in order, with file lists and path filters', as
   t.alike(onlySrc, [2], 'path filter')
 })
 
+test('watcher started with since replays exactly what came after it (feed resume, waits from base)', async (t) => {
+  const [a] = await repos(t, 1)
+  const ws = await a.workspace('w')
+  for (const name of ['one', 'two', 'three']) {
+    await ws.commit([put('/src/' + name + '.js', name)])
+    await ws.land({ message: name })
+  }
+
+  const got = []
+  const w = new Watcher(a, { since: 1 })
+  w.on('changeset', (cs) => got.push(cs.message))
+  await w.start()
+  t.teardown(() => w.close())
+  await until(() => got.length === 2, a)
+  t.alike(got, ['two', 'three'], 'resumes after seq 1, nothing repeated or missed')
+
+  const dep = []
+  const wait = new Watcher(a, { since: 0, paths: ['/src/two.js'] })
+  wait.on('changeset', (cs) => dep.push(cs.seq))
+  await wait.start()
+  t.teardown(() => wait.close())
+  await until(() => dep.length === 1, a)
+  t.alike(dep, [2], 'a wait from an older base sees a change that already landed')
+})
+
 test('watcher reports a reorg when a changeset it showed is replaced', async (t) => {
   const [a, b, c1, c2] = await repos(t, 4)
   const ab = link(a, b)

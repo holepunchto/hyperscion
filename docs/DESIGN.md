@@ -392,3 +392,17 @@ Known costs:
 - `watch` adds a second RocksDB store per worktree.
 - `apply` does one extra lookup per landed path for the history values.
 - A shared per-machine daemon would remove the first two.
+
+### Connectivity notes (milestone 2 follow-up)
+
+- **A connection counts once replication flows on it.** `Network.waitForPeers` waits until
+  main's bootstrap core has a live replicating peer, not just until a socket opened. A
+  connection that hasn't started replicating within 5 s is dropped so the swarm redials.
+  - Reproduced on a localhost testnet: a peer dialing a hub that had only just started got a
+    connection that was open on its side and never registered on the hub's side. It sat idle
+    for about 12 s before closing.
+  - Worth reporting to hyperswarm/hyperdht with a minimal repro.
+- **Loopback-only private DHTs.** When every bootstrap node is on loopback, the CLI's DHT node
+  binds 127.0.0.1 with `firewalled: false`, like the testnet's own nodes. Otherwise short-lived
+  CLI processes assume they are firewalled and their holepunched loopback connections are
+  unreliable. This made the subprocess CLI test reliable (3/3 runs, ~25 s).

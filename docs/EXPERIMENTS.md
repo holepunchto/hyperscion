@@ -65,6 +65,12 @@ Each item is ranked by how many agents raised it.
    - `log -f <path>` lists every file in each matching changeset;
    - conflict markers don't name the changeset or author.
 
+**Status after the follow-up:**
+
+- Done: items 1 (rebase wording now names who changed what), 3 (waits start from your synced base, `--timeout`), 4 (`hs watch --stop`, feeds resume) and 5 (`sync`/`land` list incoming changesets).
+- Open: item 2 (finality) and item 6 (review).
+- `test/cli.js` covers them through the real `hs` binary and runs by default. Its earlier failures were loopback connectivity, now fixed (DESIGN.md, connectivity notes).
+
 ## Experiment 1 findings and their fixes (milestone 2)
 
 See DESIGN.md §9. In short:

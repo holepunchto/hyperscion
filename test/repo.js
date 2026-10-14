@@ -218,3 +218,25 @@ test('show: each changeset records before/after entries per path', async (t) => 
   t.ok(g.prev && !g.next, 'deletion has prev only')
   await drive.close()
 })
+
+test('lastChange and changesetsBetween name who changed what (rebase and incoming messages)', async (t) => {
+  const repo = await create(t)
+  const a = await repo.workspace('a')
+  await a.commit([put('/NOTES.md', 'n1\n'), put('/a.js', 'a\n')])
+  await a.land({ message: 'first', author: 'a1' })
+  await a.commit([put('/NOTES.md', 'n2\n')])
+  await a.land({ message: 'second', author: 'a2' })
+  await a.commit([put('/b.js', 'b\n')])
+  await a.land({ message: 'third', author: 'a3' })
+
+  const last = await repo.lastChange('/NOTES.md')
+  t.is(last.seq, 2)
+  t.is(last.author, 'a2')
+  t.is(await repo.lastChange('/missing.js'), null)
+
+  t.alike(
+    (await repo.changesetsBetween(1, 3)).map((cs) => cs.message),
+    ['second', 'third']
+  )
+  t.alike(await repo.changesetsBetween(3, 3), [])
+})

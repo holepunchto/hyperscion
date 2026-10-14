@@ -9,7 +9,8 @@
   "upgrade": "pear://<YOUR_KEY_HERE>",
   "scripts": {
     "format": "prettier . --write",
-    "test": "brittle-bare test/*.js",
+    "test": "brittle-bare --timeout 300000 test/*.js",
+    "test:e2e": "scripts/e2e.sh",
     "lint": "prettier . --check && lunte",
     "start": "bare bin.mjs --no-updates",
     "make": "node scripts/make.js",
@@ -41,6 +42,7 @@
     "hyperblobs": "^2.12.1",
     "hypercore": "^11.38.0",
     "hypercore-crypto": "^3.7.0",
+    "hyperdht": "^6.34.1",
     "hyperdrive": "file:./vendor/hyperdrive",
     "hyperswarm": "^4.17.0",
     "localdrive": "^2.2.1",
