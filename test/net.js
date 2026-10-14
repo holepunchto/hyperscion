@@ -111,6 +111,70 @@ test('a mirror keeps main readable after its authors go offline', async (t) => {
   await drive.close()
 })
 
+test('after prefetch, everything in the sparse set works offline', async (t) => {
+  const Worktree = require('../lib/worktree')
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+
+  const a = await peer(t, null, bootstrap)
+  const wa = await a.repo.workspace('w')
+  await wa.commit([put('/src/a.js', 'a\n'), put('/src/b.js', 'b\n'), put('/docs/x.md', 'x\n')])
+  await wa.land()
+
+  const mirror = await peer(t, a.repo.key, bootstrap, { mirror: true })
+  await mirror.net.waitForPeers()
+  await mirror.net.settle()
+  await waitFor(() => mirror.net.mirrored >= 1)
+  await a.close() // the author is gone; only the mirror holds the content
+
+  const b = await peer(t, a.repo.key, bootstrap)
+  t.ok(await b.net.waitForPeers(), 'b found the mirror')
+  await b.net.settle()
+  const ws = await b.repo.workspace('w')
+  const res = await ws.prefetch({ sparse: ['/src'], timeout: 5000 })
+  t.alike(res.missing, [], 'nothing missing for /src')
+  t.ok(res.fetched >= 2)
+
+  await b.net.close() // offline from here on
+  ws.io = { wait: false }
+
+  const dir = await tmp(t)
+  const wt = new Worktree(dir, { sparse: ['/src'] })
+  const co = await wt.checkout(ws)
+  t.alike(co.missing, [], 'checkout works offline')
+  t.is(co.written, 2)
+  t.alike([...(await wt.status(ws))], [])
+  t.alike(await ws.drive.get('/src/b.js', { wait: false }), b4a.from('b\n'), 'cat works offline')
+
+  await ws.commit([put('/src/a.js', 'a2\n')])
+  t.is((await ws.changes()).length, 1, 'diff works offline')
+  await ws.sync() // up to date, nothing to fetch
+})
+
+test('without a holder, prefetch reports what is missing instead of stalling', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+
+  const a = await peer(t, null, bootstrap)
+  const b = await peer(t, a.repo.key, bootstrap)
+  await b.net.waitForPeers()
+
+  const wa = await a.repo.workspace('w')
+  await wa.commit([put('/only-on-a.txt', 'a\n')])
+  await wa.land()
+  await b.net.settle() // b knows the changeset exists...
+  await a.close() // ...but its author leaves before anyone fetched the content
+
+  const ws = await b.repo.workspace('w')
+  const started = Date.now()
+  const res = await ws.prefetch({ timeout: 1000 })
+  t.alike(
+    res.missing.map((m) => m.path),
+    ['/only-on-a.txt']
+  )
+  t.ok(Date.now() - started < 10_000, 'bounded by the timeout')
+})
+
 async function waitFor(fn, timeout = 20_000) {
   const deadline = Date.now() + timeout
   while (!fn()) {

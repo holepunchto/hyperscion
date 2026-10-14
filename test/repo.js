@@ -154,3 +154,67 @@ test('workspaces persist across reopen', async (t) => {
   await repo.close()
   await store.close()
 })
+
+test('union merge for paths marked in .hsattributes: concurrent appends never conflict', async (t) => {
+  const repo = await create(t)
+
+  const seed = await repo.workspace('seed')
+  await seed.commit([
+    put('/.hsattributes', 'NOTES.md merge=union\n'),
+    put('/NOTES.md', '# notes\n- [hub] start\n'),
+    put('/code.js', 'a\n')
+  ])
+  await seed.land()
+
+  const a = await repo.workspace('a')
+  const b = await repo.workspace('b')
+  await a.commit([put('/NOTES.md', '# notes\n- [hub] start\n- [a] from a\n')])
+  await b.commit([put('/NOTES.md', '# notes\n- [hub] start\n- [b] from b\n')])
+
+  t.is((await a.land()).outcome.status, 'accepted')
+  const res = await b.land({ rebase: 1 })
+  t.is(res.outcome.status, 'accepted', 'second append lands after a union rebase')
+  t.is(res.attempts, 2)
+
+  const drive = repo.drive()
+  const notes = b4a.toString(await drive.get('/NOTES.md'))
+  t.ok(notes.includes('- [a] from a') && notes.includes('- [b] from b'), 'both lines kept')
+  t.absent(notes.includes('<<<<<<<'), 'no conflict markers')
+  await drive.close()
+
+  // files without the attribute still get real conflicts
+  const c1 = await repo.workspace('c1')
+  const c2 = await repo.workspace('c2')
+  await c1.commit([put('/code.js', 'one\n')])
+  await c2.commit([put('/code.js', 'two\n')])
+  await c1.land()
+  const sync = await c2.sync()
+  t.alike(sync.conflicts, ['/code.js'])
+})
+
+test('show: each changeset records before/after entries per path', async (t) => {
+  const merge = require('../lib/merge')
+  const repo = await create(t)
+  const ws = await repo.workspace('w')
+  await ws.commit([put('/f.txt', 'one\ntwo\nthree\n'), put('/gone.txt', 'x\n')])
+  await ws.land({ message: 'first' })
+  await ws.commit([put('/f.txt', 'one\nTWO\nthree\n'), { path: '/gone.txt', content: null }])
+  await ws.land({ message: 'second' })
+
+  const res = await repo.show(2)
+  t.is(res.cs.message, 'second')
+  t.alike(res.files.map((f) => (f.deleted ? '-' : '') + f.path).sort(), ['-/gone.txt', '/f.txt'])
+
+  const drive = repo.drive()
+  const read = async (v) => {
+    if (!v) return null
+    const entry = require('compact-encoding').decode(require('hyperdrive/lib/encoding'), v)
+    return (await drive.getBlobsFor(entry.blob)).get(entry.blob)
+  }
+  const f = res.files.find((x) => x.path === '/f.txt')
+  const text = merge.unifiedDiff(f.path, await read(f.prev), await read(f.next))
+  t.ok(text.includes('-two') && text.includes('+TWO'), 'diff shows the edit')
+  const g = res.files.find((x) => x.path === '/gone.txt')
+  t.ok(g.prev && !g.next, 'deletion has prev only')
+  await drive.close()
+})

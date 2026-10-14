@@ -33,7 +33,7 @@ test('checkout, edit, status, commit round-trip', async (t) => {
   t.is(stats.written, 3)
   t.is(fs.readFileSync(path.join(dir, 'dir', 'b.txt'), 'utf8'), 'b\n')
 
-  t.alike(await wt.status(ws), [], 'clean after checkout')
+  t.alike([...(await wt.status(ws))], [], 'clean after checkout')
   t.is((await wt.checkout(ws)).skipped, 3, 'second checkout skips via stat cache')
 
   fs.writeFileSync(path.join(dir, 'a.txt'), 'A\n')
@@ -46,8 +46,8 @@ test('checkout, edit, status, commit round-trip', async (t) => {
     ['modified /a.txt', 'deleted /dir/c.txt', 'added /new.txt']
   )
 
-  t.is(await wt.commit(ws), 3)
-  t.alike(await wt.status(ws), [])
+  t.is((await wt.commit(ws)).committed, 3)
+  t.alike([...(await wt.status(ws))], [])
   t.is((await ws.land()).outcome.status, 'accepted')
 
   const main = repo.drive()
@@ -69,7 +69,7 @@ test('sparse checkout only materializes prefixes and never deletes outside them'
 
   t.ok(fs.existsSync(path.join(dir, 'src', 'x.js')))
   t.absent(fs.existsSync(path.join(dir, 'docs')))
-  t.alike(await wt.status(ws), [], 'unmaterialized files are not deletions')
+  t.alike([...(await wt.status(ws))], [], 'unmaterialized files are not deletions')
 })
 
 test('missing blobs are reported, not silently skipped or deleted', async (t) => {
@@ -91,5 +91,5 @@ test('missing blobs are reported, not silently skipped or deleted', async (t) =>
   const stats = await wt.checkout(ws)
   t.alike(stats.missing, ['/b.txt'])
   t.is(stats.written, 1)
-  t.alike(await wt.status(ws), [], 'missing file is not reported as deleted')
+  t.alike([...(await wt.status(ws))], [], 'missing file is not reported as deleted')
 })

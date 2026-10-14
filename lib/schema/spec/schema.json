@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "schema": [
     {
       "name": "head",
@@ -235,6 +235,12 @@
           "name": "blobs",
           "type": "fixed32",
           "version": 3
+        },
+        {
+          "name": "files",
+          "array": true,
+          "type": "string",
+          "version": 5
         }
       ]
     },
@@ -347,6 +353,24 @@
           "name": "preLandBase",
           "type": "@hs/base",
           "version": 4
+        }
+      ]
+    },
+    {
+      "name": "hist",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "prev",
+          "type": "buffer",
+          "version": 6
+        },
+        {
+          "name": "next",
+          "type": "buffer",
+          "version": 6
         }
       ]
     }

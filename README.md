@@ -43,7 +43,18 @@ hs land -m "feature"
 hs ws switch default && hs sync
 ```
 
-Collaborating across machines:
+For teams, and AI agents in particular, read **[docs/AGENTS.md](docs/AGENTS.md)**. It's the
+playbook: watch instead of poll, sync, land small, learn from teammates' diffs. To set up a
+team with one command (an always-on holder plus N writable worktrees):
+
+```sh
+scripts/team.sh ./team 5      # hub runs `hs seed --mirror --admit`, agents in team/agents/a1..a5
+```
+
+Every team needs a **holder**: a hub running `hs seed --mirror`, or a blind peer. It keeps
+landed work available when its author is offline.
+
+Collaborating across machines by hand:
 
 ```sh
 # machine A
@@ -53,7 +64,8 @@ hs seed --mirror             # stay online and hold all landed content
 hs clone <invite> work --sparse src   # only materialize src/
 cd work && hs info                     # copy the writer key
 
-# machine A (stop seed first; one process per store)
+# machine A: admit without stopping the seed (`hs seed --mirror --admit ./admit`, and clone
+# with `hs clone <invite> --admit ./admit`), or stop the seed and:
 hs add-writer <writer-key>
 
 # machine B
@@ -64,20 +76,23 @@ hs pull && hs land --online -m "my change"
 
 ## Commands
 
-|                                               |                                                                  |
-| --------------------------------------------- | ---------------------------------------------------------------- |
-| `init [dir] [--encrypt]`                      | create a repo                                                    |
-| `clone <invite> [dir] [--sparse p]…`          | join a repo, sparse checkout                                     |
-| `status`, `diff`, `commit`                    | working copy vs workspace                                        |
-| `land [-m] [--online]`                        | commit and land onto main (provisional until all writers see it) |
-| `sync`                                        | rebase onto main, 3-way merging overlapping files                |
-| `log [path]`, `ls [prefix]`, `cat <path>`     | read main (no checkout needed)                                   |
-| `checkout [prefix…]`                          | materialize files, optionally sparse                             |
-| `ws new\|switch\|list`                        | workspaces                                                       |
-| `info`, `add-writer <key> [--indexer]`        | identity and access                                              |
-| `pull`, `push`, `seed [--mirror] [--updates]` | networking                                                       |
-| `blind-peer <key> [--remove]`                 | configure blind peers                                            |
-| `import-git <gitdir> [--branch] [--limit]`    | replay a git branch's first-parent history                       |
+|                                                    |                                                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `init [dir] [--encrypt]`                           | create a repo                                                                    |
+| `clone <invite> [dir] [--sparse p]… [--admit dir]` | join a repo, sparse checkout, request write access                               |
+| `status`, `diff`, `commit`, `restore <path…>`      | working copy vs workspace; discard local edits                                   |
+| `land -o [-m]`                                     | commit and land onto main; auto-rebases on conflict; waits until a holder has it |
+| `sync [--offline]`                                 | pull main and rebase onto it (3-way merge, union merge per `.hsattributes`)      |
+| `watch [--path p] [--count n] [--json] [--patch]`  | stream changesets (and reorgs) as they land                                      |
+| `show <n> [--stat]`                                | a changeset's message and unified diff                                           |
+| `log [-f] [path]`, `ls [prefix]`, `cat <path>`     | read main (no checkout needed)                                                   |
+| `checkout [prefix…]`                               | materialize files, optionally sparse                                             |
+| `ws new\|switch\|list`                             | workspaces                                                                       |
+| `info`, `add-writer <key> [--indexer]`             | identity and access                                                              |
+| `pull`, `push`, `doctor`                           | fetch, upload, check connectivity and holder                                     |
+| `seed [--mirror] [--admit dir] [--updates]`        | stay online as the team's holder                                                 |
+| `blind-peer <key> [--remove]`                      | configure blind peers                                                            |
+| `import-git <gitdir> [--branch] [--limit]`         | replay a git branch's first-parent history                                       |
 
 ## Library
 

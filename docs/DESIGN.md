@@ -23,7 +23,7 @@ scripts in `bench/` and `scripts/e2e.sh`.
 | Derived data computed recursively from parents                              | Path index, path history, changeset log and content-hash index maintained inside `apply`, cost proportional to the land                       | working: `hs log <path>` is one range read                                        |
 | Content-addressed immutable objects, cacheable anywhere                     | Hypercore blocks are immutable and merkle-verified, so any peer or cache can serve them and none can lie                                      | working                                                                           |
 | Lazy, on-demand fetch                                                       | Sparse hypercore replication: a peer fetches exactly the blocks it reads                                                                      | measured: 100 of 50,000 blob blocks fetched for a one-directory checkout          |
-| scion-cache / scion-server tiers, >99% hit rate                             | **Blind peers** (hosted, encrypted at rest, untrusted) and **mirror peers** (`hs seed --mirror`, self-hosted)                                 | mirror: tested; blind peers: wired, **not yet tested against a real blind peer**  |
+| scion-cache / scion-server tiers, >99% hit rate                             | **Blind peers** (hosted, encrypted at rest, untrusted) and **mirror peers** (`hs seed --mirror`, self-hosted)                                 | mirror and blind peer: tested (encrypted repo readable after its author leaves)   |
 | Daemon boots from a periodic snapshot                                       | autobee **fast-forward**: boot from a writer's stamped view head instead of replaying the oplog                                               | measured: a fresh peer fetched 12 of 100 oplog blocks                             |
 | API-only access, no checkout needed                                         | `hs ls`, `hs cat`, and the library API (`Repo`, `Workspace`) need no working copy                                                             | working                                                                           |
 | Sparse / virtual checkouts                                                  | `hs checkout <prefix>…` materializes only those prefixes; no virtual FS yet                                                                   | working                                                                           |
@@ -191,8 +191,9 @@ at 4 writers / 200 workspaces.
     most likely while reading view blocks that only an unreachable writer held. The exact
     blocks were not traced.
   - Blind peers fill the same role as a hosted service: `addAutobase` for main, `addCore` for
-    workspace cores, priority 1 once landed and 0 before. This code path is untested against a
-    running blind peer (§8). Note that blind peers downgrade `announce: true` unless they trust
+    workspace cores, priority 1 once landed and 0 before. _Tested_ with an in-process
+    blind-peer: it holds an encrypted repo's oplog, tree and blobs as ciphertext and serves a
+    fresh peer after the author left (`test/blind-peer.js`). Note that blind peers downgrade `announce: true` unless they trust
     the client, so discovery for `hs clone` also needs a seed online or trusted blind peers.
 - **Encryption.** `hs init --encrypt` creates a repo-wide key. The invite
   (`<repoKey>.<encryptionKey>`) carries it. Autobee's per-core view encryption provider is used
@@ -330,8 +331,8 @@ It passes both unencrypted and encrypted.
 3. **Tree-read amplification and memory in hyperbee2.** Take the cold-read and sparse-listing
    findings, and the 1M-path RSS growth, to the hyperbee2 maintainers. Candidates: view
    compaction (autobee has `compactMaybe`), inline keys, bounded-bytes node caches.
-4. **Blind peers end to end.** Run blind-peer in a test, check eager download, priority
-   promotion on land, and GC of unlanded workspaces.
+4. **Blind peers at scale.** Basic hold-and-serve is tested; still to check: GC of unlanded
+   workspaces under storage pressure, and a team that relies on blind peers alone.
 5. **Compression and deltas.** Per-blob compression, maybe chunked dedup for large files.
 6. **Writer scaling.** Multi-process and multi-machine landing benchmarks, and profiling of the
    reorg and apply cost per writer.
@@ -340,3 +341,54 @@ It passes both unencrypted and encrypted.
    is the escape hatch if client-side derivation gets too heavy.
 8. Virtual file system, directory ACLs, pairing UX for `add-writer`, and a bidirectional git
    bridge.
+
+## 9. Milestone 2: what experiment 1 changed
+
+In experiment 1, five agents built a project together through `hs` and rated it 2/5 against
+git. They liked the model (lock-free per-file lands, `log -f` as a feed, fast feedback loops)
+but hit availability and safety bugs. Milestone 2 turns those into rules.
+
+- **`pull` makes main local for your sparse set.**
+  - `Workspace.prefetch` lists every sparse prefix in both main and the workspace, which
+    fetches every tree block on the way.
+  - It downloads every missing blob, plus the fork-point versions of paths the workspace
+    changed (merge inputs).
+  - Afterwards `status`, `diff`, `checkout`, `cat` and local `sync` never touch the network.
+  - `sync` is online by default. `cat` and `show` read locally first and go online only on a
+    miss.
+- **Reads time out instead of stalling.** Workspace reads go through `ws.io`: wait forever for
+  library users, `{ timeout }` when online, `{ wait: false }` offline. A miss throws
+  `ContentUnavailableError` before the root moves, so a rebase is never half-applied. The CLI
+  turns it into "start a holder". Bare's drained-event-loop stall is still caught and traced as
+  a last resort.
+- **Stale is never an edit.**
+  - A file whose new version couldn't be fetched is marked stale in the stat cache.
+  - `status` lists it separately, and `commit` excludes it. Edits on top of it are held back
+    (`modified (stale base)`), and `land` refuses while they exist.
+  - `checkout` never overwrites a locally edited file; `hs restore` does that on request.
+  - This closes the near-silent revert three agents hit.
+- **A land isn't done until a holder has it.**
+  - `land -o` and `push` wait until a peer holds the oplog _and_ the landed workspace's tree
+    and blobs.
+  - The second experiment's dry run showed why: a one-shot `land -o` exited before the hub
+    mirror had downloaded its content, leaving it only on the author's machine.
+- **Every team has a holder.** `hs seed --mirror` on a hub (now also mirroring every writer's
+  view core) or a blind peer. `hs seed --admit <dir>` admits writers without taking the holder
+  offline. `scripts/team.sh` sets a team up, and `hs doctor` checks it.
+- **Flips are loud.** `pull`, `sync`, `status` and `land` repeat a banner until `sync` restores
+  the land. `hs watch` reports reorgs.
+- **Lands rebase themselves.** `land -o` retries up to 3 times: pull, prefetch, sync, land. The
+  loop lives in the CLI so each retry fetches what the newer land needs. Paths marked
+  `merge=union` in `/.hsattributes` (e.g. NOTES.md) merge without markers.
+- **Watch, don't poll.** `hs watch` streams changesets (`--json`, `--path`, `--count 1` to wait
+  for a dependency, `--patch` for diffs) from its own observer store, so it runs next to other
+  `hs` commands. `hs show <n>` diffs a changeset using before/after entry values that `apply`
+  now records per path.
+- **Agent playbook.** `docs/AGENTS.md` replaces ad-hoc instructions.
+
+Known costs:
+
+- Online commands pay ~2–3 s of DHT connect each, and `sync` is now online.
+- `watch` adds a second RocksDB store per worktree.
+- `apply` does one extra lookup per landed path for the history values.
+- A shared per-machine daemon would remove the first two.

@@ -34,8 +34,12 @@ test('provisional land flipped by a reorg is restored on sync', async (t) => {
   t.alike([oa.status, ob.status].sort(), ['accepted', 'conflict'])
 
   const loser = oa.status === 'conflict' ? wa : wb
+  const winner = loser === wa ? wb : wa
+  t.ok(await loser.flipped(), 'loser sees its land was undone')
+  t.absent(await winner.flipped(), 'winner does not')
   const res = await loser.sync()
   t.ok(res.restored, 'flipped land was detected and restored')
+  t.absent(await loser.flipped(), 'banner stops once sync restored the land')
   t.alike(res.merged, ['/f.txt'], 'restored change rebased with a clean merge')
   t.alike(await loser.drive.get('/f.txt'), b4a.from('ONE\ntwo\nTHREE\n'))
 
@@ -86,6 +90,43 @@ test('commits made after a land that later flips are kept', async (t) => {
   const main = b.drive()
   t.alike(await main.get('/f.txt'), b4a.from('ONE\ntwo\nTHREE\n'))
   t.ok(await main.entry(later), 'later commit landed')
+  await main.close()
+  await disconnect()
+})
+
+test('landing again right after a flip (without syncing first) keeps the undone changes', async (t) => {
+  const { a, b, connect } = await pair(t)
+
+  const seed = await a.workspace('seed')
+  await seed.commit([put('/f.txt', 'one\ntwo\nthree\n')])
+  await seed.land()
+  let disconnect = connect()
+  await settle(a, b)
+  await disconnect()
+
+  const wa = await a.workspace('wa')
+  const wb = await b.workspace('wb')
+  await wa.commit([put('/f.txt', 'ONE\ntwo\nthree\n')])
+  await wb.commit([put('/f.txt', 'one\ntwo\nTHREE\n')])
+  await wa.land()
+  await wb.land()
+
+  disconnect = connect()
+  await settle(a, b)
+
+  const loser = (await wa.lastLand()).status === 'conflict' ? wa : wb
+  const later = loser === wa ? '/later-a.txt' : '/later-b.txt'
+  await loser.commit([put(later, 'x\n')])
+
+  // no sync and no retries: straight to the next land, as a hurried agent would. (With retries
+  // the stale base would also catch it: the flipped land's seq now hashes differently.)
+  const res = await loser.land()
+  t.is(res.outcome.status, 'accepted', 'land restores the undone changes first')
+  await settle(a, b)
+
+  const main = a.drive()
+  t.alike(await main.get('/f.txt'), b4a.from('ONE\ntwo\nTHREE\n'), 'undone change made it to main')
+  t.ok(await main.entry(later), 'later change too')
   await main.close()
   await disconnect()
 })
