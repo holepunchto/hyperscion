@@ -2,7 +2,7 @@
 # The swarm benchmark matrix (milestone 7): per-writer vs shared at several writer counts.
 #
 #   bench/swarm-matrix.sh <results-dir> [runs] [think]
-#   runs: space-separated mode[+shared-dht]:writers, default
+#   runs: space-separated mode[+shared-dht][+full]:writers (+full: the pre-M7 full mesh), default
 #         "per-writer:10 per-writer:25 per-writer:50 shared:10 shared:50 shared:100 shared:200"
 #
 # Stores go to HS_BENCH_DIR (default ~/.cache/hs-bench, on disk). Runs are sequential; between
@@ -32,6 +32,7 @@ for run in $RUNS; do
   mode=${spec%%+*}
   extra=
   case "$spec" in *+shared-dht*) extra=--shared-dht ;; esac
+  case "$spec" in *+full*) extra="$extra --mesh full" ;; esac
   name=$(echo "$spec" | tr '+' '_')
   procs=8
   dur=120

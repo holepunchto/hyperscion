@@ -64,7 +64,9 @@ async function main() {
       // separate hosts) but share one DHT node per process, so 100-200 of them fit in memory
       const net = new Network(repo, {
         bootstrap,
-        server: true,
+        // --mesh star (default): writers are feeds, dialing the hub only; full: every writer
+        // announces and dials everyone (the mesh before milestone 7)
+        role: opts.mesh === 'full' ? 'holder' : 'feed',
         keepAlive: true,
         mirror: !!opts.mirror,
         swarm: opts.sharedDht

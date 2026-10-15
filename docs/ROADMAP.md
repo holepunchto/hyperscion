@@ -129,6 +129,18 @@ It is parked as an option (DESIGN.md §8). M7 now asks the P2P question:
 
 3. **Settlement at scale:** replacing a dead indexer, and a quorum of indexers instead of all.
 
+**Progress: the cheaper per-agent model (item 2, done).**
+
+- **Storage:** about 2.5 MB per store (`bench/store-mem.js`), so it isn't the cost.
+- **The cost was the full mesh.** Peer roles now make a star: agents dial the hub, and feeds
+  mesh only during an outage, closing those links once settling resumes (DESIGN.md §7 "Star
+  mesh").
+- **Per-agent results, before → after:**
+  - **25 agents:** land p90 907 → 91 ms; 145 → 81 MB per agent; the hub's mirror keeps up.
+  - **50 agents:** previously out of memory; now 199/200 lands, p90 289 ms, 137 MB per agent.
+- **What remains scales with the writer count** (each peer applies every writer's ops). Past
+  about 50 on one box needs runs across machines.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

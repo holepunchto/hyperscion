@@ -12,6 +12,8 @@
 // --mirror           writers also mirror everything (feeds-as-holders, the cost of it)
 // --shared-dht       per-writer mode, but writers in a process share one DHT node (their
 //                    swarms, identities and connections stay separate): many writers per box
+// --mesh star|full   star (default): agents dial the hub only (feeds' shape since M7); full:
+//                    every agent announces and dials everyone (the shape before)
 // --max-peers n      with --shared-dht: cap each writer's connections (default hyperswarm's 64)
 //
 // Prints one JSON result and a markdown row. Latencies are upper bounds: every process
@@ -36,6 +38,7 @@ const TREE = Number(args.tree || 2000)
 const MIRROR = !!args.mirror
 const SHARED_DHT = !!args['shared-dht']
 const MAX_PEERS = args['max-peers'] ? Number(args['max-peers']) : null
+const MESH = args.mesh || 'star'
 const LINES = 400
 
 main().catch((err) => {
@@ -97,7 +100,8 @@ async function main() {
           duration: DURATION,
           mirror: MIRROR,
           sharedDht: SHARED_DHT,
-          maxPeers: MAX_PEERS
+          maxPeers: MAX_PEERS,
+          mesh: MESH
         },
         async (ev) => {
           if (ev.type === 'keys') {
@@ -177,6 +181,7 @@ function summarize({ events, finals, hubMeta, hubSamples, setupMs }) {
     mirror: MIRROR,
     sharedDht: SHARED_DHT,
     maxPeers: MAX_PEERS,
+    mesh: MESH,
     setupS: +(setupMs / 1000).toFixed(1),
     lands: {
       total: lands.length,
