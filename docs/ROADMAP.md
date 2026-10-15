@@ -88,6 +88,47 @@ lost)` shows on the author's next `status`, `sync`, `fetch`, `land` or `doctor`.
 - **Check:** the benchmark report, plus one quick run with a few LLM agents alongside a
   scripted swarm.
 
+**Progress, swarm benchmark (done):** `bench/swarm.js` and `bench/swarm-matrix.sh`; results
+in DESIGN.md §7 "Swarm".
+
+- **Shared (daemon) mode:**
+  - 200 agents at 6.3 lands/s;
+  - land p50 58 ms, settlement p90 under 0.4 s;
+  - about 40 MB per agent;
+  - every peer converged.
+- **Per-agent mode:** degrades by 25 agents (land p90 about 0.9 s, the hub's mirror falls
+  behind) and runs out of memory at 50.
+- **A constraint found:** two writers of one repo can't share a store, so a daemon is one
+  writer per machine.
+
+**Re-scoped (after the swarm benchmark).** On one machine, the realistic count is roughly
+5–30 agents, not hundreds:
+
+- inference runs elsewhere (GPU nodes batch many sessions);
+- the agent loop is limited by builds and tests;
+- hosted agents usually run one sandbox each.
+
+Per-agent mode handles that range (land p50 56 ms at 10). So the daemon doesn't justify its
+cost to the P2P model:
+
+- writer identity moves to the machine;
+- it conflicts with sandbox isolation;
+- it's a new local single point of failure.
+
+It is parked as an option (DESIGN.md §8). M7 now asks the P2P question:
+
+1. **The many-writers benchmark:** 50–200 writers, each its own peer, standing in for a few
+   agents per machine across many machines. Settlement, the hub's mirror and per-writer
+   replication cost are the likely limits.
+2. **A cheaper per-agent model,** with no change to the model:
+   - memory per agent (storage caches);
+   - a mesh shaped so co-located peers don't all replicate everything;
+   - hub mirror throughput.
+
+   Then re-measure 10, 25 and 50 agents per machine.
+
+3. **Settlement at scale:** replacing a dead indexer, and a quorum of indexers instead of all.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

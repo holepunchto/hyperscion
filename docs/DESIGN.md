@@ -312,6 +312,96 @@ holepunchto/hypercore, 2,060 first-parent commits:
 - **Storage:** 83 MB store against git's 13 MB `.git`. There is no delta compression or
   packing, so all 77 MB of raw blob versions are kept.
 
+### Swarm: many agents landing continuously (`bench/swarm-matrix.sh`, milestone 7)
+
+**Setup:**
+
+- N agents land continuously against a hub (`hs seed`: mirror plus acks), over a local DHT
+  testnet, spread across P worker processes on one machine (24 cores, 23 GB RAM). Latencies
+  are upper bounds.
+- Each agent waits a mean of 30 s between lands. Half its lands also edit one of 20 shared
+  400-line files. Every land uses `rebase: 3`.
+- "held" is the time until some peer holds the land (the CLI's "pushed: a holder has the
+  changes"). "settle" is the time until the hub's ack settles it.
+
+**The two modes:**
+
+- **per-writer:** every agent has its own Corestore and swarm, which is today's
+  one-`hs`-per-agent model. N agents means N autobee writers.
+- **shared:** one Corestore, one swarm and one writer per process, with agents as workspaces
+  on it (the per-machine daemon model). N agents means P autobee writers.
+
+**One finding before any numbers:** two writers of the same repo cannot share a store. The
+autobee view cores are keyed by the repo, so a second writer's open hangs on the first. A
+per-machine daemon is therefore **one writer per machine**, with every agent's workspace
+landing through it (Scion's per-node daemon has the same shape). Attribution and review then
+need the agent's handle, not just the writer key (the changeset `author` field already
+carries it).
+
+| mode       | agents | procs | lands ok                                  | lands/s | land p50/p90/p99 ms | held p50/p90 ms | settle p50/p90 ms | attempts | MB/agent | CPU ms/land | converged |
+| ---------- | ------ | ----- | ----------------------------------------- | ------- | ------------------- | --------------- | ----------------- | -------- | -------- | ----------- | --------- |
+| per-writer | 10     | 2     | 15/15                                     | 0.25    | 56 / 72 / 145       | 28 / 63         | 371 / 477         | 1.07     | 60       | 937         | 10/10     |
+| per-writer | 25     | 4     | 80/80                                     | 0.67    | 220 / 907 / 1803    | 55 / 91 \*      | 400 / 807         | 1.24     | 145      | 4030        | 25/25     |
+| per-writer | 50     | 8     | aborted: available memory fell under 3 GB |         |                     |                 |                   |          |          |             |           |
+| shared     | 10     | 2     | 12/12                                     | 0.20    | 41 / 53 / 68        | 25 / 26         | 414 / 454         | 1.00     | 33       | 331         | 10/10     |
+| shared     | 50     | 8     | 215/215                                   | 1.79    | 42 / 81 / 106       | 25 / 50         | 307 / 431         | 1.29     | 67       | 553         | 50/50     |
+| shared     | 100    | 8     | 375/376                                   | 3.13    | 40 / 87 / 154       | 25 / 50         | 288 / 436         | 1.34     | 48       | 482         | 100/100   |
+| shared     | 200    | 8     | 758/775                                   | 6.32    | 58 / 109 / 230      | 25 / 50         | 263 / 399         | 1.44     | 40       | 484         | 200/200   |
+
+\* At per-writer 25, 34 of 80 lands were **not held within 30 s**: the hub's mirror fell behind
+(it had mirrored 51 of 83 changesets at the end). In shared mode the mirror kept up even at 200.
+
+**Raw output:** `docs/experiments/swarm/m7-2/`. At shared 200, the 17 lands that didn't go in
+were 11 conflicts after 3 rebases, 4 empty and 2 errors.
+
+**Reading it:**
+
+- **The daemon shape scales; per-agent processes don't.**
+  - In shared mode, 200 agents land 6.3 times a second (about 20× Scion's 30k/day average).
+    Land p50 stays at 40–60 ms, settlement stays under 0.5 s, every peer converges, and each
+    agent costs about 40 MB.
+  - Per-writer degrades fast. At 25 agents, land p90 is about 0.9 s, the CPU per land is 8×
+    shared's, and the hub's mirror falls behind. At 50 agents it doesn't fit on the machine
+    (about 300 MB per agent).
+- **The cost is per writer and per connection, not per agent.** Per-writer at 25 has 612
+  swarm connections, and every connection replicates every writer's oplog core. Shared at 200
+  has 50 connections and 8 writers.
+- **Not measured yet:** many _writers_ (autobee nodes) at scale. Shared mode keeps the writer
+  count at P (8). Settlement and apply cost with 50–200 writers is still open, and it matters
+  for teams spread over many machines (one daemon each).
+
+### Many writers on one machine (`--shared-dht`, milestone 7)
+
+**Setup:** every writer is its own peer (its own store, swarm, identity and connections),
+standing in for agents on separate machines. Writers in one process share a DHT node, and
+each runs 60–120 s with a 30 s think time.
+
+| writers      | max peers each | lands ok                                  | land p50/p90 ms | not held in 30 s | converged | MB per writer | connections | CPU ms per land, all peers |
+| ------------ | -------------- | ----------------------------------------- | --------------- | ---------------- | --------- | ------------- | ----------- | -------------------------- |
+| 10           | 64             | 19/19                                     | 43 / 108        | 0                | 10/10     | 48            | –           | –                          |
+| 25           | 64             | 124/124                                   | 106 / 281       | 1                | 25/25     | 173           | 611         | 3782                       |
+| 25 (60 s)    | 4              | 26/26                                     | 39 / 95         | 20               | 22/25     | 65            | 167         | 2083                       |
+| 50, 100, 200 | 64             | aborted: available memory fell under 3 GB |                 |                  |           |               |             |                            |
+
+**Reading it:**
+
+- **Memory per writer grows with the number of writers** (48 MB at 10, 173 MB at 25), so
+  total memory grows roughly quadratically. The full mesh is a large part of it: every
+  connection opens a channel for every writer's oplog core. Capping peers at 4 halves memory.
+  But then writers that fill their slots before reaching the hub never reach it: 20 of 26
+  lands were not held, and 3 writers didn't converge.
+- **CPU per land grows with the writer count,** because every peer applies every op (about
+  2–3.8 s of CPU per land, summed over all peers). On separate machines, each one pays only
+  its own share. A single-box simulation adds them all up, so it overstates the cost and can't
+  go past about 25–40 writers.
+- **What it points to (M7 item 2):**
+  - **Mesh shaping.** Every agent keeps a connection to the hub (or holders), for example
+    `joinPeer` on the hub's key plus a small peer cap for everyone else. That's instead of a
+    full mesh.
+  - **Per-core channel cost.** Bound how many writer cores each connection opens.
+  - **Storage cache tuning.** Reduce memory per store.
+  - **Runs beyond about 40 writers need more than one machine** (containers or VMs).
+
 ### End to end
 
 `scripts/e2e.sh [dir] [--encrypt]` runs two worktrees over the **public DHT**:
@@ -327,8 +417,14 @@ It passes both unencrypted and encrypted.
 1. **Settlement / finality.** Done in milestone 4 (§11). Still open: recovering when an
    indexer is gone for good (removing writers), quorums below "all indexers", and a proof
    rather than a property test.
-2. **Daemon.** One store per machine, warm caches, an IPC API for many worktrees and agents.
-   This is also the fix for cold reads and for the RocksDB single-process limit.
+2. **Daemon (parked as an option).** One store and one writer per machine, with warm caches
+   and an IPC API for many worktrees and agents. The swarm benchmark (§7 "Swarm") shows it
+   scales far past per-agent mode on one box, but realistic hosts run about 5–30 agents, which
+   per-agent mode handles.
+   - **Costs to the P2P model:** writer identity moves to the machine, it conflicts with
+     per-agent sandboxes, and it's a local single point of failure.
+   - **When to revisit:** many agents per unsandboxed host. It would also fix cold reads and
+     the RocksDB single-process limit.
 3. **Tree-read amplification and memory in hyperbee2.** Take the cold-read and sparse-listing
    findings, and the 1M-path RSS growth, to the hyperbee2 maintainers. Candidates: view
    compaction (autobee has `compactMaybe`), inline keys, bounded-bytes node caches.
