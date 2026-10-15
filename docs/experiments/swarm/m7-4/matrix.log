@@ -1,0 +1,20 @@
+== per-writer 10 writers 2 procs 60s think 30s
+exit 0
+| per-writer | 10 | 2 | 30s | 21/21 | 0.35 | 34/70/137 | 50/76 | 326/435 | 1.14 | 0 | 0 | 57.7 | 10/10 |
+== per-writer 25 writers 4 procs 120s think 30s
+exit 0
+| per-writer | 25 | 4 | 30s | 91/92 | 0.76 | 32/91/139 | 57/127 | 324/458 | 1.21 | 0 | 0 | 81.3 | 25/25 |
+== per-writer 50 writers 8 procs 120s think 30s
+exit 0
+| per-writer | 50 | 8 | 30s | 199/200 | 1.66 | 51/289/956 | 433/1312 | 222/452 | 1.42 | 3 | 0 | 136.8 | 50/50 |
+== per-writer+shared-dht 25 writers 4 procs 120s think 30s
+exit 0
+| per-writer | 25 | 4 | 30s | 101/101 | 0.84 | 29/99/195 | 52/107 | 308/454 | 1.21 | 0 | 0 | 83.6 | 25/25 |
+== per-writer+shared-dht 50 writers 8 procs 120s think 30s
+exit 0
+| per-writer | 50 | 8 | 30s | 172/175 | 1.43 | 62/284/668 | 356/907 | 264/516 | 1.42 | 1 | 0 | 129.3 | 50/50 |
+== per-writer+shared-dht 100 writers 8 procs 120s think 30s
+aborted: available memory fell to 2878 MB
+== per-writer+shared-dht 200 writers 8 procs 120s think 30s
+aborted: available memory fell to 2887 MB
+DONE

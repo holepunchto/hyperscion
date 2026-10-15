@@ -1,0 +1,10 @@
+== per-writer+shared-dht 25 writers 4 procs 120s think 30s
+exit 0
+| per-writer | 25 | 4 | 30s | 124/124 | 1.03 | 106/281/908 | 367/1043 | 348/599 | 1.29 | 0 | 0 | 172.8 | 25/25 |
+== per-writer+shared-dht 50 writers 8 procs 120s think 30s
+aborted: available memory fell to 2962 MB
+== per-writer+shared-dht 100 writers 8 procs 120s think 30s
+aborted: available memory fell to 2795 MB
+== per-writer+shared-dht 200 writers 8 procs 120s think 30s
+aborted: available memory fell to 2619 MB
+DONE

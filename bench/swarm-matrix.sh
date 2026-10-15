@@ -2,6 +2,9 @@
 # The swarm benchmark matrix (milestone 7): per-writer vs shared at several writer counts.
 #
 #   bench/swarm-matrix.sh <results-dir> [runs] [think]
+# Writes <results-dir>/results.jsonl (one JSON line per run) and matrix.log; raw output goes
+# to <results-dir>/.raw (git-ignored).
+#
 #   runs: space-separated mode[+shared-dht][+full]:writers (+full: the pre-M7 full mesh), default
 #         "per-writer:10 per-writer:25 per-writer:50 shared:10 shared:50 shared:100 shared:200"
 #
@@ -16,7 +19,7 @@ THINK=${3:-30}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 export HS_BENCH_DIR=${HS_BENCH_DIR:-$HOME/.cache/hs-bench}
 MIN_MEM_MB=${HS_BENCH_MIN_MEM_MB:-3000}
-mkdir -p "$OUT"
+mkdir -p "$OUT/.raw"
 
 cleanup() {
   pkill -9 -f "$ROOT/bench/swarm-worker.js" 2> /dev/null
@@ -41,7 +44,7 @@ for run in $RUNS; do
   cleanup
   echo "== $spec $n writers $procs procs ${dur}s think ${THINK}s" | tee -a "$OUT/matrix.log"
   timeout $((dur + 900)) bare "$ROOT/bench/swarm.js" --writers "$n" --procs "$procs" --mode "$mode" \
-    --duration "$dur" --think "$THINK" $extra > "$OUT/$name-$n.out" 2> "$OUT/$name-$n.err" &
+    --duration "$dur" --think "$THINK" $extra > "$OUT/.raw/$name-$n.out" 2> "$OUT/.raw/$name-$n.err" &
   pid=$!
   low=0
   while kill -0 $pid 2> /dev/null; do
@@ -54,12 +57,16 @@ for run in $RUNS; do
   done
   wait $pid
   code=$?
+  # results.jsonl: one line per run (the JSON result, or why it was aborted). Raw stdout and
+  # stderr stay in $OUT/.raw, which is git-ignored.
   if [ "$low" != 0 ]; then
     echo "aborted: available memory fell to ${low} MB" | tee -a "$OUT/matrix.log"
+    printf '{"run":"%s","writers":%s,"aborted":"available memory fell to %s MB"}\n' "$spec" "$n" "$low" >> "$OUT/results.jsonl"
   else
     echo "exit $code" | tee -a "$OUT/matrix.log"
+    grep '^{' "$OUT/.raw/$name-$n.out" | sed "s/^{/{\"run\":\"$spec\",/" >> "$OUT/results.jsonl"
   fi
-  grep '^|' "$OUT/$name-$n.out" | tee -a "$OUT/matrix.log"
+  grep '^|' "$OUT/.raw/$name-$n.out" | tee -a "$OUT/matrix.log"
 done
 cleanup
 echo DONE | tee -a "$OUT/matrix.log"

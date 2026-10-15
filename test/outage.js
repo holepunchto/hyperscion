@@ -23,6 +23,11 @@ test('outage: feeds keep the team working while the hub is down', async (t) => {
   await waitFor(() => /\bone\b/.test(feed2.output()), 30_000)
 
   await tm.stopHub()
+  // left alone, the feeds lose their only peer (the hub), then find each other on the
+  // fallback topic: the outage mesh
+  await waitFor(() => /no peers reachable/.test(feed1.output()), 60_000)
+  await waitFor(() => /peers reachable again/.test(feed1.output() + feed2.output()), 60_000)
+  t.pass('feeds meshed with each other while the hub is down')
 
   // a1 lands while the hub is down: a feed holds it
   tm.write('a1', 'src/two.js', 'two while the hub is down\n')
@@ -43,6 +48,14 @@ test('outage: feeds keep the team working while the hub is down', async (t) => {
   await tm.startHub()
   await waitFor(() => /hub settling again/.test(feed2.output()), 60_000)
   t.pass('feed says the hub is back')
+  // the feeds meshed during the outage; with the hub back, those links are closed again
+  await waitFor(() => /closed \d+ outage link/.test(feed1.output() + feed2.output()), 30_000).catch(
+    (err) => {
+      t.comment('feed1:\n' + feed1.output() + '\nfeed2:\n' + feed2.output())
+      throw err
+    }
+  )
+  t.pass('outage links between feeds are closed once the hub settles again')
   // status reads this machine's main, which the feed may be ahead of: it catches up first
   await waitFor(() => /hub settling again/.test(feed1.output()), 60_000)
   const after = await tm.as('a1', ['status'])

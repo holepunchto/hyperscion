@@ -402,6 +402,58 @@ each runs 60–120 s with a 30 s think time.
   - **Storage cache tuning.** Reduce memory per store.
   - **Runs beyond about 40 writers need more than one machine** (containers or VMs).
 
+### Star mesh: the cheaper per-agent model (milestone 7)
+
+**Where the per-writer memory went:**
+
+- **Not storage.** `bare bench/store-mem.js 20` measures about 2.5 MB per repo in its own store
+  after a few lands. A 4 MB write buffer instead of 64 MB changes it by 0.2 MB.
+- **The mesh.** Every long-lived agent announced on the repo topic, so N agents meant N²
+  connections, each opening a channel for every writer's oplog core.
+
+**The fix (`lib/net.js`, peer roles):**
+
+- **holder** (the hub, a blind peer): announces on the repo topic.
+- **feed** (an agent's long-running `hs watch`, and the benchmark's writers): dials the repo
+  topic and listens on a second **fallback** topic.
+- **command:** dials both.
+
+So normally each agent keeps one connection, to the hub. When a feed loses everyone (the hub is
+down) it also dials the fallback topic, so feeds mesh only during an outage. Once settling
+resumes, each feed closes the outage links it dialed (never a teammate's command, and only
+while another connection remains). The hub looks up the fallback topic too, so it finds feeds
+again after a restart.
+
+**Per-writer mode, star vs. the full mesh before** (`--mesh full`; same machine, 30 s think;
+raw output in `docs/experiments/swarm/m7-4/`):
+
+| writers        | mesh | lands ok      | land p50/p90/p99 ms | held p50/p90 ms | not held | MB per writer | connections | converged |
+| -------------- | ---- | ------------- | ------------------- | --------------- | -------- | ------------- | ----------- | --------- |
+| 10             | full | 15/15         | 56 / 72 / 145       | 28 / 63         | 0        | 60            | –           | 10/10     |
+| 10             | star | 21/21         | 34 / 70 / 137       | 50 / 76         | 0        | 58            | 10          | 10/10     |
+| 25             | full | 80/80         | 220 / 907 / 1803    | 55 / 91         | 34       | 145           | 612         | 25/25     |
+| 25             | star | 91/92         | 32 / 91 / 139       | 57 / 127        | 0        | 81            | 25          | 25/25     |
+| 50             | full | out of memory |                     |                 |          |               |             |           |
+| 50             | star | 199/200       | 51 / 289 / 956      | 433 / 1312      | 3        | 137           | 50          | 50/50     |
+| 25, shared DHT | star | 101/101       | 29 / 99 / 195       | 52 / 107        | 0        | 84            | 25          | 25/25     |
+| 50, shared DHT | star | 172/175       | 62 / 284 / 668      | 356 / 907       | 3        | 129           | 50          | 50/50     |
+| 100, 200       | star | out of memory |                     |                 |          |               |             |           |
+
+**Reading it:**
+
+- **The star fixes the 5–30-agent range.**
+  - At 25 agents, land p90 drops from 907 to 91 ms.
+  - The hub's mirror keeps up (0 not held, against 34).
+  - Memory per agent nearly halves.
+  - 50 agents now run.
+- **What's left grows with the number of writers, not connections.** Each peer opens every
+  writer's oplog core and applies every op. So per-writer memory still rises (58 → 81 → 137
+  MB at 10/25/50), and CPU per land summed over all peers rises (about 0.5 → 0.9 → 2.3 s).
+  - On separate machines each peer pays its own share.
+  - A single box pays all of them, which is why 100+ writers still don't fit here.
+  - Going further means runs across machines, or cheaper per-writer state in autobee
+    (bounded sessions for idle writers' cores).
+
 ### End to end
 
 `scripts/e2e.sh [dir] [--encrypt]` runs two worktrees over the **public DHT**:
@@ -678,6 +730,9 @@ were invisible, and a stand-in that started during the outage saw an empty main.
 - It emits `offline` after a 3 s grace and `online` once connections have lasted 8 s, so
   short commands don't make it flap.
 - Waits (`--count`) and one-shot commands stay client-only.
+- **Since milestone 7, feeds no longer mesh with each other.** They dial the hub, and other
+  feeds only while they can't reach anyone (the fallback topic). They close those links once
+  settling resumes. See §7 "Star mesh".
 
 **Consequences.**
 
