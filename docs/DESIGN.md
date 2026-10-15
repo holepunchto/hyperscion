@@ -505,9 +505,10 @@ writer has seen it" would be stricter and would stall whenever any agent goes of
 
 **Surfaces.**
 
-- `land -o` prints `(provisional: settles when the hub acks it)`.
-- `land --wait-final [--timeout s]` waits for `#n final`, or `#n settled; not final until
-review from a4`. It exits 2 if the land isn't settled in time.
+- `land` waits up to 10 s for the hub's ack and ends with `#n final`, `#n settled; not final
+until review from a4`, or `#n provisional` (exit 0 either way). An indexer acks its own
+  land right away, so a solo repo settles immediately.
+- `land --wait-final [--timeout s]` waits until final, review included, and exits 2 if not.
 - `status` shows the last land's state and "your lands not final yet".
 - `log` tags each changeset `[final]`, `[settled]` or `[provisional]`.
 - `watch` streams `settled` events. `--for-me` turns them into `@ #27 settled ...` /
@@ -526,3 +527,40 @@ View cores and proposals are mirrored best-effort, one core at a time.
   is no writer removal yet.
 - Quorums below "all indexers".
 - Finality for review ops themselves.
+
+## 12. CLI defaults (before experiment 3)
+
+With review and finality the surface had grown to 28 commands and about 45 flags. We
+reviewed every one against experiment 2's traces (142 calls) and optimized the defaults for
+people first, agents second.
+
+**Evidence from the traces:**
+
+- 27 of 28 `land` calls passed `-o`.
+- 14 of 16 `log` calls passed `-n`, and 11 passed `-f`.
+- `pull` fell from 271 calls to 5 once `watch` existed. Unlike git's pull, it never changed
+  files.
+- Every agent asked when "provisional" ends.
+
+**Principles and changes:**
+
+1. **Online by default, `--offline` to opt out, the same on every command.**
+   - `land` pulls, rebases, pushes and waits; `-o` is a hidden no-op.
+   - `add-writer` pushes the op.
+   - A repo with no other writers waits only 2 s for peers, so `init` then `land` stays quick.
+2. **Names mean what git users expect.**
+   - `pull` became `fetch` (`pull` is a hidden alias).
+   - `diff` prints a unified diff of what `land` would send, uncommitted edits included;
+     `--stat` lists the paths.
+   - `log` lists files by default (the first 8, or only the matching file with a path
+     filter); `--oneline` turns that off.
+3. **A plain command ends in the state people care about.** `land` waits up to 10 s to settle
+   (`--no-wait` skips the wait). `seed` mirrors by default (`--no-mirror` turns it off), since
+   a seed exists to be the holder.
+
+**Removed or renamed:**
+
+- Removed: `land --author` (identity is the handle) and `land --show` (`-r` means Show; owners
+  are asked automatically; `--ship` opts out).
+- Renamed: `land --rebase <n>` became `--retries <n>`.
+- Added: `clone --as` names the handle explicitly. `add-writer` warns when `--as` is missing.

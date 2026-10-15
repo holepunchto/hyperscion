@@ -1,6 +1,6 @@
 #!/bin/sh
 # Bootstrap a hyperscion team: a hub worktree that stays online as the holder
-# (`hs seed --mirror --admit`) and N agent worktrees that are writers.
+# (`hs seed --admit`) and N agent worktrees that are writers.
 #
 #   scripts/team.sh <dir> <n> [--skeleton <dir>] [--encrypt] [--blind-peer <key>]
 #
@@ -54,10 +54,10 @@ if [ ! -f .hsattributes ]; then printf 'NOTES.md merge=union\n' > .hsattributes;
 "$HUB" init $ENCRYPT > "$DIR/init.out"
 INVITE=$(grep '^repo' "$DIR/init.out" | awk '{print $2}')
 if [ -n "$BLIND" ]; then "$HUB" blind-peer "$BLIND" > /dev/null; fi
-"$HUB" land -m "project skeleton" > /dev/null
+"$HUB" land --offline -m "project skeleton" > /dev/null
 echo "repo invite: $INVITE"
 
-"$BARE" "$ROOT/bin.mjs" seed --mirror --admit "$DIR/admit" > "$DIR/hub-seed.log" 2>&1 &
+"$BARE" "$ROOT/bin.mjs" seed --admit "$DIR/admit" > "$DIR/hub-seed.log" 2>&1 &
 echo $! > "$DIR/hub-seed.pid"
 sleep 2
 
@@ -67,7 +67,7 @@ while [ $i -le "$N" ]; do
   wrapper $a
   echo "== $a"
   cd "$DIR/agents"
-  "$DIR/bin/hs-$a" clone "$INVITE" $a --admit "$DIR/admit" | head -1
+  "$DIR/bin/hs-$a" clone "$INVITE" $a --as $a --admit "$DIR/admit" | head -1
   if [ -n "$BLIND" ]; then (cd "$DIR/agents/$a" && "$DIR/bin/hs-$a" blind-peer "$BLIND" > /dev/null); fi
   i=$((i + 1))
 done
@@ -85,7 +85,7 @@ while [ $i -le "$N" ]; do
   a=a$i
   cd "$DIR/agents/$a"
   tries=0
-  until "$DIR/bin/hs-$a" pull > /dev/null 2>&1 && "$DIR/bin/hs-$a" info | grep -q '(writable)'; do
+  until "$DIR/bin/hs-$a" fetch > /dev/null 2>&1 && "$DIR/bin/hs-$a" info | grep -q '(writable)'; do
     tries=$((tries + 1))
     [ $tries -gt 10 ] && { echo "$a did not become writable"; exit 1; }
     sleep 2

@@ -45,14 +45,14 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   const init = await hs(hub, ['init'])
   t.is(init.code, 0, 'init')
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
-  t.is((await hs(hub, ['land', '-m', 'skeleton'])).code, 0)
+  t.is((await hs(hub, ['land', '--offline', '-m', 'skeleton'])).code, 0)
 
-  const seed = background(hub, ['seed', '--mirror', '--admit', admit], { ...env, USER: 'hub' })
+  const seed = background(hub, ['seed', '--admit', admit], { ...env, USER: 'hub' })
   t.teardown(() => seed.stop(), { order: 1 })
   await waitFor(() => seed.output().includes('admitting'))
 
   for (const a of ['a1', 'a2']) {
-    const res = await hs(dir, ['clone', invite, a, '--admit', admit], a)
+    const res = await hs(dir, ['clone', invite, a, '--as', a, '--admit', admit], a)
     t.is(res.code, 0, `${a} cloned`)
   }
   await waitFor(() => seed.output().split('admitted').length === 3, 30_000).catch((err) => {
@@ -67,7 +67,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   ]) {
     let last = ''
     await waitFor(async () => {
-      const p = await hs(cwd, ['pull'], user)
+      const p = await hs(cwd, ['fetch'], user)
       const i = await hs(cwd, ['info'], user)
       last = p.stdout + p.stderr + i.stdout
       return i.stdout.includes('(writable)')
@@ -85,9 +85,9 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   fs.writeFileSync(path.join(A2, 'src', 'geo.js'), 'geo\n')
 
   const l1 = await hs(A1, ['land', '-o', '-m', 'model'], 'a1')
-  t.is(l1.code, 0, 'a1 landed')
-  const l2 = await hs(A2, ['land', '-o', '-m', 'geo'], 'a2')
-  t.is(l2.code, 0, 'a2 landed after rebasing')
+  t.is(l1.code, 0, l1.code ? l1.stdout + l1.stderr : 'a1 landed')
+  const l2 = await hs(A2, ['land', '-m', 'geo'], 'a2')
+  t.is(l2.code, 0, l2.code ? l2.stdout + l2.stderr : 'a2 landed after rebasing')
   t.comment(l2.stdout.trim().split('\n').join(' | '))
   t.ok(
     /main moved: \/NOTES\.md \(#\d+ a1\)/.test(l2.stdout),
@@ -108,7 +108,9 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
 
   // 3. waiting for a dependency that landed before the wait started returns immediately
   fs.writeFileSync(path.join(A1, 'src', 'dep.js'), 'dep\n')
-  t.is((await hs(A1, ['land', '-o', '-m', 'dep ready'], 'a1')).code, 0)
+  const dep = await hs(A1, ['land', '-m', 'dep ready'], 'a1')
+  t.is(dep.code, 0)
+  t.ok(/#\d+ final/.test(dep.stdout), 'a plain land waits for the hub to settle it: ' + dep.stdout)
   const started = Date.now()
   const w = await hs(
     A2,
@@ -134,7 +136,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   await waitFor(() => fs.existsSync(path.join(A2, '.hs', 'watch.pid')))
   await sleep(3000) // let it connect and settle
   fs.writeFileSync(path.join(A1, 'src', 'f1.js'), 'f1\n')
-  const lf1 = await hs(A1, ['land', '-o', '-m', 'f1'], 'a1')
+  const lf1 = await hs(A1, ['land', '-m', 'f1'], 'a1')
   t.is(lf1.code, 0, lf1.code ? lf1.stdout + lf1.stderr : 'f1 landed')
   await waitFor(() => feed1.output().includes('/src/f1.js'), 30_000)
   t.pass('feed saw f1')
@@ -145,7 +147,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.absent(fs.existsSync(path.join(A2, '.hs', 'watch.pid')), 'pidfile removed')
 
   fs.writeFileSync(path.join(A1, 'src', 'f2.js'), 'f2\n')
-  t.is((await hs(A1, ['land', '-o', '-m', 'f2 while a2 feed was down'], 'a1')).code, 0)
+  t.is((await hs(A1, ['land', '-m', 'f2 while a2 feed was down'], 'a1')).code, 0)
 
   const feed2 = background(A2, ['watch', '--json'], { ...env, USER: 'a2' })
   await waitFor(() => feed2.output().includes('/src/f2.js'), 30_000)
@@ -166,13 +168,14 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   // 6. Show by default: a2 changes a file a1 owns; a1 is asked, reviews; a2 hears about it
   t.is((await hs(A2, ['sync'], 'a2')).code, 0)
   fs.writeFileSync(path.join(A2, 'src', 'pricing.js'), 'price = 2\n')
-  const show = await hs(A2, ['land', '-o', '-m', 'raise price'], 'a2')
+  const show = await hs(A2, ['land', '-m', 'raise price'], 'a2')
   t.is(show.code, 0, 'Show lands immediately')
   t.ok(show.stdout.includes('showing to a1 (owner of /src/pricing.js)'))
   t.ok(show.stdout.includes('review requested from a1'))
   const showSeq = Number(show.stdout.match(/landed #(\d+)/)[1])
 
-  t.is((await hs(A1, ['pull'], 'a1')).code, 0) // status is offline: it shows what was pulled
+  // status is offline: it shows what was fetched (`pull` is the old, hidden name for fetch)
+  t.is((await hs(A1, ['pull'], 'a1')).code, 0)
   const st = await hs(A1, ['status'], 'a1')
   t.ok(st.stdout.includes(`review requested: #${showSeq} by a2`), 'a1 sees the request in status')
   // replaying from the start also reports a1's own lands becoming final, so read a few lines
@@ -193,11 +196,11 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
 
   // 7. Ask: a2 proposes a contract change to a1; it lands only once approved
   fs.writeFileSync(path.join(A2, 'CONTRACTS.md'), '# contracts\nplan(day) -> Plan\n')
-  const prop = await hs(A2, ['propose', '-o', '-m', 'pin Plan shape', '-r', 'a1'], 'a2')
+  const prop = await hs(A2, ['propose', '-m', 'pin Plan shape', '-r', 'a1'], 'a2')
   t.is(prop.code, 0, prop.stdout + prop.stderr)
   t.ok(/proposed P1: 1 path\(s\), needs 1 approval\(s\), asked a1/.test(prop.stdout))
 
-  const early = await hs(A2, ['land', '-o', '-m', 'pin Plan shape'], 'a2')
+  const early = await hs(A2, ['land', '-m', 'pin Plan shape'], 'a2')
   t.is(early.code, 2, 'cannot land before approval')
   t.ok(early.stdout.includes('not landed, needs review: P1 has 0/1 approvals'))
 
@@ -207,7 +210,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   const approve = await hs(A1, ['review', 'P1', 'approve', '-m', 'lgtm'], 'a1')
   t.ok(approve.stdout.includes('P1: approved; 1/1 approvals, approved'))
 
-  const landed = await hs(A2, ['land', '-o', '-m', 'pin Plan shape'], 'a2')
+  const landed = await hs(A2, ['land', '-m', 'pin Plan shape'], 'a2')
   t.is(landed.code, 0, landed.stdout + landed.stderr)
   t.ok(/landed P1 as #\d+/.test(landed.stdout))
   t.ok((await hs(A1, ['proposals', '--all'], 'a1')).stdout.includes('P1 landed'))
@@ -215,6 +218,13 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   // 8. provisional -> final: the seeding hub acks, so a Ship land becomes final in seconds
   t.is((await hs(A1, ['sync'], 'a1')).code, 0)
   fs.writeFileSync(path.join(A1, 'src', 'final.js'), 'final\n')
+  fs.appendFileSync(path.join(A1, 'NOTES.md'), '- [a1] final next\n')
+  const d = await hs(A1, ['diff'], 'a1')
+  t.ok(
+    d.stdout.includes('+++ b/src/final.js') && d.stdout.includes('+- [a1] final next'),
+    'diff shows uncommitted edits as a patch'
+  )
+  t.ok((await hs(A1, ['diff', '--stat'], 'a1')).stdout.includes('A /src/final.js'), 'diff --stat')
   const fin = await hs(
     A1,
     ['land', '-o', '-m', 'wait for it', '--wait-final', '--timeout', '30'],
@@ -222,11 +232,11 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   )
   t.is(fin.code, 0, fin.stdout + fin.stderr)
   const finSeq = Number(fin.stdout.match(/landed #(\d+)/)[1])
-  t.ok(fin.stdout.includes('(provisional: settles when the hub acks it)'))
   t.ok(fin.stdout.includes(`#${finSeq} final`), 'land --wait-final reports final')
   t.ok((await hs(A1, ['status'], 'a1')).stdout.includes(`last land: #${finSeq} final`))
   const log = await hs(A1, ['log', '-n', '3'], 'a1')
   t.ok(new RegExp(`#${finSeq} .*\\[final\\]`).test(log.stdout), 'log tags it final')
+  t.ok(log.stdout.includes('      /src/final.js'), 'log lists files by default')
   const doc = await hs(A1, ['doctor'], 'a1')
   t.ok(
     /settled\s+through #\d+/.test(doc.stdout) && doc.stdout.includes('indexer      hub has seen')

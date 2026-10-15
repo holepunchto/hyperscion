@@ -19,7 +19,7 @@ system can get without a server:
   There is no merge queue.
 - **Reads are lazy and verifiable.** Peers fetch exactly the blocks they read, from anyone,
   and merkle proofs mean no cache can lie.
-- **Data stays available without a server.** Mirror peers (`hs seed --mirror`) or blind peers
+- **Data stays available without a server.** Mirror peers (`hs seed`) or blind peers
   that hold encrypted blocks they cannot read.
 
 This is a milestone-1 prototype. **[docs/DESIGN.md](docs/DESIGN.md)** has the architecture, the
@@ -32,8 +32,9 @@ npm install
 alias hs="bare $PWD/bin.mjs"
 
 mkdir demo && cd demo
-hs init                      # prints the repo invite
+hs init --as me              # prints the repo invite
 echo hello > README.md
+hs diff                      # what land would send
 hs land -m "first"           # commit + land onto main
 hs log
 
@@ -48,52 +49,58 @@ playbook: watch instead of poll, sync, land small, learn from teammates' diffs. 
 team with one command (an always-on holder plus N writable worktrees):
 
 ```sh
-scripts/team.sh ./team 5      # hub runs `hs seed --mirror --admit`, agents in team/agents/a1..a5
+scripts/team.sh ./team 5      # hub runs `hs seed --admit`, agents in team/agents/a1..a5
 ```
 
-Every team needs a **holder**: a hub running `hs seed --mirror`, or a blind peer. It keeps
-landed work available when its author is offline.
+Every team needs a **holder**: a hub running `hs seed`, or a blind peer. It keeps landed
+work available when its author is offline, and it settles lands (see below).
 
 Collaborating across machines by hand:
 
 ```sh
 # machine A
-hs seed --mirror             # stay online and hold all landed content
+hs seed                      # stay online, hold all landed content, settle lands
 
 # machine B
 hs clone <invite> work --sparse src   # only materialize src/
 cd work && hs info                     # copy the writer key
 
-# machine A: admit without stopping the seed (`hs seed --mirror --admit ./admit`, and clone
-# with `hs clone <invite> --admit ./admit`), or stop the seed and:
-hs add-writer <writer-key>
+# machine A: admit without stopping the seed (`hs seed --admit ./admit`, and clone with
+# `hs clone <invite> --as bob --admit ./admit`), or stop the seed and:
+hs add-writer <writer-key> --as bob
 
 # machine B
-hs pull && hs land --online -m "my change"
+hs land -m "my change"                 # pulls, rebases if main moved, pushes, waits to settle
 ```
 
 `hs init --encrypt` encrypts all repo data at rest. The invite then carries the key.
 
 ## Commands
 
-|                                                                                                 |                                                                                  |
-| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `init [dir] [--encrypt]`                                                                        | create a repo                                                                    |
-| `clone <invite> [dir] [--sparse p]… [--admit dir]`                                              | join a repo, sparse checkout, request write access                               |
-| `status`, `diff`, `commit`, `restore <path…>`                                                   | working copy vs workspace; discard local edits                                   |
-| `land -o [-m]`                                                                                  | commit and land onto main; auto-rebases on conflict; waits until a holder has it |
-| `sync [--offline]`                                                                              | pull main and rebase onto it (3-way merge, union merge per `.hsattributes`)      |
-| `watch [--path p] [--count n] [--json] [--patch]`                                               | stream changesets (and reorgs) as they land                                      |
-| `show <#n\|Pn> [--stat]`                                                                        | a changeset or proposal: message, reviews, unified diff                          |
-| `propose -o [-m] [-r handles] [-q n]`, `review <Pn\|#n> approve\|changes\|comment`, `proposals` | Ask and review (Ship / Show / Ask, see docs/AGENTS.md)                           |
-| `log [-f] [path]`, `ls [prefix]`, `cat <path>`                                                  | read main (no checkout needed)                                                   |
-| `checkout [prefix…]`                                                                            | materialize files, optionally sparse                                             |
-| `ws new\|switch\|list`                                                                          | workspaces                                                                       |
-| `info`, `add-writer <key> [--indexer]`                                                          | identity and access                                                              |
-| `pull`, `push`, `doctor`                                                                        | fetch, upload, check connectivity and holder                                     |
-| `seed [--mirror] [--admit dir] [--updates]`                                                     | stay online as the team's holder                                                 |
-| `blind-peer <key> [--remove]`                                                                   | configure blind peers                                                            |
-| `import-git <gitdir> [--branch] [--limit]`                                                      | replay a git branch's first-parent history                                       |
+Every command that talks to peers does so by default; `--offline` opts out. A land is
+**provisional** until the hub acks it, then **settled** (it can't be reordered), then **final**
+(settled and accepted by review). `land` waits up to 10 s for the hub, so it usually ends with
+`#27 final`.
+
+| command                                                                         | what                                                                            |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `init [dir] [--as handle] [--encrypt]`                                          | create a repo                                                                   |
+| `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`                | join a repo, request write access, sparse checkout                              |
+| `status`                                                                        | your edits, unlanded work, stale files, lands not yet final, reviews for you    |
+| `diff [--stat]`                                                                 | what `land` would send, as a unified diff                                       |
+| `land [-m msg] [-r handles] [--ship] [--wait-final] [--offline]`                | commit, pull, rebase if main moved, land, push, wait to settle                  |
+| `sync [--offline]`                                                              | bring main into your files and rebase your work onto it                         |
+| `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`       | stream lands, reviews and settlement as they happen                             |
+| `log [path] [-n n] [--oneline]`, `show <#n\|Pn> [--stat]`                       | history with files and states; a changeset or proposal with its diff            |
+| `propose [-m] [-r handles] [-q n]`, `review <Pn\|#n> approve\|changes\|comment` | Ask and review (Ship / Show / Ask, see docs/AGENTS.md)                          |
+| `proposals [--all]`                                                             | open proposals: waiting for you, yours                                          |
+| `ls [prefix]`, `cat <path>`                                                     | read main (or `--ws`, your workspace) without a checkout                        |
+| `commit`, `restore <path…>`, `checkout [prefix…]`                               | checkpoint edits, discard edits, materialize files (optionally sparse)          |
+| `ws new\|switch\|list`                                                          | workspaces                                                                      |
+| `fetch`, `push`                                                                 | download main without touching files; make sure a holder has your lands         |
+| `seed [--admit dir] [--no-mirror] [--updates]`                                  | be the team's holder: stay online, hold everything, settle lands, admit writers |
+| `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                    | identity, connectivity and settlement, access                                   |
+| `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`       | configure blind peers; replay a git branch's first-parent history               |
 
 ## Library
 

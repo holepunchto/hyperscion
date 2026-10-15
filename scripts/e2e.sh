@@ -5,7 +5,7 @@
 #
 # Uses the public DHT unless HS_BOOTSTRAP=host:port points at a private one
 # (see scripts/testnet.js). A seeds as a mirror, B sparse-clones, gets added as a
-# writer, lands with --online, and A syncs B's change after B has gone offline.
+# writer, lands (online by default), and A syncs B's change after B has gone offline.
 set -e
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -24,11 +24,11 @@ INVITE=$(grep '^repo' "$WORK/init.out" | awk '{print $2}')
 
 mkdir -p docs src && echo "# docs" > docs/index.md
 for i in 1 2 3; do echo "src $i" > "src/$i.js"; done
-hs land -m "initial import"
+hs land --offline -m "initial import"
 
 seed() {
   cd "$WORK/a"
-  "$BARE" "$ROOT/bin.mjs" seed --mirror > "$WORK/seed-a.out" 2>&1 &
+  "$BARE" "$ROOT/bin.mjs" seed > "$WORK/seed-a.out" 2>&1 &
   SEED=$!
   sleep 2
 }
@@ -43,9 +43,9 @@ unseed
 cd "$WORK/a" && hs add-writer "$WRITER"
 
 seed
-cd "$WORK/b" && hs pull && hs info | grep '^writer'
+cd "$WORK/b" && hs fetch && hs info | grep '^writer'
 echo "src 2 changed by b" > src/2.js
-hs land --online -m "b edits"
+hs land -m "b edits"
 unseed
 
 cd "$WORK/a" && hs log && hs sync
