@@ -10,12 +10,14 @@
 //                    ~6.7 lands/s, about 20x Scion's 30k changes/day average
 // --hot n --hot-p p  n shared 400-line files; each land edits one of them with probability p
 // --mirror           writers also mirror everything (feeds-as-holders, the cost of it)
+// --shared-dht       per-writer mode, but writers in a process share one DHT node (their
+//                    swarms, identities and connections stay separate): many writers per box
+// --max-peers n      with --shared-dht: cap each writer's connections (default hyperswarm's 64)
 //
 // Prints one JSON result and a markdown row. Latencies are upper bounds: every process
 // shares one machine (see `cores` in the result).
 const b4a = require('b4a')
 const os = require('bare-os')
-const process = require('bare-process')
 const path = require('bare-path')
 const { spawn } = require('bare-subprocess')
 const createTestnet = require('hyperdht/testnet')
@@ -32,6 +34,8 @@ const HOT = Number(args.hot || 20)
 const HOT_P = Number(args['hot-p'] ?? 0.5)
 const TREE = Number(args.tree || 2000)
 const MIRROR = !!args.mirror
+const SHARED_DHT = !!args['shared-dht']
+const MAX_PEERS = args['max-peers'] ? Number(args['max-peers']) : null
 const LINES = 400
 
 main().catch((err) => {
@@ -91,7 +95,9 @@ async function main() {
           hotP: HOT_P,
           think: THINK,
           duration: DURATION,
-          mirror: MIRROR
+          mirror: MIRROR,
+          sharedDht: SHARED_DHT,
+          maxPeers: MAX_PEERS
         },
         async (ev) => {
           if (ev.type === 'keys') {
@@ -99,7 +105,10 @@ async function main() {
           } else if (ev.type === 'ready') ready.add(ev.id)
           else if (ev.type === 'final') finals.push(ev)
           else if (ev.type === 'error') console.error(`worker ${ev.id}: ${ev.error}`)
-          else events.push(ev)
+          else if (ev.type === 'stuck') {
+            console.error(`worker ${ev.id}: stuck writers ${JSON.stringify(ev.stuck)}`)
+            events.push(ev)
+          } else events.push(ev)
         }
       )
       workers.push(w)
@@ -116,13 +125,13 @@ async function main() {
     const hubSamples = []
     const sampler = setInterval(async () => {
       const m = await hub.repo.meta().catch(() => null)
-      if (m)
-        hubSamples.push({
-          t: Date.now() - loadStart,
-          head: m.seq,
-          settled: m.settled || 0,
-          mirrored: net.mirrored
-        })
+      if (!m) return
+      hubSamples.push({
+        t: Date.now() - loadStart,
+        head: m.seq,
+        settled: m.settled || 0,
+        mirrored: net.mirrored
+      })
     }, 2000)
     await waitUntil(() => finals.length === P, (DURATION + 120) * 1000, 'workers final')
     clearInterval(sampler)
@@ -166,6 +175,8 @@ function summarize({ events, finals, hubMeta, hubSamples, setupMs }) {
     hot: HOT,
     hotP: HOT_P,
     mirror: MIRROR,
+    sharedDht: SHARED_DHT,
+    maxPeers: MAX_PEERS,
     setupS: +(setupMs / 1000).toFixed(1),
     lands: {
       total: lands.length,
@@ -183,6 +194,7 @@ function summarize({ events, finals, hubMeta, hubSamples, setupMs }) {
       : 0,
     flips: lands.filter((l) => l.flipped).length,
     unavailable: events.filter((e) => e.type === 'unavailable').length,
+    stuck: events.filter((e) => e.type === 'stuck').flatMap((e) => e.stuck),
     hub: {
       head: hubMeta.seq,
       settled: hubMeta.settled || 0,

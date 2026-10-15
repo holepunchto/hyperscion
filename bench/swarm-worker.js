@@ -21,11 +21,17 @@ const emit = (o) => process.stdout.write(JSON.stringify(o) + '\n')
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const now = () => Date.now()
 const LAND_TIMEOUT_MS = 120_000
-const dbg = (m) => process.env.HS_BENCH_DEBUG && process.stderr.write(opts.id + ': ' + m + '\n')
+const STUCK_GRACE_MS = 60_000
 
 const writers = [] // { name, repo, net, store }
 let swarm = null
 let root = null
+let dht = null
+
+function sharedDht() {
+  if (!dht) dht = new HyperDHT({ bootstrap: opts.bootstrap, host: '127.0.0.1', firewalled: false })
+  return dht
+}
 
 main().catch((err) => {
   emit({ type: 'error', id: opts.id, error: String((err && err.stack) || err) })
@@ -54,11 +60,19 @@ async function main() {
     for (let i = 0; i < opts.count; i++) {
       const store = new Corestore(path.join(opts.dir, 'w' + i))
       const repo = new Repo(store, { key })
+      // --shared-dht: writers keep their own swarm (own peer identity and connections, as on
+      // separate hosts) but share one DHT node per process, so 100-200 of them fit in memory
       const net = new Network(repo, {
         bootstrap,
         server: true,
         keepAlive: true,
-        mirror: !!opts.mirror
+        mirror: !!opts.mirror,
+        swarm: opts.sharedDht
+          ? new Hyperswarm({
+              dht: sharedDht(),
+              ...(opts.maxPeers ? { maxPeers: opts.maxPeers } : {})
+            })
+          : null
       })
       await net.ready()
       writers.push({ name: `${opts.id}.${i}`, repo, net, store })
@@ -94,7 +108,16 @@ async function main() {
   await waitForLine('go')
   const deadline = now() + opts.duration * 1000
   const settler = settleLoop(deadline + 30_000)
-  await Promise.all(writers.map((w, i) => writerLoop(w, i, deadline)))
+  // a writer stuck past the deadline is reported (with the step it's stuck in) and left
+  // behind: the run still finishes and reports
+  const loops = Promise.all(writers.map((w, i) => writerLoop(w, i, deadline)))
+  const watchdog = sleep(opts.duration * 1000 + STUCK_GRACE_MS).then(() => 'stuck')
+  if ((await Promise.race([loops, watchdog])) === 'stuck') {
+    const stuck = writers
+      .filter((w) => !w.done)
+      .map((w) => ({ w: w.name, step: w.step, for: now() - w.stepAt }))
+    emit({ type: 'stuck', id: opts.id, stuck })
+  }
   await settler
 
   // let replication settle, then report where each writer's main is
@@ -119,9 +142,10 @@ async function main() {
   setTimeout(() => Bare.exit(0), 15_000)
   for (const repo of new Set(writers.map((w) => w.repo))) {
     const w = writers.find((x) => x.repo === repo)
-    if (w.net) await w.net.close()
-    await repo.close()
-    if (w.store) await w.store.close()
+    // (with a shared DHT the first close destroys it for everyone: ignore the rest)
+    if (w.net) await w.net.close().catch(() => {})
+    await repo.close().catch(() => {})
+    if (w.store) await w.store.close().catch(() => {})
   }
   if (swarm) await swarm.destroy()
   if (root) await root.close()
@@ -130,18 +154,28 @@ async function main() {
 const pendingSettle = [] // { w, seq, at }
 
 async function writerLoop(w, i, deadline) {
+  const step = (name) => {
+    w.step = name
+    w.stepAt = now()
+  }
+  step('workspace')
   const ws = await w.repo.workspace('ws-' + w.name)
   ws.io = { timeout: 15_000 }
   let n = 0
   while (now() < deadline) {
     // think time: exponential around the mean, so lands don't arrive in lockstep
-    await sleep(-Math.log(1 - Math.random()) * opts.think * 1000)
+    step('think')
+    // (capped at the time left: an exponential tail must not sleep past the end of the run)
+    await sleep(
+      Math.min(-Math.log(1 - Math.random()) * opts.think * 1000, Math.max(0, deadline - now()))
+    )
     if (now() >= deadline) break
     n++
     const changes = [{ path: `/swarm/${w.name}/${n}.txt`, content: b4a.from(`land ${n}\n`) }]
     try {
       if (Math.random() < opts.hotP) {
         const hot = opts.hot[Math.floor(Math.random() * opts.hot.length)]
+        step('read hot')
         const text = b4a.toString(await ws.drive.get(hot, { timeout: 15_000 }))
         const lines = text.split('\n')
         const at = Math.floor(Math.random() * Math.max(1, lines.length - 1))
@@ -155,7 +189,9 @@ async function writerLoop(w, i, deadline) {
     const t0 = now()
     let res
     try {
+      step('commit')
       await ws.commit(changes)
+      step('land')
       // a land stuck on a peer that never answers is reported, not waited on forever
       res = await Promise.race([
         ws.land({ message: `${w.name} ${n}`, rebase: 3 }),
@@ -178,11 +214,13 @@ async function writerLoop(w, i, deadline) {
     const status = res.outcome.status
     let held = null
     if (status === 'accepted') {
+      step('held')
       held = await heldBySomeone(w, ws)
       pendingSettle.push({ w, seq: res.outcome.seq, at: now() })
     }
     let flipped = false
     try {
+      step('flipped')
       flipped = !!(await ws.flipped())
     } catch {}
     emit({
@@ -197,8 +235,13 @@ async function writerLoop(w, i, deadline) {
       flipped
     })
     // a land that didn't go in: bring main in and try again next round
-    if (status !== 'accepted') await ws.sync().catch(() => {})
+    if (status !== 'accepted') {
+      step('sync')
+      await ws.sync().catch(() => {})
+    }
   }
+  w.done = true
+  step('done')
 }
 
 // the "pushed: a holder has the changes" wait: some peer holds our oplog, tree and blobs
