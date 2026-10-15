@@ -1,0 +1,122 @@
+{
+  "outcomes": {
+    "main_states": 12,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 1.7,
+    "acceptance_80_at_min": 1.7,
+    "acceptance_100_at_min": 3.9,
+    "final_state_min": 4.3,
+    "change_request_at_min": 3,
+    "change_request_done_after_min": 0.9
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.7,
+      "author": "hub",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "#2",
+      "minute": 0.8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "#3",
+      "minute": 1.1,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "#4",
+      "minute": 1.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false
+    },
+    {
+      "id": "#5",
+      "minute": 1.7,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "#6",
+      "minute": 2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "#7",
+      "minute": 3,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "#8",
+      "minute": 3.3,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "#9",
+      "minute": 3.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "#10",
+      "minute": 3.9,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true
+    },
+    {
+      "id": "#11",
+      "minute": 4.1,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true
+    },
+    {
+      "id": "#12",
+      "minute": 4.3,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true
+    },
+    {
+      "id": "#13",
+      "minute": 4.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true
+    }
+  ]
+}

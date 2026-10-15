@@ -22,9 +22,11 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
   when that happens and keeps your changes, so you just land again. Once the hub has seen your
   land (usually within seconds) it is **settled** and can't be undone any more; it is
   **final** once it is also accepted by review (see below).
-- **The holder** (a hub running `hs seed`, or a blind peer) keeps every landed file
-  available when its author is offline. Every team needs one. Don't run `hs seed` in your own
-  worktree.
+- **Holders** keep landed files available when their author is offline. The team's hub
+  (`hs seed`, or a blind peer) is the one that's always on. Every running `hs watch` feed is a
+  holder too: it announces itself and keeps a copy of everything landed, so while the hub is
+  down, teammates still land and sync through each other's feeds. Only the hub survives your
+  machine going away, though. Don't run `hs seed` in your own worktree.
 
 ## The loop
 
@@ -38,6 +40,9 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    ```
 
    A feed resumes where it stopped, so restarting one never skips or repeats a changeset.
+   If a feed can't reach anyone (the hub is down and no teammate's feed is running), it prints
+   `{"type":"offline"}` (text: `!! watch: no peers reachable`), keeps retrying, and prints
+   `{"type":"online"}` when peers are back. Silence in the feed means nothing landed.
 
    Each line is `{"type":"changeset","seq":27,"author":"a3","files":[...],"message":"..."}`.
    A `{"type":"reorg",...}` line means a provisional land was replaced. If it was yours, see
@@ -154,28 +159,31 @@ again.
 
 ## What the messages mean
 
-| you see                                                                    | meaning                                                             | do                                                                                                           |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `landed #n` / `pushed: a holder has the changes` / `#n final`              | done                                                                | carry on                                                                                                     |
-| `#n settled; not final until review from a4`                               | its place is fixed; the Show review is still open                   | carry on; answer any "changes"                                                                               |
-| `#n provisional: waiting for hub to ack`                                   | the hub (indexer) is slow, offline or behind                        | carry on; it settles on its own. If it persists, tell the team owner (`hs doctor`)                           |
-| `!! no peers online: landed locally only`                                  | nobody to push to                                                   | `hs push` when a holder is up                                                                                |
-| `main moved: /X (#18 a4) changed ...` then `rebasing ... (this is normal)` | a teammate landed the same file first; hs merges and retries        | nothing (if it ends in `landed #n`, you're done)                                                             |
-| `incoming from teammates (n): ...`                                         | what your sync or land brought into your files, oldest first        | skim; `hs show <n>` for details                                                                              |
-| `check failed (exit n) on main #m + your changes: not landed`              | your `--check` failed on the merged tree                            | your files now include main: fix, then `hs land --check ...` again                                           |
-| `real conflicts in X (#n author)`                                          | overlapping edits that couldn't be merged                           | fix markers in X (talk to that author if unsure), `hs land`                                                  |
-| `!! your last land was undone ...`                                         | lost a race                                                         | `hs sync && hs land`                                                                                         |
-| `stale  path (behind main ...)` in `status`                                | main has a newer version that couldn't be fetched                   | `hs fetch` once a holder is online. Stale files are never landed, so you can't revert a teammate by accident |
-| `modified (stale base)`                                                    | you edited a stale file                                             | `hs fetch && hs sync`, or `hs restore <path>` to drop your edit                                              |
-| `changed on main but also edited here, left as is`                         | hs won't overwrite your edits                                       | keep yours: `hs commit && hs sync`; take main's: `hs restore <path>`                                         |
-| `could not be fetched ... no online peer holds it`                         | the holder is down, or the author left before a holder got it       | tell the team owner; `hs doctor` shows what's reachable                                                      |
-| `push timed out: no holder has your changes yet`                           | your land is only on your machine                                   | `hs push` when a holder is up                                                                                |
-| `showing to a4 (owner of /src/pricing.js)`                                 | you changed a teammate's files; this is a Show                      | nothing; they'll review after it lands                                                                       |
-| `not landed, needs review: ...`                                            | Ask needed: unapproved proposal or a path protected by `/.hsreview` | `hs propose --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`                   |
-| `stale-review`                                                             | the proposal changed after you looked                               | `hs show P5` again, then review again                                                                        |
-| `another hs process is using this worktree`                                | e.g. `hs seed` running here                                         | stop it; seeds belong on the hub                                                                             |
+| you see                                                                    | meaning                                                             | do                                                                                                          |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `landed #n` / `pushed: a holder has the changes` / `#n final`              | done                                                                | carry on                                                                                                    |
+| `#n settled; not final until review from a4`                               | its place is fixed; the Show review is still open                   | carry on; answer any "changes"                                                                              |
+| `#n provisional: waiting for hub to ack`                                   | the hub (indexer) is slow, offline or behind                        | carry on; it settles on its own. If it persists, tell the team owner (`hs doctor`)                          |
+| `!! no peers online: landed locally only`                                  | nobody to push to                                                   | `hs push` when a holder is up                                                                               |
+| `!! no peers reachable: showing local main #n`                             | `sync` reached nobody: your files are as of what this machine has   | keep working; `hs sync` again shortly                                                                       |
+| `main moved: /X (#18 a4) changed ...` then `rebasing ... (this is normal)` | a teammate landed the same file first; hs merges and retries        | nothing (if it ends in `landed #n`, you're done)                                                            |
+| `incoming from teammates (n): ...`                                         | what your sync or land brought into your files, oldest first        | skim; `hs show <n>` for details                                                                             |
+| `!! not landed: check failed (exit n) on main #m + your changes`           | your `--check` failed on the merged tree                            | your files now include main: fix, then `hs land --check ...` again                                          |
+| `real conflicts in X (#n author)`                                          | overlapping edits that couldn't be merged                           | fix markers in X (talk to that author if unsure), `hs land`                                                 |
+| `!! your last land was undone ...`                                         | lost a race                                                         | `hs sync && hs land`                                                                                        |
+| `stale  path (behind main ...)` in `status`                                | main has a newer version that couldn't be fetched                   | `hs sync` once a holder is online. Stale files are never landed, so you can't revert a teammate by accident |
+| `modified (stale base)`                                                    | you edited a stale file                                             | `hs sync`, or `hs restore <path>` to drop your edit                                                         |
+| `changed on main but also edited here, left as is`                         | hs won't overwrite your edits                                       | keep yours: `hs commit && hs sync`; take main's: `hs restore <path>`                                        |
+| `could not be fetched ... no online peer holds it`                         | the holder is down, or the author left before a holder got it       | tell the team owner; `hs doctor` shows what's reachable                                                     |
+| `push timed out: no holder has your changes yet`                           | your land is only on your machine                                   | `hs push` when a holder is up                                                                               |
+| `showing to a4 (owner of /src/pricing.js)`                                 | you changed a teammate's files; this is a Show                      | nothing; they'll review after it lands                                                                      |
+| `!! not landed: needs review: ...`                                         | Ask needed: unapproved proposal or a path protected by `/.hsreview` | `hs propose --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`                  |
+| `stale-review`                                                             | the proposal changed after you looked                               | `hs show P5` again, then review again                                                                       |
+| `another hs process is using this worktree`                                | e.g. `hs seed` running here                                         | stop it; seeds belong on the hub                                                                            |
 
-Exit codes: `0` means done; `2` means done, but read the `!!` lines; `1` means error.
+Exit codes: `0` means done; `2` means done, but read the `!!` lines; `1` means not done: an
+error, or a land that didn't happen (`!! not landed: ...` says why, where your changes are
+and what to do next).
 
 ## Good to know
 

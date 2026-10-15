@@ -19,6 +19,37 @@ node scripts/experiment/outcomes.js <teamdir> scripts/experiment/acceptance/acce
 node scripts/experiment/compare.js <teamdir> <teamdir> ...    # arms and rounds side by side
 ```
 
+## Fast loop (minutes, not hours)
+
+Use it before a full round. There are two tiers.
+
+1. **Scripted probes (no LLM, about a minute each).**
+   - `test/outage.js` and `test/fixes.js` replay what experiment 4's agents ran into on a
+     private testnet:
+     - the hub going down;
+     - a stand-in taking over while it's down;
+     - restore, conflict markers, proposal diffs and approvals.
+   - `test/helpers/team.js` sets up a hub plus N agents in a few seconds. Write a new probe
+     for every new agent complaint before fixing it.
+   - Run them with `npx brittle-bare test/outage.js test/fixes.js`.
+2. **A quick LLM run.** Scenario `q1`:
+   - 3 agents on a smaller split of the same task, about 10 minutes, with a short report.
+   - hs runs on a local testnet (`localDht`), so setup takes about 15 s and there's no
+     public-DHT latency.
+   - The hub or origin is down from minute 2 to 4, and the change request lands at minute 3.
+   - One run is about 3 agents × 60–100k tokens, compared with about 500k for a full run.
+
+   ```sh
+   scripts/experiment/setup.sh <teamdir> hs q1        # or git
+   # start a1..a3 from <teamdir>/prompts, then:
+   date -Iseconds > <teamdir>/started.txt
+   node scripts/experiment/inject.js <teamdir>
+   # when the reports are in: inject.js --stop, analyze.js, outcomes.js, as below
+   ```
+
+   `inject.js --scale 0.1` replays a scenario's schedule ten times faster, for dry runs
+   without agents.
+
 ## Pieces
 
 - **Arms:**

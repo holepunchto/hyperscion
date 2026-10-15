@@ -103,7 +103,8 @@ const actions = {
       {
         cwd: path.join(dir, 'hub'),
         detached: true,
-        stdio: ['ignore', logFd, logFd]
+        stdio: ['ignore', logFd, logFd],
+        env: run.bootstrap ? { ...process.env, HS_BOOTSTRAP: run.bootstrap } : process.env
       }
     )
     child.unref()
@@ -124,7 +125,8 @@ const actions = {
     const cwd = path.join(dir, 'agents', 'pm')
     const line = fs.readFileSync(path.join(src, 'NOTES.line'), 'utf8')
     const message = 'CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)'
-    for (let attempt = 1; attempt <= 6; attempt++) {
+    // keep trying for up to 10 minutes: the origin may be down when the request is due
+    for (let attempt = 1; attempt <= 60; attempt++) {
       const steps = hs ? [['sync']] : [['pull']]
       for (const s of steps) tool('pm', s, cwd)
       if (!fs.existsSync(path.join(cwd, 'CHANGE-REQUEST.md'))) {
@@ -152,6 +154,8 @@ const actions = {
 async function stop() {
   const stopped = []
   if (hs && (await stopPid(readPid(path.join(dir, 'hub-seed.pid'))))) stopped.push('hub')
+  // quick runs: the local testnet goes last (feeds and the hub were using it)
+  const stopTestnet = () => stopPid(readPid(path.join(dir, 'testnet.pid')))
   for (const a of fs.existsSync(path.join(dir, 'agents'))
     ? fs.readdirSync(path.join(dir, 'agents'))
     : []) {
@@ -160,6 +164,7 @@ async function stop() {
   if (!hs && fs.existsSync(path.join(dir, 'origin.git.down'))) {
     fs.renameSync(path.join(dir, 'origin.git.down'), path.join(dir, 'origin.git'))
   }
+  if (await stopTestnet()) stopped.push('testnet')
   for (const f of fs.readdirSync(faults)) {
     if (/\.(offline|dead)$/.test(f)) fs.rmSync(path.join(faults, f))
   }
@@ -185,12 +190,16 @@ async function main() {
   const started = new Date(fs.readFileSync(startedFile, 'utf8').trim()).getTime()
   const events = [...scenario.schedule].sort((a, b) => a.at - b.at)
   log({ do: 'schedule', scenario: run.scenario, arm: run.arm, scale, events: events.length })
-  for (const e of events) {
-    const due = started + e.at * 60_000 * scale
-    if (Date.now() < due) await sleep(due - Date.now())
-    const res = await actions[e.do](e)
-    log({ ...e, minute: Number(((Date.now() - started) / 60_000).toFixed(2)), ...res })
-  }
+  // each event fires on its own clock: a slow one (a change request retrying while the
+  // origin is down) must not delay the next (the origin coming back)
+  await Promise.all(
+    events.map(async (e) => {
+      const due = started + e.at * 60_000 * scale
+      if (Date.now() < due) await sleep(due - Date.now())
+      const res = await actions[e.do](e)
+      log({ ...e, minute: Number(((Date.now() - started) / 60_000).toFixed(2)), ...res })
+    })
+  )
 }
 
 main().catch((err) => {

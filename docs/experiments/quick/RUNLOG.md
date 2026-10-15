@@ -1,0 +1,8 @@
+- q1-hs-1 a1 done (4/5; landing worked through peers during hub outage, #7-#10 provisional then final; watch --count 1 returns already-seen cs without prior sync)
+- q1-hs-1 a2 done (4/5 choose; 1 conflict CONTRACTS.md; status showed #9 provisional after feed said final until sync (local main stale); duplicate flightMinutes w/ a1)
+- q1-hs-1 a3 done (4/5; triple CR-1 code; never saw hub stall in feed)
+- q1-hs-1 SCORED: ~5 min, ~193k tokens; 11 accepted, 1 conflict (clear not-landed msg), 54 calls, 0 polling, 0 errors, 0 stack traces; main 100% green; acceptance 100% at 3.9; CR done 0.9 min after (landed during hub outage via feeds); ratings 4,4,4 (3/3 choose); lost 2 min. GAP: no hub-down signal (feeds still had peers); settlement stall only visible as provisional.
+- q1-git-1: CR retries exhausted at min 4.03 just as origin came back; landed manually right after (~min 4.5). inject now retries up to 10 min
+- q1-git-1 a2 done (git 3/5; 0 conflicts ~8 cycles; outage = confusing 'not a git repository'; polling)
+- q1-git-1 a1 done (git 3/5; 3 pushes clean; polling; outage message reads as bad remote)
+- q1-git-1 a3 done (git 3/5; triple CR flight minutes)

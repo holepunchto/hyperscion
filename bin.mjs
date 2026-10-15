@@ -31,7 +31,18 @@ try {
   const program = cli.parse(argv)
   if (program && program.running) await program.running
 } catch (err) {
-  console.error('hs: ' + (err && err.message ? err.message : err))
+  // paparam hands command errors back as their stack text; users get the message only
+  // (HS_DEBUG=1 for the stack)
+  let msg = err && err.message ? err.message : String(err)
+  if (!process.env.HS_DEBUG) {
+    msg = msg
+      .split('\n')
+      .filter((l) => !/^\s+at /.test(l))
+      .join('\n')
+      .trim()
+      .replace(/^Error: /, '')
+  }
+  console.error('hs: ' + msg)
   if (process.env.HS_DEBUG) console.error(err)
   process.exitCode = 1
 }

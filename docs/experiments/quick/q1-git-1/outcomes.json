@@ -1,0 +1,114 @@
+{
+  "outcomes": {
+    "main_states": 11,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 1.1,
+    "acceptance_80_at_min": 1.1,
+    "acceptance_100_at_min": 5.1,
+    "final_state_min": 5.1,
+    "change_request_at_min": 4.3,
+    "change_request_done_after_min": 0.8
+  },
+  "rows": [
+    {
+      "id": "67b0337583",
+      "minute": 0,
+      "author": "hub",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "f42dce5355",
+      "minute": 0.3,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "41f7eca41f",
+      "minute": 0.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false
+    },
+    {
+      "id": "46128d7689",
+      "minute": 0.9,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false
+    },
+    {
+      "id": "cfa3561ad1",
+      "minute": 0.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false
+    },
+    {
+      "id": "6f8a207069",
+      "minute": 1.1,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "d389e5bb27",
+      "minute": 1.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "a3d1a98dcb",
+      "minute": 1.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "49abd88f31",
+      "minute": 4.3,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "be3dc4bfd1",
+      "minute": 4.5,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "84ff455670",
+      "minute": 4.9,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false
+    },
+    {
+      "id": "86411da329",
+      "minute": 5.1,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true
+    }
+  ]
+}

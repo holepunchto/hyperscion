@@ -1,0 +1,73 @@
+# hs usage: 181 calls since 2026-10-15T12:25:39.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 62 | 28 | 8 | 0 | 0 | 2 (2) | 1 | 0 | 0 | 0 | 8 | 0 | 0.9m |
+| a2 | 53 | 20 | 8 | 0 | 0 | 4 (4) | 1 | 0 | 0 | 0 | 6 | 0 | 0.3m |
+| a3 | 66 | 29 | 7 | 0 | 0 | 4 (4) | 3 | 0 | 0 | 0 | 6 | 0 | 0.5m |
+
+totals: lands 10 (accepted 10), auto-rebased 5, real conflicts 0, flip banners 0, stalls 0, unavailable 20, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: pull 26/35, log 8/10, add 7/7, commit 9/9, push 25/25, fetch 15/23, status 7/7
+a2: pull 25/38, log 8/9, add 9/9, commit 10/11, push 25/26, fetch 13/22, status 8/8
+a3: log 8/10, pull 28/36, add 7/9, commit 10/12, push 26/28, fetch 16/24, show 9/9, status 10/10
+
+## command mix
+a1: pull=8 log=27 add=2 commit=2 push=2 fetch=20 status=1
+a2: pull=8 log=19 add=4 commit=4 push=4 fetch=13 status=1
+a3: log=27 pull=7 add=4 commit=4 push=4 fetch=18 show=1 status=1
+
+## land timeline
+  0.3m a2 pushed                                                  
+  0.5m a3 pushed                                                  
+  0.9m a3 pushed                                                  
+  0.9m a1 pushed                                                  
+  1.1m a2 pushed                                                  
+  1.4m a2 pushed                                                  
+  1.5m a3 pushed                                                  
+  4.6m a1 pushed                                                  
+  4.9m a2 pushed                                                  
+  5.1m a3 pushed                                                  
+
+## metrics (also in metrics.json)
+calls: 181
+minutes: 7.3
+lands: 10
+accepted: 10
+calls_per_accepted_land: 18.1
+auto_rebased: 5
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 20
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 25
+land_ms_p90: 28
+tool: "git"
+polling_calls: 74
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0
+vcs_min_total: 0
+vcs_share_pct: 0.2
+watch_calls: 0
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 20
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,3,3]
+would_choose_hs: "1/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 5
+confusing_messages_total: 3
+review_usefulness_mean: null

@@ -68,6 +68,7 @@ for (const r of runs) {
     unknownFlags: 0,
     oldHabits: 0,
     pushRejected: 0,
+    notLanded: 0,
     waitMs: 0,
     vcsMs: 0,
     first: r.t,
@@ -85,7 +86,11 @@ for (const r of runs) {
     countGit(a, r, cmd)
     continue
   }
-  if (r.exit === 1) a.errors++
+  // a land that didn't happen (failed check, conflict, needs review) exits 1 since the
+  // round 4 fixes; that's a normal outcome, not a tool error
+  const notLanded = has(r, /^!! not landed:/)
+  if (notLanded) a.notLanded++
+  if (r.exit === 1 && !notLanded) a.errors++
   if (r.exit === 2) a.warnings++
   if (r.argv.includes('--help') || r.argv.includes('-h') || cmd === 'help') a.helps++
   if (has(r, /UNKNOWN_FLAG|unknown flag|UNKNOWN_COMMAND|unknown command/i)) a.unknownFlags++
@@ -230,6 +235,7 @@ const metrics = {
   tool: isGit ? 'git' : 'hs',
   polling_calls: runs.filter((r) => ['pull', 'fetch'].includes(r.argv[0])).length,
   push_rejected: total('pushRejected'),
+  not_landed: total('notLanded'),
   wait_min_total: Number((total('waitMs') / 60000).toFixed(1)),
   vcs_min_total: Number((total('vcsMs') / 60000).toFixed(1)),
   vcs_share_pct: Number(

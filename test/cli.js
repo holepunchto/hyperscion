@@ -201,8 +201,9 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok(/proposed P1: 1 path\(s\), needs 1 approval\(s\), asked a1/.test(prop.stdout))
 
   const early = await hs(A2, ['land', '-m', 'pin Plan shape'], 'a2')
-  t.is(early.code, 2, 'cannot land before approval')
-  t.ok(early.stdout.includes('not landed, needs review: P1 has 0/1 approvals'))
+  t.is(early.code, 1, 'cannot land before approval: not landed exits 1')
+  t.ok(early.stderr.includes('not landed: needs review: P1 has 0/1 approvals'), early.stderr)
+  t.ok(/committed but not on main: \/CONTRACTS.md/.test(early.stderr), 'says where the work is')
 
   const shown = await hs(A1, ['show', 'P1'], 'a1')
   t.ok(shown.stdout.includes('proposal P1 revision 0 by a2: open'))
@@ -266,7 +267,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   fs.writeFileSync(path.join(A2, 'src', 'peer.js'), 'peer\n')
   t.is((await hs(A2, ['land', '-m', 'peer'], 'a2')).code, 0)
   const bad = await hs(A1, ['land', '-m', 'checked', '--check', 'exit 3'], 'a1')
-  t.is(bad.code, 2, 'a failing check exits 2')
+  t.is(bad.code, 1, 'a failing check is not landed: exit 1')
   t.absent(/landed #/.test(bad.stdout), 'and does not land')
   t.ok(bad.stderr.includes('check failed (exit 3'))
   // the check runs in the worktree after main (with a2's peer.js) was brought in

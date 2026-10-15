@@ -244,6 +244,50 @@ Smaller asks:
 - partial land;
 - a "team is done" signal.
 
+**Status after the follow-up.** Each fix is covered by `test/outage.js` or `test/fixes.js`.
+
+Fixed:
+
+- **Feeds are holders.**
+  - A long-running `hs watch` now announces itself, mirrors every landed file and rejoins
+    after losing all peers.
+  - So while the hub is down, teammates land and sync through each other's feeds.
+  - The stand-in case from S3e is a probe: a3b syncs a3's landed work from a2's feed.
+- **Agents are told about outages.**
+  - Feeds print `offline`/`online` lines, debounced so short commands don't flap them.
+  - `sync` with nobody reachable says `!! no peers reachable: showing local main #n (your
+feed has seen #m)` and exits 2; it no longer says "up to date".
+  - `push` with nobody reachable gives a plain warning instead of a stack trace.
+  - The holder hint no longer tells agents to run `hs seed`.
+- **No more stack traces.**
+  - paparam passed command errors on as their stack text, so every command error printed
+    one; `bin.mjs` now prints the message only (`HS_DEBUG=1` for the stack).
+- **Lands that don't happen are clear.**
+  - They exit 1 with `!! not landed: <why>`, list the changed files kept in the workspace,
+    and give the next step.
+  - Merges into files you edited are reported (except union files such as `NOTES.md`).
+- **Smaller fixes:**
+  - `status` lists files that still have `<<<<<<<` markers.
+  - `restore` drops committed-but-unlanded edits too, and `changes()` ignores entries
+    rewritten unchanged.
+  - Lands without `-m` get the proposal's message or `update <paths>`.
+  - `cat` catches up when the feed knows a newer main.
+  - `show P<n>` diffs against the proposal's base.
+  - `watch --for-me` resumes from the last event it showed you.
+  - Stale-file hints say `hs sync`.
+
+Not fixed:
+
+- **Approvals reset when main's changes merge into the proposal's files.** Approvals are
+  pinned to the full content, so a merge resets them. Keeping them needs approvals pinned to
+  the proposal's diff, which is a design change. An earlier attempt hashed content instead of
+  entries, but it changed how every peer computes approval state and wasn't shown to fix
+  the reported case, so it was reverted.
+- A land made offline and renumbered on reconnect isn't announced in the feed; `status`
+  shows the undone-land banner.
+- From the smaller asks: `watch --path` precision within a file, blame, stash, partial land,
+  a "team is done" signal, and work-in-progress claims.
+
 ### Caveats
 
 - **Playbook leak.** In runs s1-git-1 and s2-git-1, reading `docs/AGENTS-git.md` made Claude
@@ -284,6 +328,51 @@ Smaller asks:
    the duplication that both arms share. Measure it in S2.
 4. Make the scenario harder, so outcomes, not just effort, can separate the tools: bigger
    tasks, or a longer horizon with several change requests.
+
+## Quick loop: first q1 pair (after the experiment 4 fixes)
+
+This is scenario `q1`, the first pair on the fast loop (see `scripts/experiment/README.md`):
+
+- 3 agents, about 5–7 minutes of work;
+- the hub or origin is down from minute 2 to 4;
+- the change request is due at minute 3.
+
+The data is in `docs/experiments/quick/`. This is a new baseline, not comparable with
+experiment 4.
+
+|                                | hs                  | git                               |
+| ------------------------------ | ------------------- | --------------------------------- |
+| tokens, wall time              | about 193k, 4.8 min | about 167k, 7.5 min               |
+| calls (per accepted land)      | 54 (4.9)            | 181 (18.1)                        |
+| polling calls; "unavailable"   | 0; 0                | 74; 20                            |
+| errors; stack traces           | 0; 0                | 20 (fetches during the outage); – |
+| main green; acceptance 100% at | 100%; minute 3.9    | 100%; minute 5.1                  |
+| change request landed; done in | minute 3.0; 0.9 min | minute 4.3 \*; 0.8 min            |
+| ratings; minutes lost (self)   | 4, 4, 4; 2          | 3, 3, 3; 5                        |
+
+\* On git the change request couldn't land while the origin was down. The injector's retries ran
+out just as the origin came back, and it was landed by hand about 20 s later. The retry budget
+is now 10 minutes.
+
+**What it showed:**
+
+- **The fixes work with real agents.**
+  - The change request and three agent lands went through feeds while the hub was down. They
+    stayed provisional, then became final when the hub returned.
+  - No `sync` reported "no peers", and nothing printed a stack trace.
+  - The one not-landed outcome printed the new three-line message.
+- **Remaining gap: nobody is told the hub is down.**
+  - Feeds stay connected to each other, so they never go offline.
+  - Settling stalls silently, and one agent "never saw" the outage.
+  - Next fix: feeds and `status` say when the hub (indexer) isn't reachable or lands aren't
+    settling.
+- **Also seen:**
+  - `watch --count 1` without a prior `sync` returns a changeset you've already seen (twice).
+  - `status` shows provisional after the feed said final, until a `sync`.
+  - All three agents built the change request's flight minutes in parallel, on both arms
+    again. That's the duplication problem from experiment 4.
+- **On the git arm,** one agent set `would_choose_hs_over_git_for_this` to true despite the
+  instructions, so that field is meaningless there.
 
 ## Round 4 design: a git control team and scenarios that matter
 

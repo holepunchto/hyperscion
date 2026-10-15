@@ -1,0 +1,30 @@
+{
+  "name": "Q1 quick",
+  "about": "Fast-feedback run: 3 agents, ~10 minutes, local testnet. The hub/origin is down min 2-4 and a pm lands the per-minute pricing change request at min 3. Probes availability, waits, change propagation and agent-facing messages, not product depth.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "brief": "\n**This is a short run (about 10 minutes of work).** Requirements can change: the product manager (`pm`) posts change requests as a `- [pm] CHANGE REQUEST ...` line in NOTES.md plus a `CHANGE-REQUEST.md` file on main, which take priority. Things can also go wrong (the shared server, the network); keep working and note what happened.\n",
+  "roles": {
+    "a1": "**a1 owns `src/model.js` and `src/geo.js` (+ `test/model.test.js`, `test/geo.test.js`).** Load and validate a day file (`loadDay`), haversine `distanceKm`, travel minutes at a drone's speed, and a simple stop order (nearest neighbour). Pin both sections of CONTRACTS.md in your first land; a2 and a3 build on them.",
+    "a2": "**a2 owns `src/scheduler.js` (+ `test/scheduler.test.js`).** `plan(day)` assigns packages to drones greedily: payload and range per trip, several trips per drone, delivery windows (waiting allowed), express first, and every undeliverable package in `unassigned` with a reason. Pin the `Plan` shape in CONTRACTS.md early; use a1's real functions once they land (shim until then).",
+    "a3": "**a3 owns `src/pricing.js`, `src/report.js`, `src/cli.js` and `test/integration.test.js`.** Prices (pin the formula in CONTRACTS.md), a readable report, and `node src/cli.js plan <day> [--json]` with the `--json` shape pinned in CONTRACTS.md. The integration test runs the CLI on `fixtures/day1.json` and checks the basic rules (every package once, p19 unassigned as too heavy, totals add up)."
+  },
+  "schedule": [
+    {
+      "at": 2,
+      "do": "origin-down"
+    },
+    {
+      "at": 3,
+      "do": "change-request",
+      "files": "change-request"
+    },
+    {
+      "at": 4,
+      "do": "origin-up"
+    }
+  ]
+}

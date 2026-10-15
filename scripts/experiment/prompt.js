@@ -53,8 +53,9 @@ if (!vars.ROLE) {
   console.error('no role for ' + agent + ' in ' + scenarioName)
   process.exit(1)
 }
+const variant = scenario.template ? '-' + scenario.template : ''
 const template = fs.readFileSync(
-  path.join(__dirname, arm === 'git' ? 'agent-prompt-git.md' : 'agent-prompt.md'),
+  path.join(__dirname, (arm === 'git' ? 'agent-prompt-git' : 'agent-prompt') + variant + '.md'),
   'utf8'
 )
 process.stdout.write(template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k]))

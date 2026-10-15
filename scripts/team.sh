@@ -13,7 +13,7 @@
 #   <dir>/agents/a1..aN    agent worktrees, writable
 #   <dir>/bin/hs-aN        per-agent hs wrapper (sets USER/HS_AGENT, traces to <dir>/trace.jsonl)
 #   <dir>/hub-seed.pid     stop the hub with: kill -INT $(cat <dir>/hub-seed.pid)
-# Uses the public DHT unless HS_BOOTSTRAP=host:port is set.
+# Uses the public DHT unless HS_BOOTSTRAP=host:port is set (then the wrappers pin it too).
 set -e
 
 DIR=$1
@@ -45,6 +45,7 @@ wrapper() {
 #!/bin/sh
 # hs for $1; every call is traced to $DIR/trace.jsonl
 export USER=$1 HS_AGENT=$1 HS_TRACE=$DIR/trace.jsonl
+${HS_BOOTSTRAP:+export HS_BOOTSTRAP=$HS_BOOTSTRAP}
 if [ -f $DIR/faults/$1.dead ]; then echo "hs: this machine is gone" >&2; exit 1; fi
 if [ -f $DIR/faults/$1.offline ]; then export HS_BOOTSTRAP=127.0.0.1:9; fi
 exec $BARE $ROOT/bin.mjs "\$@"

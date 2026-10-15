@@ -564,3 +564,31 @@ people first, agents second.
   are asked automatically; `--ship` opts out).
 - Renamed: `land --rebase <n>` became `--retries <n>`.
 - Added: `clone --as` names the handle explicitly. `add-writer` warns when `--as` is missing.
+
+## 13. Feeds as holders (after experiment 4)
+
+**The problem.** In experiment 4's fault runs, the hub going down left agents unable to
+reach each other: only `hs seed` joined the swarm as a server. Every other command,
+including the long-running `hs watch`, joined as client-only. Peers online with the data
+were invisible, and a stand-in that started during the outage saw an empty main.
+
+**Now a feed is a holder.**
+
+- `hs watch` without `--count` joins as a server and runs the mirror loop, so its store holds
+  every landed workspace's tree and blobs.
+- Its store is `.hs/watch`, separate from the worktree.
+- A long-lived peer (a feed or the seed) rejoins the topic with backoff when it loses every
+  connection.
+- It emits `offline` after a 3 s grace and `online` once connections have lasted 8 s, so
+  short commands don't make it flap.
+- Waits (`--count`) and one-shot commands stay client-only.
+
+**Consequences.**
+
+- `land`'s "a holder has the changes" can now be satisfied by your own feed, on your own
+  machine. That's enough for teammates to fetch your land while you're online, but only the
+  hub (or a blind peer) survives your machine going away.
+- Settlement still needs the indexer: while the hub is down, lands are accepted and shared
+  but stay `provisional`, and they settle when it returns.
+- Every feed mirrors everything. That's fine at experiment scale. A large repo would want a
+  sparse feed (mirror only the paths you watch).
