@@ -33,6 +33,22 @@ test('fixes: restore, markers, messages, proposal diffs, approvals across rebase
     'default message'
   )
 
+  // a wait answered by something already on main says so; --new waits for new lands only
+  const old = await tm.as('a2', ['watch', '--path', '/src/b.js', '--count', '1', '--timeout', '30'])
+  t.is(old.code, 0)
+  t.ok(/already on main before this wait/.test(old.stderr), old.stderr)
+  const fresh = await tm.as('a2', [
+    'watch',
+    '--path',
+    '/src/b.js',
+    '--count',
+    '1',
+    '--new',
+    '--timeout',
+    '3'
+  ])
+  t.is(fresh.code, 2, '--new ignores what already landed')
+
   // a proposal, then a teammate's later land on the same file: the review diff shows only
   // the proposal's own change, not the teammate's lines as deletions
   tm.write('a2', 'CONTRACTS.md', '# contracts\nplan(day) -> Plan\n')

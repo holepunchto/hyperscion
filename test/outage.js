@@ -7,7 +7,10 @@ const { team, waitFor } = require('./helpers/team')
 const NO_TRACE = /^\s+at /m // a raw stack trace line
 
 test('outage: feeds keep the team working while the hub is down', async (t) => {
-  const tm = await team(t, { files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' } })
+  const tm = await team(t, {
+    files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' },
+    env: { HS_HUB_STALL_S: '4' }
+  })
 
   const feed1 = tm.bgAs('a1', ['watch'])
   const feed2 = tm.bgAs('a2', ['watch'])
@@ -32,6 +35,20 @@ test('outage: feeds keep the team working while the hub is down', async (t) => {
   t.is(tm.read('a2', 'src/two.js'), 'two while the hub is down\n', 'a2 synced the content')
   t.absent(/no peers reachable/.test(synced.stderr), 'a2 reached a peer')
   await waitFor(() => /\btwo\b/.test(feed2.output()), 30_000)
+
+  // the feeds still have each other, so what says "the hub is down" is lands not settling
+  await waitFor(() => /hub not settling/.test(feed2.output()), 60_000)
+  t.pass('feed says the hub is not settling')
+  t.ok(/hub not settling/.test((await tm.as('a1', ['status'])).stderr), 'status says so too')
+  await tm.startHub()
+  await waitFor(() => /hub settling again/.test(feed2.output()), 60_000)
+  t.pass('feed says the hub is back')
+  // status reads this machine's main, which the feed may be ahead of: it catches up first
+  await waitFor(() => /hub settling again/.test(feed1.output()), 60_000)
+  const after = await tm.as('a1', ['status'])
+  t.absent(/hub not settling/.test(after.stderr), 'status agrees with the feed: ' + after.stderr)
+  t.ok(/last land: #\d+ final/.test(after.stdout), after.stdout)
+  await tm.stopHub()
 
   const seq = Number(second.stdout.match(/landed #(\d+)/)[1])
   const shown = await tm.as('a2', ['show', String(seq)])

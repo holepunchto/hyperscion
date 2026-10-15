@@ -43,6 +43,9 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    If a feed can't reach anyone (the hub is down and no teammate's feed is running), it prints
    `{"type":"offline"}` (text: `!! watch: no peers reachable`), keeps retrying, and prints
    `{"type":"online"}` when peers are back. Silence in the feed means nothing landed.
+   If the hub is down but teammates' feeds are up, you stay online and keep landing; the feed
+   then prints `{"type":"hub","state":"stalled",...}` (text: `!! watch: hub not settling`)
+   because lands stay provisional, and `{"type":"hub","state":"settling",...}` when it's back.
 
    Each line is `{"type":"changeset","seq":27,"author":"a3","files":[...],"message":"..."}`.
    A `{"type":"reorg",...}` line means a provisional land was replaced. If it was yours, see
@@ -58,7 +61,9 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    ```
 
    `--count` counts changesets (with `--for-me`, review events). `--path` takes a file or a
-   folder and can be repeated.
+   folder and can be repeated. If the wait returns at once with
+   `watch: already on main before this wait`, the change landed after your last sync: `hs sync`
+   brings it in. To wait only for lands that happen from now on, add `--new`.
 
 2. **Bring teammates' work in** before building on it: `hs sync`. This pulls main, fetches
    what you need, rebases your work on top, updates your files and lists what came in
@@ -165,6 +170,7 @@ again.
 | `#n settled; not final until review from a4`                               | its place is fixed; the Show review is still open                   | carry on; answer any "changes"                                                                              |
 | `#n provisional: waiting for hub to ack`                                   | the hub (indexer) is slow, offline or behind                        | carry on; it settles on its own. If it persists, tell the team owner (`hs doctor`)                          |
 | `!! no peers online: landed locally only`                                  | nobody to push to                                                   | `hs push` when a holder is up                                                                               |
+| `!! hub not settling` (feed or `status`)                                   | the hub is down or behind; lands still reach teammates via feeds    | keep working; they settle when it's back. If it persists, tell the team owner                               |
 | `!! no peers reachable: showing local main #n`                             | `sync` reached nobody: your files are as of what this machine has   | keep working; `hs sync` again shortly                                                                       |
 | `main moved: /X (#18 a4) changed ...` then `rebasing ... (this is normal)` | a teammate landed the same file first; hs merges and retries        | nothing (if it ends in `landed #n`, you're done)                                                            |
 | `incoming from teammates (n): ...`                                         | what your sync or land brought into your files, oldest first        | skim; `hs show <n>` for details                                                                             |

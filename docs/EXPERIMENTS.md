@@ -374,6 +374,36 @@ is now 10 minutes.
 - **On the git arm,** one agent set `would_choose_hs_over_git_for_this` to true despite the
   instructions, so that field is meaningless there.
 
+### Quick check after the hub-down signal and `watch --count` fixes (q1-hs-2)
+
+Fixes in this round:
+
+- **Hub signal in feeds:** a feed prints `hub` `stalled` when lands have stayed unsettled for
+  20 s, and `settling` when they settle again.
+- **Hub signal in `status`:** it says the same.
+- **Waits:** a wait answered by something already on main says so, and `--new` waits only for
+  new lands.
+
+The run itself:
+
+- **Size:** 3 agents, about 6 minutes, about 197k tokens.
+- **Results:**
+  - 8 lands, no conflicts, 56 calls, no errors or stack traces;
+  - main green, acceptance at 100% at minute 3.9;
+  - the change request was done 0.9 min after it landed;
+  - ratings 4, 4, 4, with 2 self-reported minutes lost.
+- **The new signal worked:**
+  - all three feeds printed `stalled` during the outage and `settling` after it;
+  - `status` warned while the hub was down.
+- **New finding:** two agents saw `status` and `log` still showing "provisional" or "hub not
+  settling" for a few seconds after the feed reported recovery. Their local copy of main
+  hadn't caught up.
+  - **Fixed after the run:** the feed records how far main is settled (`watch.settled`), and
+    `status`, `log` and `cat` pull main first whenever the feed knows more than this machine.
+  - The outage probe covers it.
+- **Still open:** all three agents built the change request's flight-minutes code in parallel
+  again.
+
 ## Round 4 design: a git control team and scenarios that matter
 
 Round 3 hit a ceiling: the task was so well partitioned that git would have done "about 80%

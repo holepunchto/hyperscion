@@ -6,3 +6,6 @@
 - q1-git-1 a2 done (git 3/5; 0 conflicts ~8 cycles; outage = confusing 'not a git repository'; polling)
 - q1-git-1 a1 done (git 3/5; 3 pushes clean; polling; outage message reads as bad remote)
 - q1-git-1 a3 done (git 3/5; triple CR flight minutes)
+- q1-hs-2 a1 done (4/5; hub stall cost nothing; status/log said provisional after feed said #7 final until sync (2nd report) -> fix: use feed's settled point)
+- q1-hs-2 a2,a3 done (4/5; status stale after recovery (fixed after run: catchUp in status/log/cat via feed's watch.settled); triple CR-1 again)
+- q1-hs-2 SCORED: 8 accepted, 0 conflicts, 56 calls, 0 errors, 0 stack traces; main 100% green; acceptance 100% at 3.9; CR done 0.9 min; ratings 4,4,4 (3/3); lost 2. All 3 feeds printed hub stalled + settling; status warned during outage.

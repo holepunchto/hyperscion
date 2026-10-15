@@ -11,11 +11,12 @@ const tmp = require('test-tmp')
 const BIN = path.join(__dirname, '..', '..', 'bin.mjs')
 
 // files: { 'path': 'content' } for the skeleton the hub lands first
-async function team(t, { agents = ['a1', 'a2'], files = {} } = {}) {
+async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} } = {}) {
   const testnet = await createTestnet(3, t.teardown)
   const env = {
     ...require('bare-process').env,
-    HS_BOOTSTRAP: testnet.bootstrap.map((b) => b.host + ':' + b.port).join(',')
+    HS_BOOTSTRAP: testnet.bootstrap.map((b) => b.host + ':' + b.port).join(','),
+    ...extraEnv
   }
   const dir = await tmp(t)
   const hub = path.join(dir, 'hub')
