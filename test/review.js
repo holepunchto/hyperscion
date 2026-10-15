@@ -53,7 +53,7 @@ test('Ask: a proposal lands only once approved by someone other than its author'
   t.is((await b.proposal(id)).statusName, 'landed')
   t.is(wb.state.proposal, 0, 'workspace no longer tracks it')
 
-  const types = (await b.events()).map((e) => e.type)
+  const types = (await b.events()).map((e) => e.type).filter((type) => type !== 'settled')
   t.alike(types, ['proposal', 'review', 'review', 'approved', 'landed'])
 })
 
@@ -130,7 +130,7 @@ test('Show: a land can ask teammates to review it afterwards', async (t) => {
   t.is(reviews[0].verdict, 2)
   t.is(reviews[0].comment, 'rounding is off')
   t.alike(
-    (await b.events()).map((e) => e.type),
+    (await b.events()).map((e) => e.type).filter((type) => type !== 'settled'),
     ['request', 'review']
   )
 })

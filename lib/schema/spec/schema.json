@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "schema": [
     {
       "name": "head",
@@ -177,6 +177,11 @@
           "name": "review",
           "type": "@hs/review",
           "version": 7
+        },
+        {
+          "name": "seen",
+          "type": "@hs/base",
+          "version": 8
         }
       ]
     },
@@ -207,6 +212,11 @@
           "name": "events",
           "type": "uint",
           "version": 7
+        },
+        {
+          "name": "settled",
+          "type": "uint",
+          "version": 8
         }
       ]
     },
@@ -540,13 +550,18 @@
       "name": "writer",
       "namespace": "hs",
       "compact": false,
-      "flagsPosition": -1,
+      "flagsPosition": 1,
       "fields": [
         {
           "name": "handle",
           "required": true,
           "type": "string",
           "version": 7
+        },
+        {
+          "name": "indexer",
+          "type": "bool",
+          "version": 8
         }
       ]
     },

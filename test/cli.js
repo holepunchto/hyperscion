@@ -134,7 +134,8 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   await waitFor(() => fs.existsSync(path.join(A2, '.hs', 'watch.pid')))
   await sleep(3000) // let it connect and settle
   fs.writeFileSync(path.join(A1, 'src', 'f1.js'), 'f1\n')
-  t.is((await hs(A1, ['land', '-o', '-m', 'f1'], 'a1')).code, 0)
+  const lf1 = await hs(A1, ['land', '-o', '-m', 'f1'], 'a1')
+  t.is(lf1.code, 0, lf1.code ? lf1.stdout + lf1.stderr : 'f1 landed')
   await waitFor(() => feed1.output().includes('/src/f1.js'), 30_000)
   t.pass('feed saw f1')
 
@@ -153,6 +154,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
     .split('\n')
     .filter((l) => l.startsWith('{'))
     .map((l) => JSON.parse(l))
+    .filter((l) => l.type === 'changeset')
   t.alike(
     lines.map((l) => l.message),
     ['f2 while a2 feed was down'],
@@ -173,17 +175,21 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.is((await hs(A1, ['pull'], 'a1')).code, 0) // status is offline: it shows what was pulled
   const st = await hs(A1, ['status'], 'a1')
   t.ok(st.stdout.includes(`review requested: #${showSeq} by a2`), 'a1 sees the request in status')
+  // replaying from the start also reports a1's own lands becoming final, so read a few lines
   const req = await hs(
     A1,
-    ['watch', '--for-me', '--since', '0', '--count', '1', '--timeout', '30'],
+    ['watch', '--for-me', '--since', '0', '--count', '20', '--timeout', '8'],
     'a1'
   )
   t.ok(req.stdout.includes(`@ #${showSeq} by a2: review requested from a1`), 'and in its feed')
 
   t.is((await hs(A1, ['review', '#' + showSeq, 'approve', '-m', 'ok'], 'a1')).code, 0)
-  const heard = await hs(A2, ['watch', '--for-me', '--count', '1', '--timeout', '30'], 'a2')
-  t.is(heard.code, 0)
+  // a2 hears the approval and that its Show land is final (exactly once)
+  const heard = await hs(A2, ['watch', '--for-me', '--count', '2', '--timeout', '30'], 'a2')
+  t.is(heard.code, 0, heard.stdout + heard.stderr)
   t.ok(heard.stdout.includes(`@ #${showSeq} approved by a1 :: ok`), 'a2 hears the review')
+  t.ok(heard.stdout.includes(`@ #${showSeq} final`), 'and that the land is final')
+  t.is(heard.stdout.split(`@ #${showSeq} final`).length, 2, 'final announced once')
 
   // 7. Ask: a2 proposes a contract change to a1; it lands only once approved
   fs.writeFileSync(path.join(A2, 'CONTRACTS.md'), '# contracts\nplan(day) -> Plan\n')
@@ -205,6 +211,26 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.is(landed.code, 0, landed.stdout + landed.stderr)
   t.ok(/landed P1 as #\d+/.test(landed.stdout))
   t.ok((await hs(A1, ['proposals', '--all'], 'a1')).stdout.includes('P1 landed'))
+
+  // 8. provisional -> final: the seeding hub acks, so a Ship land becomes final in seconds
+  t.is((await hs(A1, ['sync'], 'a1')).code, 0)
+  fs.writeFileSync(path.join(A1, 'src', 'final.js'), 'final\n')
+  const fin = await hs(
+    A1,
+    ['land', '-o', '-m', 'wait for it', '--wait-final', '--timeout', '30'],
+    'a1'
+  )
+  t.is(fin.code, 0, fin.stdout + fin.stderr)
+  const finSeq = Number(fin.stdout.match(/landed #(\d+)/)[1])
+  t.ok(fin.stdout.includes('(provisional: settles when the hub acks it)'))
+  t.ok(fin.stdout.includes(`#${finSeq} final`), 'land --wait-final reports final')
+  t.ok((await hs(A1, ['status'], 'a1')).stdout.includes(`last land: #${finSeq} final`))
+  const log = await hs(A1, ['log', '-n', '3'], 'a1')
+  t.ok(new RegExp(`#${finSeq} .*\\[final\\]`).test(log.stdout), 'log tags it final')
+  const doc = await hs(A1, ['doctor'], 'a1')
+  t.ok(
+    /settled\s+through #\d+/.test(doc.stdout) && doc.stdout.includes('indexer      hub has seen')
+  )
 })
 
 function run(cwd, args, env) {

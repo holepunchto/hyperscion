@@ -157,8 +157,8 @@ There is no finality signal in autobee today. In hyperscion:
   auto-synced, and that also flipped later, would be replayed as ours. Tested: the losing writer's change
   is restored, 3-way merged and re-landed.
 
-A land is final once every writer has an oplog node causally after it. Computing and exposing
-that ("settled") is the most important open item (§8).
+Since milestone 4 a land moves from provisional to settled once every indexer has acknowledged
+it, and to final once review has also accepted it (§11).
 
 ### 4.4 Sync and rebase (client side)
 
@@ -324,8 +324,9 @@ It passes both unencrypted and encrypted.
 
 ## 8. Open problems and next steps
 
-1. **Settlement / finality.** Expose "settled" once every writer has a node causally after the
-   land, and make `hs land --wait-settled` the default for agents.
+1. **Settlement / finality.** Done in milestone 4 (§11). Still open: recovering when an
+   indexer is gone for good (removing writers), quorums below "all indexers", and a proof
+   rather than a property test.
 2. **Daemon.** One store per machine, warm caches, an IPC API for many worktrees and agents.
    This is also the fix for cold reads and for the RocksDB single-process limit.
 3. **Tree-read amplification and memory in hyperbee2.** Take the cold-read and sparse-listing
@@ -445,4 +446,83 @@ is no review UI. Proposals and reviews are ops in main's history, and the CLI, `
   - line-level comment threads (a comment may start with `path:line`);
   - a UI;
   - notifications beyond the feed;
-  - finality (review ops are provisional like any op).
+  - finality of review ops themselves: they are informational and resolve with ordering.
+    Finality of lands, including what review contributes, is §11.
+
+## 11. Finality: provisional → settled → final (milestone 4)
+
+Agents in experiment 2 asked when a land stops being provisional, and expected review to
+answer it. Review and ordering answer two different questions:
+
+- **Accepted:** was the change wanted? Show reviews and Ask approvals cover this.
+- **Settled:** can a concurrent land still reorder it? No reviewer can prevent that.
+
+So **final = settled + accepted**.
+
+- **Ship:** final once settled.
+- **Show:** final once settled, and approved by at least one requested reviewer with no
+  outstanding "changes" from any of them.
+- **Ask:** approval happened before landing, so final once settled.
+
+**Seen markers.** Every op carries an optional `seen {seq, hash}`, filled in by `Repo._append`
+from the writer's current view of main.
+
+- `apply` records `hs-seen/<writer>` (the max) only when `hash` matches main's chain at
+  `seq`. A forged or stale marker is ignored, and since `apply` replays after a reorg, a
+  marker for a changeset that was replaced stops counting.
+- Any op therefore proves what its writer had seen, including a review of #27. A dedicated
+  `ack` op (type 5) carries nothing but the marker.
+
+**Indexers and the settled point.**
+
+- The indexers are the bootstrap writer (passed to `apply` by closure) plus writers added with
+  `add-writer --indexer`.
+- After each node `apply` computes `settled = min(seen over indexers)`, capped at the head.
+  When it advances it stores `meta.settled` and appends a `settled` event to `hs-ev`.
+- Everything is derived from op bytes and the chain, so every peer computes the same thing.
+- `hs seed` (the hub) acks automatically, debounced 250 ms after main's view updates, whenever
+  main's head is past its recorded seen. Agents never need to ack.
+
+**Why indexer acks are enough.** Autobee linearizes by indexer weight: once an indexer's node
+causally follows a changeset, a concurrent node from a non-indexer that the indexer hadn't seen
+sorts after the indexer's causal past, so it can't land in front of that changeset. "Every
+writer has seen it" would be stricter and would stall whenever any agent goes offline.
+
+**Evidence, not proof.** `test/settle-property.js` is the gate:
+
+- A hub (the only indexer) and 3 agents run in-process over links toggled into random
+  partitions, with the hub sometimes cut off entirely.
+- Each round, random agents land concurrently on 3 hot paths, sometimes after a sync, and the
+  hub sometimes acks.
+- Every peer's settled claims (seq → changeset hash) are recorded at each round, then checked
+  against the converged history after a full heal. The all-writers rule runs alongside as a
+  control.
+- 8 seeds × 40 rounds produced 19 real reorders of provisional changesets and 0 violations,
+  for both the indexer rule and the control. The default run (seed 12, 30 rounds) is part of
+  `npm test`; sweep with `HS_SETTLE_SEED` / `HS_SETTLE_ROUNDS`.
+- Fallback: if a counterexample is found, settlement switches to the all-writers rule. That
+  only changes the set the minimum is taken over.
+
+**Surfaces.**
+
+- `land -o` prints `(provisional: settles when the hub acks it)`.
+- `land --wait-final [--timeout s]` waits for `#n final`, or `#n settled; not final until
+review from a4`. It exits 2 if the land isn't settled in time.
+- `status` shows the last land's state and "your lands not final yet".
+- `log` tags each changeset `[final]`, `[settled]` or `[provisional]`.
+- `watch` streams `settled` events. `--for-me` turns them into `@ #27 settled ...` /
+  `@ #27 final` for your lands, including when a later approval makes a settled Show final.
+- `doctor` shows the settled point and what each indexer has seen.
+
+**Mirror hardening found on the way.** With a hub acking, a mirror's loop could block forever
+on `update({wait:true})` / `download().done()` for a writer that had gone offline, which in turn
+blocked mirroring later lands (`push timed out`). Every mirror step is now bounded (10 s). A
+changeset whose content can't be fetched yet isn't marked mirrored and is retried every 2 s.
+View cores and proposals are mirrored best-effort, one core at a time.
+
+**Not done:**
+
+- An indexer that is gone for good stalls settlement. `doctor` and `status` say so, but there
+  is no writer removal yet.
+- Quorums below "all indexers".
+- Finality for review ops themselves.
