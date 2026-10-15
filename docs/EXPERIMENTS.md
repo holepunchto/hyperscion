@@ -37,6 +37,58 @@ much of their time on stalls, polling and checking for reverts. In experiment 2:
 - they read teammates' changes as diffs (`hs show`);
 - they waited on dependencies with `hs watch --path <file> --count 1`.
 
+## Experiment 3 (milestones 3–5: review, finality, CLI defaults)
+
+Same setup and task, on the public DHT. `scripts/experiment/analyze.js` now writes
+`metrics.json`, and `compare.js` puts rounds side by side:
+
+|                                   | exp 2         | exp 3         |
+| --------------------------------- | ------------- | ------------- |
+| usefulness vs git                 | 4, 4, 4, 4, 4 | 4, 4, 4, 4, 4 |
+| would choose hs                   | 5/5           | 5/5           |
+| hs calls / minutes                | 129 / 23.9    | 100 / 18.2    |
+| calls per accepted land           | 4.96          | **3.7**       |
+| lands accepted / attempted        | 26 / 27       | **27 / 27**   |
+| real conflicts                    | 1             | **0**         |
+| lands that ended final            | n/a           | **27 / 27**   |
+| land p50 / p90                    | 2.6 s / 2.9 s | 2.8 s / 3.2 s |
+| `-o` / `pull` (old habits)        | 27            | **0**         |
+| output clarity (1–5)              | n/a           | 4.2           |
+| knew when a land was safe (1–5)   | n/a           | 4.8           |
+| confusing messages / minutes lost | n/a           | 7 / 12        |
+| proposals / reviews / Shows       | 0 / 0 / 0     | 0 / 0 / 0     |
+
+The product: 28 changesets, 69/69 tests from a fresh clone, and the CLI plans 18/19 packages.
+
+**Why the rating stayed at 4.** Nothing went wrong. Every agent said, in one form or another,
+that this task is well partitioned (one owner per file, append-only shared files), so git with
+a union attribute and `pull --rebase` would be "about 80% as good". hs's differentiators never
+came into play:
+
+- no lands were reordered, so finality only showed `final`;
+- nobody touched another owner's files, so review was never triggered;
+- the hub never went down, so availability was never tested.
+
+The task design caps the score, not the tool.
+
+**What experiment 3 found:**
+
+1. **Lands publish merged states nobody tested (4/5 agents; the most-wanted feature for 3).**
+   `land` rebases onto teammates' changes and publishes immediately. Wanted: `land --check
+"npm test"`, which runs on the rebased tree and refuses to land if it fails.
+2. **`watch --count` counts `settled` events (2/5; a bug).** Without `--path`, a watch exited
+   on `@ settled through #n` lines without printing the changesets.
+3. **The incoming list hides the oldest entry** behind `... and 1 earlier (hs log -f)`, which
+   also names a flag that is now hidden.
+4. **`log --oneline` prints two lines**, and **`log`/`status` don't say how far behind main
+   you are**.
+5. **Smaller requests:**
+   - `show <n> --path <p>`;
+   - `watch --path` with globs or several paths;
+   - "changeset(s)" wording in `--for-me` timeouts;
+   - exit 2 is overloaded for watch timeouts;
+   - an amend for your own provisional land.
+
 ## What experiment 2 still found
 
 Each item is ranked by how many agents raised it.

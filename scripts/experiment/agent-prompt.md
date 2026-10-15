@@ -49,12 +49,27 @@ Keep brief running notes. At the end write `{{REPORT}}` (NOT inside the repo) wi
   "stalls_or_unavailable": 0,
   "used_watch_feed": false,
   "times_others_work_changed_my_plan": 0,
+  "proposals_made": 0,
+  "reviews_given": 0,
+  "review_usefulness": 0,
+  "output_clarity": 0,
+  "knew_when_my_land_was_safe": 0,
+  "confusing_messages": 0,
+  "minutes_lost_to_hs": 0,
   "biggest_win": "",
   "biggest_friction": "",
   "most_wanted_feature": ""
 }
 ```
 
-(`usefulness_vs_git`: 1 = much worse than git, 3 = same, 5 = much better.)
+Scales are 1–5:
+- `usefulness_vs_git`: 1 = much worse than git, 3 = same, 5 = much better.
+- `review_usefulness`: how much Ship/Show/Ask and reviews helped coordination. Use 0 if you never touched review.
+- `output_clarity`: 1 = often unsure what hs meant, 5 = always clear.
+- `knew_when_my_land_was_safe`: 1 = never sure, 5 = always knew.
+
+Counts:
+- `confusing_messages`: hs outputs you had to stop and puzzle over.
+- `minutes_lost_to_hs`: your honest estimate of time spent on the tool rather than the task.
 
 Your final message to me: 3–5 sentences summarizing what you built, the state of main as you left it, and your verdict on hs.
