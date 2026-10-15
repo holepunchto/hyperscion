@@ -64,6 +64,7 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    folder and can be repeated. If the wait returns at once with
    `watch: already on main before this wait`, the change landed after your last sync: `hs sync`
    brings it in. To wait only for lands that happen from now on, add `--new`.
+   To wait for one teammate's change to a shared file, add `--author a3`.
 
 2. **Bring teammates' work in** before building on it: `hs sync`. This pulls main, fetches
    what you need, rebases your work on top, updates your files and lists what came in
@@ -86,6 +87,8 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    - `hs cat /src/geo.js` — the latest landed version of a file, without touching your worktree.
 5. **When you see `!! your last land was undone by a concurrent land`** (or a `reorg` naming
    your land), run `hs sync && hs land`. Your changes were kept.
+   `your land #11 is now #14` is different: nothing was undone. A land made offline (or one
+   that lost a race) was given a later number when peers met.
 
 ## Ship, Show or Ask
 
@@ -116,8 +119,10 @@ from them.
 **Rules.**
 
 - Approvals only count from people other than the author.
-- An approval is pinned to the exact content it saw. Running `hs propose` again after
-  changes makes a new revision, and approvals start over.
+- An approval is pinned to the content it saw. Running `hs propose` again after changes makes
+  a new revision, and approvals start over. Teammates' changes merged into the proposal's
+  files on the way to landing (by `sync` or `land --check`) keep the approval. Paths
+  protected by `/.hsreview` are the exception: there, any difference needs review again.
 - `hs proposals` lists open proposals. Once a proposal is approved, its author lands it with
   `hs land`.
 

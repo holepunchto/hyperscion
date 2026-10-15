@@ -88,13 +88,17 @@ for (const s of states().filter((st, i, all) => i === 0 || st.id !== all[i - 1].
     a = JSON.parse(acc.out)
   } catch {}
   const perMinute = (a.failures || []).filter((f) => /per-minute/.test(f.name)).length === 0
+  const duplicates = scenario.duplication
+    ? countImplementations(to, scenario.duplication)
+    : undefined
   rows.push({
     id: s.id,
     minute: minute(s.t),
     author: s.author,
     green: test.code === 0,
     acceptance: a.total ? Number((a.passed / a.total).toFixed(3)) : 0,
-    ...(scenario.acceptance ? { perMinute: perMinute && a.total > 0 } : {})
+    ...(scenario.acceptance ? { perMinute: perMinute && a.total > 0 } : {}),
+    ...(duplicates !== undefined ? { duplicates } : {})
   })
   fs.rmSync(to, { recursive: true, force: true })
   console.log(JSON.stringify(rows[rows.length - 1]))
@@ -135,6 +139,12 @@ const outcomes = {
   acceptance_100_at_min: firstAt((r) => r.acceptance >= 1),
   final_state_min: last.minute ?? null
 }
+// duplicated work: how many source files (tests excluded) each compute what the scenario's
+// change request asks for, on the final tree. 1 is ideal; more means agents built it twice.
+if (scenario.duplication) {
+  outcomes.duplicate_implementations = last.duplicates ?? null
+  outcomes.duplicate_implementations_max = Math.max(0, ...team.map((r) => r.duplicates || 0))
+}
 if (scenario.acceptance) {
   const cr = team.find((r) => r.author === 'pm')
   const done = cr ? team.find((r) => r.minute >= cr.minute && r.perMinute) : null
@@ -153,3 +163,23 @@ fs.writeFileSync(
   JSON.stringify({ arm: run.arm, scenario: run.scenario, ...metrics, ...outcomes }, null, 2) + '\n'
 )
 console.log(JSON.stringify(outcomes, null, 2))
+
+// files under src/ matching every regex in `all` (e.g. mentions flight minutes AND derives them
+// from speed): each is one implementation of the feature
+function countImplementations(root, { all }) {
+  const res = []
+  const walk = (dir) => {
+    if (!fs.existsSync(dir)) return
+    for (const name of fs.readdirSync(dir)) {
+      const p = path.join(dir, name)
+      if (fs.statSync(p).isDirectory()) walk(p)
+      else if (/\.js$/.test(name)) res.push(p)
+    }
+  }
+  walk(path.join(root, 'src'))
+  const patterns = all.map((r) => new RegExp(r, 'i'))
+  return res.filter((f) => {
+    const text = fs.readFileSync(f, 'utf8')
+    return patterns.every((re) => re.test(text))
+  }).length
+}

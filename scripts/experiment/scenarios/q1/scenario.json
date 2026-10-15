@@ -26,5 +26,9 @@
       "at": 4,
       "do": "origin-up"
     }
-  ]
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"]
+  }
 }

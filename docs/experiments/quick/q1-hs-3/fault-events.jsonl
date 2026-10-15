@@ -1,0 +1,5 @@
+{"t":"2026-10-15T16:27:13.861Z","do":"schedule","scenario":"q1","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-15T16:29:02.690Z","at":2,"do":"origin-down","minute":2.01,"stopped":true}
+{"t":"2026-10-15T16:30:14.580Z","at":3,"do":"change-request","files":"change-request","minute":3.21,"attempt":1,"out":["landed #9","pushed: a holder has the changes","#9 provisional: waiting for hub to ack (it settles on its own)",""]}
+{"t":"2026-10-15T16:31:02.072Z","at":4,"do":"origin-up","minute":4,"pid":665832}
+{"t":"2026-10-15T16:31:57.916Z","do":"stop","stopped":["hub","testnet"]}

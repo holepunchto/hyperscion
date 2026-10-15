@@ -85,7 +85,7 @@ test('a new revision makes earlier reviews stale; quorum counts distinct writers
   t.is((await wb.land()).outcome.status, 'accepted')
 })
 
-test('approval is pinned to content: a rebase that changes it needs review again', async (t) => {
+test("an approval survives merging teammates' changes into the proposal on the way to land", async (t) => {
   const { a, b, settle } = await team(t)
 
   const seed = await a.workspace('seed')
@@ -105,9 +105,52 @@ test('approval is pinned to content: a rebase that changes it needs review again
   await wa.land()
   await settle()
 
+  await settle()
   const res = await wb.land({ rebase: 1 })
-  t.is(res.outcome.status, 'needs-review')
-  t.ok(/content changed since P\d+ was reviewed/.test(res.outcome.reason))
+  t.is(res.outcome.status, 'accepted', "only main's change was merged in: still approved")
+  t.is((await b.changeset(res.outcome.seq)).proposal, id)
+
+  // anything else that changed after review needs review again
+  const wc = await b.workspace('wc')
+  await wc.commit([put('/y.txt', 'y\n')])
+  const id2 = (await wc.propose({ reviewers: ['a1'] })).outcome.proposal
+  await settle()
+  await a.review({ proposal: id2, verdict: 1, hash: (await a.proposal(id2)).hash })
+  await settle()
+  await wc.commit([put('/y.txt', 'y changed by the author\n')])
+  const again = await wc.land()
+  t.is(again.outcome.status, 'needs-review')
+  t.ok(/content changed since P\d+ was reviewed/.test(again.outcome.reason))
+})
+
+test('.hsreview-protected paths keep approvals pinned to the exact content', async (t) => {
+  const { a, b, settle } = await team(t)
+  const wa = await a.workspace('wa')
+  await wa.commit([
+    put('/.hsreview', 'contract.md approvals=1\n'),
+    put('/contract.md', 'one\ntwo\nthree\n')
+  ])
+  t.is((await wa.land()).outcome.status, 'accepted')
+  await settle()
+
+  const wb = await b.workspace('wb')
+  await wb.commit([put('/contract.md', 'ONE\ntwo\nthree\n')])
+  const id = (await wb.propose({ reviewers: ['a1'] })).outcome.proposal
+  await settle()
+  await a.review({ proposal: id, verdict: 1, hash: (await a.proposal(id)).hash })
+
+  // a's own approved change to the protected file lands through a proposal of its own
+  const wa2 = await a.workspace('wa2')
+  await wa2.commit([put('/contract.md', 'one\ntwo\nTHREE\n')])
+  const pa = (await wa2.propose({ reviewers: ['b1'] })).outcome.proposal
+  await settle()
+  await b.review({ proposal: pa, verdict: 1, hash: (await b.proposal(pa)).hash })
+  await settle()
+  t.is((await wa2.land()).outcome.status, 'accepted')
+  await settle()
+
+  const res = await wb.land({ rebase: 1 })
+  t.is(res.outcome.status, 'needs-review', 'merged content of a protected path needs review')
 })
 
 test('Show: a land can ask teammates to review it afterwards', async (t) => {
