@@ -24,8 +24,23 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   fs.writeFileSync(path.join(hub, '.hsattributes'), 'NOTES.md merge=union\n')
   fs.writeFileSync(path.join(hub, 'NOTES.md'), '# notes\n')
   fs.writeFileSync(path.join(hub, 'src', 'a.js'), 'a\n')
+  fs.writeFileSync(path.join(hub, 'src', 'pricing.js'), 'price = 1\n')
+  fs.writeFileSync(path.join(hub, 'CONTRACTS.md'), '# contracts\n')
+  fs.writeFileSync(path.join(hub, '.hsowners'), 'src/pricing.js a1\n')
 
-  const hs = (cwd, args, user = 'hub') => run(cwd, args, { ...env, USER: user })
+  const timings = []
+  const hs = async (cwd, args, user = 'hub') => {
+    const started = Date.now()
+    const res = await run(cwd, args, { ...env, USER: user })
+    timings.push([Date.now() - started, user + ' ' + args.join(' ')])
+    return res
+  }
+  t.teardown(() => {
+    const slow = timings.filter(([ms]) => ms > 8000)
+    if (slow.length) {
+      console.log('# slow hs calls: ' + slow.map(([ms, c]) => `${c} ${ms}ms`).join('; '))
+    }
+  })
 
   const init = await hs(hub, ['init'])
   t.is(init.code, 0, 'init')
@@ -145,6 +160,51 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   )
   t.ok((await hs(A2, ['watch', '--stop'], 'a2')).stdout.includes('stopped watcher'))
   await waitFor(() => feed2.exited())
+
+  // 6. Show by default: a2 changes a file a1 owns; a1 is asked, reviews; a2 hears about it
+  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  fs.writeFileSync(path.join(A2, 'src', 'pricing.js'), 'price = 2\n')
+  const show = await hs(A2, ['land', '-o', '-m', 'raise price'], 'a2')
+  t.is(show.code, 0, 'Show lands immediately')
+  t.ok(show.stdout.includes('showing to a1 (owner of /src/pricing.js)'))
+  t.ok(show.stdout.includes('review requested from a1'))
+  const showSeq = Number(show.stdout.match(/landed #(\d+)/)[1])
+
+  t.is((await hs(A1, ['pull'], 'a1')).code, 0) // status is offline: it shows what was pulled
+  const st = await hs(A1, ['status'], 'a1')
+  t.ok(st.stdout.includes(`review requested: #${showSeq} by a2`), 'a1 sees the request in status')
+  const req = await hs(
+    A1,
+    ['watch', '--for-me', '--since', '0', '--count', '1', '--timeout', '30'],
+    'a1'
+  )
+  t.ok(req.stdout.includes(`@ #${showSeq} by a2: review requested from a1`), 'and in its feed')
+
+  t.is((await hs(A1, ['review', '#' + showSeq, 'approve', '-m', 'ok'], 'a1')).code, 0)
+  const heard = await hs(A2, ['watch', '--for-me', '--count', '1', '--timeout', '30'], 'a2')
+  t.is(heard.code, 0)
+  t.ok(heard.stdout.includes(`@ #${showSeq} approved by a1 :: ok`), 'a2 hears the review')
+
+  // 7. Ask: a2 proposes a contract change to a1; it lands only once approved
+  fs.writeFileSync(path.join(A2, 'CONTRACTS.md'), '# contracts\nplan(day) -> Plan\n')
+  const prop = await hs(A2, ['propose', '-o', '-m', 'pin Plan shape', '-r', 'a1'], 'a2')
+  t.is(prop.code, 0, prop.stdout + prop.stderr)
+  t.ok(/proposed P1: 1 path\(s\), needs 1 approval\(s\), asked a1/.test(prop.stdout))
+
+  const early = await hs(A2, ['land', '-o', '-m', 'pin Plan shape'], 'a2')
+  t.is(early.code, 2, 'cannot land before approval')
+  t.ok(early.stdout.includes('not landed, needs review: P1 has 0/1 approvals'))
+
+  const shown = await hs(A1, ['show', 'P1'], 'a1')
+  t.ok(shown.stdout.includes('proposal P1 revision 0 by a2: open'))
+  t.ok(shown.stdout.includes('+plan(day) -> Plan'), 'reviewer sees the diff')
+  const approve = await hs(A1, ['review', 'P1', 'approve', '-m', 'lgtm'], 'a1')
+  t.ok(approve.stdout.includes('P1: approved; 1/1 approvals, approved'))
+
+  const landed = await hs(A2, ['land', '-o', '-m', 'pin Plan shape'], 'a2')
+  t.is(landed.code, 0, landed.stdout + landed.stderr)
+  t.ok(/landed P1 as #\d+/.test(landed.stdout))
+  t.ok((await hs(A1, ['proposals', '--all'], 'a1')).stdout.includes('P1 landed'))
 })
 
 function run(cwd, args, env) {

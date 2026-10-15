@@ -406,3 +406,43 @@ Known costs:
   binds 127.0.0.1 with `firewalled: false`, like the testnet's own nodes. Otherwise short-lived
   CLI processes assume they are firewalled and their holepunched loopback connections are
   unreliable. This made the subprocess CLI test reliable (3/3 runs, ~25 s).
+
+## 10. Review: Ship / Show / Ask (milestone 3)
+
+Review here is a coordination signal, not a merge-queue gate, and not a second product. There
+is no review UI. Proposals and reviews are ops in main's history, and the CLI, `hs watch` and
+`hs show` are the whole surface.
+
+- **Identity.** `add-writer` binds a handle (`a3`) to a writer key in main; `init --as` and
+  `seed --admit` (file name) set it. Reviewers and owners are named by handle and resolved to
+  keys in `apply`, so handles can't be spoofed.
+- **Approvals are signatures.** Every autobee op is signed by its writer's key, so a review op
+  _is_ that writer's signature. A quorum is `apply` counting distinct non-author writer keys
+  whose latest review approves the proposal's current content hash (blake2b over the
+  canonically encoded entries). That is multisig semantics with no extra crypto, and anyone
+  can verify it from history.
+- **Ask.** `propose` stores the entries a land would carry (`hs-prop/<id>`) without touching
+  `files/`. A new revision changes the hash, so earlier approvals no longer count. A land
+  referencing the proposal is accepted only if it is approved and the land's entries hash to
+  the approved content. A rebase that changes the content needs review again.
+- **Show.** A land may name reviewers (`hs-req/<seq>`). It lands immediately, and reviews
+  (`approve`, `changes`, `comment`) attach to the changeset afterwards.
+- **Opt-in enforcement: `/.hsreview`.**
+  - Rules have the form `<pattern> approvals=<n> [reviewers=a,b]`.
+  - `apply` rejects a land touching a matching path with `needs-review` unless it lands an
+    approved proposal meeting the rule.
+  - `apply` can't fetch blobs, so a change to `/.hsreview` carries the file's text inline,
+    verified against the entry's content hash. The parsed rules are stored in main's view.
+  - The file governs changes to itself.
+- **Ownership: `/.hsowners`.** This is CLI-side only, a nudge rather than enforcement. Landing
+  changes to paths someone else owns becomes a Show to the owners unless you pass `--ship`.
+- **Event log.** `hs-ev/<n>` orders review activity (proposal, revision, review, approved,
+  landed, request). `hs watch` streams it, `--for-me` filters to what involves you, and
+  `status` summarizes what's waiting.
+- **Availability.** `propose -o` waits until a holder has the proposal's workspace content,
+  and mirrors also hold open proposals.
+- **Not done:**
+  - line-level comment threads (a comment may start with `path:line`);
+  - a UI;
+  - notifications beyond the feed;
+  - finality (review ops are provisional like any op).

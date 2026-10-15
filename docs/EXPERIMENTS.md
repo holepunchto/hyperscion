@@ -68,7 +68,8 @@ Each item is ranked by how many agents raised it.
 **Status after the follow-up:**
 
 - Done: items 1 (rebase wording now names who changed what), 3 (waits start from your synced base, `--timeout`), 4 (`hs watch --stop`, feeds resume) and 5 (`sync`/`land` list incoming changesets).
-- Open: item 2 (finality) and item 6 (review).
+- Item 6 (review) is addressed by Ship / Show / Ask: owner-default Show, proposals with quorum approvals, and opt-in `/.hsreview` rules (DESIGN.md §10). It has not been tried in an experiment yet.
+- Still open: item 2 (finality).
 - `test/cli.js` covers them through the real `hs` binary and runs by default. Its earlier failures were loopback connectivity, now fixed (DESIGN.md, connectivity notes).
 
 ## Experiment 1 findings and their fixes (milestone 2)

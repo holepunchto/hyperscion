@@ -76,23 +76,24 @@ hs pull && hs land --online -m "my change"
 
 ## Commands
 
-|                                                    |                                                                                  |
-| -------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `init [dir] [--encrypt]`                           | create a repo                                                                    |
-| `clone <invite> [dir] [--sparse p]… [--admit dir]` | join a repo, sparse checkout, request write access                               |
-| `status`, `diff`, `commit`, `restore <path…>`      | working copy vs workspace; discard local edits                                   |
-| `land -o [-m]`                                     | commit and land onto main; auto-rebases on conflict; waits until a holder has it |
-| `sync [--offline]`                                 | pull main and rebase onto it (3-way merge, union merge per `.hsattributes`)      |
-| `watch [--path p] [--count n] [--json] [--patch]`  | stream changesets (and reorgs) as they land                                      |
-| `show <n> [--stat]`                                | a changeset's message and unified diff                                           |
-| `log [-f] [path]`, `ls [prefix]`, `cat <path>`     | read main (no checkout needed)                                                   |
-| `checkout [prefix…]`                               | materialize files, optionally sparse                                             |
-| `ws new\|switch\|list`                             | workspaces                                                                       |
-| `info`, `add-writer <key> [--indexer]`             | identity and access                                                              |
-| `pull`, `push`, `doctor`                           | fetch, upload, check connectivity and holder                                     |
-| `seed [--mirror] [--admit dir] [--updates]`        | stay online as the team's holder                                                 |
-| `blind-peer <key> [--remove]`                      | configure blind peers                                                            |
-| `import-git <gitdir> [--branch] [--limit]`         | replay a git branch's first-parent history                                       |
+|                                                                                                 |                                                                                  |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `init [dir] [--encrypt]`                                                                        | create a repo                                                                    |
+| `clone <invite> [dir] [--sparse p]… [--admit dir]`                                              | join a repo, sparse checkout, request write access                               |
+| `status`, `diff`, `commit`, `restore <path…>`                                                   | working copy vs workspace; discard local edits                                   |
+| `land -o [-m]`                                                                                  | commit and land onto main; auto-rebases on conflict; waits until a holder has it |
+| `sync [--offline]`                                                                              | pull main and rebase onto it (3-way merge, union merge per `.hsattributes`)      |
+| `watch [--path p] [--count n] [--json] [--patch]`                                               | stream changesets (and reorgs) as they land                                      |
+| `show <#n\|Pn> [--stat]`                                                                        | a changeset or proposal: message, reviews, unified diff                          |
+| `propose -o [-m] [-r handles] [-q n]`, `review <Pn\|#n> approve\|changes\|comment`, `proposals` | Ask and review (Ship / Show / Ask, see docs/AGENTS.md)                           |
+| `log [-f] [path]`, `ls [prefix]`, `cat <path>`                                                  | read main (no checkout needed)                                                   |
+| `checkout [prefix…]`                                                                            | materialize files, optionally sparse                                             |
+| `ws new\|switch\|list`                                                                          | workspaces                                                                       |
+| `info`, `add-writer <key> [--indexer]`                                                          | identity and access                                                              |
+| `pull`, `push`, `doctor`                                                                        | fetch, upload, check connectivity and holder                                     |
+| `seed [--mirror] [--admit dir] [--updates]`                                                     | stay online as the team's holder                                                 |
+| `blind-peer <key> [--remove]`                                                                   | configure blind peers                                                            |
+| `import-git <gitdir> [--branch] [--limit]`                                                      | replay a git branch's first-parent history                                       |
 
 ## Library
 
