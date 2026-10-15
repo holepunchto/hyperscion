@@ -1,0 +1,100 @@
+# hs usage: 560 calls since 2026-10-15T08:01:33.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 82 | 40 | 10 | 0 | 0 | 3 (3) | 3 | 0 | 0 | 0 | 9 | 0 | 1.1m |
+| a2 | 96 | 37 | 14 | 0 | 0 | 6 (6) | 3 | 0 | 0 | 0 | 9 | 0 | 1.0m |
+| a3 | 21 | 5 | 5 | 0 | 0 | 2 (1) | 2 | 0 | 0 | 0 | 5 | 0 | 2.2m |
+| a3b | 74 | 33 | 7 | 0 | 0 | 3 (3) | 1 | 0 | 0 | 0 | 3 | 0 | 6.9m |
+| a4 | 82 | 26 | 10 | 0 | 0 | 5 (4) | 3 | 0 | 0 | 0 | 17 | 0 | 1.0m |
+| a5 | 205 | 82 | 22 | 0 | 0 | 10 (10) | 5 | 0 | 0 | 0 | 13 | 0 | 1.3m |
+
+totals: lands 29 (accepted 27), auto-rebased 17, real conflicts 0, flip banners 0, stalls 0, unavailable 56, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: pull 32/42, log 8/10, add 7/8, commit 10/11, push 26/26, fetch 15/25, show 7/7, diff 8/10, status 10/10
+a2: fetch 16/24, log 7/9, add 7/7, commit 9/11, pull 26/33, push 25/27, show 9/10, status 9/9, diff 9/10
+a3: pull 23/36, log 8/11, fetch 12/32, add 8/9, commit 10/10, push 23/23, status 8/8
+a3b: status 8/8, pull 31/38, log 7/10, branch 7/8, add 9/9, commit 10/11, fetch 15/27, reset 9/9, ls-remote 12/12, push 23/27, diff 7/8
+a4: pull 29/36, log 7/10, add 8/9, commit 11/12, push 25/27, fetch 12/20, status 8/11, remote 13/13, show 7/7
+a5: pull 24/33, log 7/10, status 9/10, config 7/7, add 8/10, commit 10/11, push 25/28, show 8/10, fetch 15/23
+
+## command mix
+a1: pull=10 log=33 add=3 commit=3 push=3 fetch=23 show=2 diff=3 status=2
+a2: fetch=27 log=28 add=6 commit=6 pull=14 push=6 show=3 status=2 diff=4
+a3: pull=5 log=4 fetch=3 add=3 commit=3 push=2 status=1
+a3b: status=2 pull=7 log=26 branch=3 add=2 commit=4 fetch=20 reset=1 ls-remote=1 push=3 diff=5
+a4: pull=10 log=20 add=3 commit=6 push=5 fetch=30 status=4 remote=2 show=2
+a5: pull=22 log=74 status=4 config=1 add=10 commit=10 push=10 show=4 fetch=70
+
+## land timeline
+  1.0m a4 pushed                                                  
+  1.0m a2 pushed                                                  
+  1.1m a1 pushed                                                  
+  1.3m a5 pushed                                                  
+  1.4m a2 pushed                                                  
+  1.7m a5 pushed                                                  
+  1.9m a1 pushed                                                  
+  2.1m a5 pushed                                                  
+  2.2m a3 pushed                                                  
+  3.3m a3 fatal: '/tmp/claude-1000/-home-ryan-github-holepunch-hy 
+  6.2m a2 pushed                                                  
+  6.2m a5 pushed                                                  
+  6.6m a5 pushed                                                  
+  6.7m a1 pushed                                                  
+  6.9m a3b pushed                                                  
+  7.2m a2 pushed                                                  
+  7.6m a4 pushed                                                  
+  8.2m a5 pushed                                                  
+  8.5m a5 pushed                                                  
+  8.5m a3b pushed                                                  
+  8.8m a5 pushed                                                  
+  9.1m a4 pushed                                                  
+  9.2m a2 pushed                                                  
+  9.3m a3b pushed                                                  
+  9.3m a4  ! [rejected]        main -> main (fetch first)         
+  9.5m a2 pushed                                                  
+  9.7m a5 pushed                                                  
+  9.8m a4 pushed                                                  
+  9.9m a5 pushed                                                  
+
+## metrics (also in metrics.json)
+calls: 560
+minutes: 25.3
+lands: 29
+accepted: 27
+calls_per_accepted_land: 20.74
+auto_rebased: 17
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 56
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 25
+land_ms_p90: 27
+tool: "git"
+polling_calls: 241
+push_rejected: 1
+wait_min_total: 0
+vcs_min_total: 0.1
+vcs_share_pct: 0.2
+watch_calls: 0
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 57
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,3,3,3,3]
+would_choose_hs: "0/5"
+output_clarity_mean: 3.6
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 41
+confusing_messages_total: 9
+review_usefulness_mean: 0

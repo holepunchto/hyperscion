@@ -1,0 +1,101 @@
+# hs usage: 835 calls since 2026-10-15T07:35:30.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 117 | 60 | 15 | 0 | 0 | 2 (2) | 2 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a2 | 149 | 72 | 19 | 0 | 0 | 7 (7) | 4 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+| a3 | 195 | 94 | 21 | 0 | 0 | 8 (7) | 5 | 1 | 0 | 0 | 0 | 0 | 3.5m |
+| a4 | 180 | 88 | 17 | 0 | 0 | 5 (5) | 3 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a5 | 194 | 81 | 18 | 0 | 0 | 11 (10) | 5 | 1 | 0 | 0 | 0 | 0 | 1.1m |
+
+totals: lands 33 (accepted 31), auto-rebased 19, real conflicts 2, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: pull 30/34, log 9/12, add 12/12, commit 13/13, push 30/30, fetch 20/31, diff 9/11, status 11/11
+a2: fetch 20/30, log 9/12, add 9/10, commit 12/14, pull 31/41, push 29/32, diff 10/11, show 9/12, status 12/12
+a3: pull 29/43, log 9/11, fetch 19/28, add 9/10, commit 11/16, status 11/11, diff 8/10, show 9/12, rebase 21/21, push 31/46
+a4: fetch 19/28, log 9/12, add 9/12, commit 12/14, pull 31/40, push 29/35, diff 9/11, show 12/12, status 8/8
+a5: pull 29/45, log 9/11, fetch 18/28, add 9/11, commit 12/13, push 29/30, show 12/12, status 10/13, checkout 9/9, rebase 21/21, reflog 10/10
+
+## command mix
+a1: pull=15 log=48 add=2 commit=2 push=2 fetch=36 diff=11 status=1
+a2: fetch=37 log=54 add=7 commit=7 pull=19 push=7 diff=10 show=6 status=2
+a3: pull=21 log=75 fetch=58 add=6 commit=7 status=2 diff=10 show=7 rebase=1 push=8
+a4: fetch=60 log=80 add=5 commit=5 pull=17 push=5 diff=3 show=4 status=1
+a5: pull=18 log=73 fetch=58 add=11 commit=11 push=11 show=5 status=3 checkout=2 rebase=1 reflog=1
+
+## land timeline
+  1.1m a5 pushed                                                  
+  1.2m a2 pushed                                                  
+  1.3m a1 pushed                                                  
+  1.4m a4 pushed                                                  
+  1.9m a5 pushed                                                  
+  1.9m a2 pushed                                                  
+  2.2m a4 pushed                                                  
+  2.6m a4 pushed                                                  
+  2.9m a1 pushed                                                  
+  3.1m a5  ! [rejected]        main -> main (fetch first)         
+  3.2m a5 pushed                                                  
+  3.5m a3 pushed                                                  
+  3.6m a2 pushed                                                  
+  4.1m a3 pushed                                                  
+  4.4m a3 pushed                                                  
+  4.6m a2 pushed                                                  
+  5.2m a5 pushed                                                  
+  5.7m a2 pushed                                                  
+  5.8m a3  ! [rejected]        main -> main (fetch first)         
+  5.9m a3 pushed                                                  
+  6.5m a5 pushed                                                  
+  6.9m a5 pushed                                                  
+ 10.3m a4 pushed                                                  
+ 10.3m a5 pushed                                                  
+ 10.6m a2 pushed                                                  
+ 10.7m a3 pushed                                                  
+ 10.8m a5 pushed                                                  
+ 11.3m a2 pushed                                                  
+ 11.5m a3 pushed                                                  
+ 12.5m a4 pushed                                                  
+ 13.0m a5 pushed                                                  
+ 23.5m a5 pushed                                                  
+ 23.9m a3 pushed                                                  
+
+## metrics (also in metrics.json)
+calls: 835
+minutes: 24.7
+lands: 33
+accepted: 31
+calls_per_accepted_land: 26.94
+auto_rebased: 19
+real_conflicts: 2
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 29
+land_ms_p90: 32
+tool: "git"
+polling_calls: 339
+push_rejected: 2
+wait_min_total: 0
+vcs_min_total: 0.2
+vcs_share_pct: 0.2
+watch_calls: 0
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 4
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,3,3,3,3]
+would_choose_hs: "0/5"
+output_clarity_mean: 4
+land_state_trust_mean: 3.8
+minutes_lost_to_hs_total: 54
+confusing_messages_total: 7
+review_usefulness_mean: 1

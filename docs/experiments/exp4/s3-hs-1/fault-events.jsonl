@@ -1,0 +1,7 @@
+{"t":"2026-10-15T04:52:47.692Z","do":"schedule","scenario":"s3","arm":"hs","scale":1,"events":5}
+{"t":"2026-10-15T04:57:31.187Z","at":5,"do":"offline","agent":"a4","minute":5,"feedStopped":true}
+{"t":"2026-10-15T05:00:32.188Z","at":8,"do":"origin-down","minute":8.02,"stopped":true}
+{"t":"2026-10-15T05:03:31.096Z","at":11,"do":"origin-up","minute":11,"pid":311180}
+{"t":"2026-10-15T05:04:31.100Z","at":12,"do":"online","agent":"a4","minute":12}
+{"t":"2026-10-15T05:04:31.101Z","at":12,"do":"kill","agent":"a3","minute":12,"feedStopped":false,"note":"stop the a3 agent now and start its replacement"}
+{"t":"2026-10-15T05:52:45.707Z","do":"stop","stopped":["hub"]}

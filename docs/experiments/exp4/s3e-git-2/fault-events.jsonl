@@ -1,0 +1,7 @@
+{"t":"2026-10-15T08:01:33.561Z","do":"schedule","scenario":"s3e","arm":"git","scale":1,"events":5}
+{"t":"2026-10-15T08:03:33.047Z","at":2,"do":"offline","agent":"a4","minute":2,"feedStopped":false}
+{"t":"2026-10-15T08:04:33.009Z","at":3,"do":"origin-down","minute":3}
+{"t":"2026-10-15T08:05:33.051Z","at":4,"do":"kill","agent":"a3","minute":4,"feedStopped":false,"note":"stop the a3 agent now and start its replacement"}
+{"t":"2026-10-15T08:07:33.097Z","at":6,"do":"origin-up","minute":6}
+{"t":"2026-10-15T08:08:33.094Z","at":7,"do":"online","agent":"a4","minute":7}
+{"t":"2026-10-15T08:27:05.141Z","do":"stop","stopped":[]}

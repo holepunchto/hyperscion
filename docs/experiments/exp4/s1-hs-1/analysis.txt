@@ -1,0 +1,89 @@
+# hs usage: 106 calls since 2026-10-15T03:09:10.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 23 | 13 | 0 | 6 | 8 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a2 | 18 | 10 | 0 | 5 | 6 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.5m |
+| a3 | 21 | 9 | 0 | 4 | 3 | 7 (7) | 0 | 0 | 0 | 0 | 0 | 0 | 3.3m |
+| a4 | 22 | 10 | 0 | 6 | 4 | 4 (4) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a5 | 22 | 13 | 0 | 5 | 6 | 4 (4) | 0 | 0 | 0 | 0 | 0 | 0 | 1.7m |
+
+totals: lands 21 (accepted 21), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 2565/2729, log 108/108, land 3697/4934, show 100/100, review 2697/2697, status 147/149, watch 21071/477116
+a2: sync 2352/2511, log 106/106, land 3538/3814, watch 76930/367397, status 137/137, show 2086/2086
+a3: sync 2493/3171, land 4018/5789, status 123/139, show 129/129, watch 11988/451977, proposals 2439/2439, log 112/112
+a4: sync 2727/2796, status 131/141, log 98/98, land 4363/4478, watch 60347/414092, proposals 2514/2514, show 132/132, review 2358/2358
+a5: sync 2391/2608, status 127/151, log 102/102, land 4409/4460, watch 402085/1294294
+
+## command mix
+a1: sync=6 log=1 land=3 show=1 review=1 status=3 watch=8
+a2: sync=5 log=1 land=3 watch=6 status=2 show=1
+a3: sync=4 land=7 status=3 show=2 watch=3 proposals=1 log=1
+a4: sync=6 status=3 log=1 land=4 watch=4 proposals=1 show=2 review=1
+a5: sync=5 status=5 log=2 land=4 watch=6
+
+## land timeline
+  1.4m a4 landed #2                                               pricing: formula pinned in CONTRACTS.md (EUR 3.00 + 0.80/km depot->des
+  1.4m a1 landed #3                                               model: loadDay + DayError landed, Day shape pinned in CONTRACTS.md (lo
+  1.5m a2 landed #4                                               geo: haversine, travel time, NN+2-opt route ordering, trip timeline wi
+  1.7m a5 landed #5                                               cli: skeleton (plan <dayfile> [--json]) + pending integration test (pr
+  2.0m a2 landed #6                                               geo: windowMisses(timeline) for delivery windows; planTrip(null, ...) 
+  3.2m a4 landed #7                                               report: renderReport + reportData (JSON form) pinned in CONTRACTS.md; 
+  3.4m a1 landed #8                                               model: tests over fixtures/edge-limits.json (x03 [0,2], x04 5.01kg pas
+  3.3m a3 landed #9                                               scheduler: plan(day) greedy window-aware insertion; Plan shape pinned 
+  4.0m a2 landed #10                                              geo: improveRoute(depot, stops, {feasible}) — constrained 2-opt a3 can
+  4.0m a4 landed #11                                              report: test over day1 with a3's real scheduler (#9): prices == delive
+  4.1m a3 landed #12                                              scheduler: packages can join any trip or open a new trip in any idle g
+  4.2m a1 landed #13                                              model: loadDay idempotent (loadDay(day) === day, keeps hasWindow), isD
+  4.6m a3 landed #14                                              scheduler: use geo.improveRoute (a2 #10) as a feasibility-checked 2-op
+  4.8m a3 landed #15                                              scheduler: always go through loadDay (idempotent since a1 #13); also a
+  5.3m a3 landed #16                                              notes: a3 -> a4, report shows back 00:09 / depart 00:08 for d3 (double
+  5.4m a5 landed #17                                              cli: --json adds currency+report (reportData); stronger integration ch
+  5.7m a4 landed #18                                              report: fix double rounding a3 found in #16 (back 00:09 / depart 00:08
+  6.4m a3 landed #19                                              scheduler: specific reason for windowed packages that lose their slot 
+  7.2m a5 landed #20                                              integration: fixtures/edge-windows.json (late/end/outside/invalid wind
+  7.9m a3 landed #21                                              notes: a3 scheduler status + known limitation (no load balancing)
+ 14.6m a5 landed #22                                              integration: compare unassigned reasons via scheduler.REASONS keys (pe
+
+## metrics (also in metrics.json)
+calls: 106
+minutes: 22.1
+lands: 21
+accepted: 21
+calls_per_accepted_land: 5.05
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 20
+land_ended_settled: 1
+land_ended_provisional: 0
+land_ms_p50: 3973
+land_ms_p90: 4478
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+wait_min_total: 24.1
+vcs_min_total: 2.8
+vcs_share_pct: 5.4
+watch_calls: 27
+proposals: 0
+reviews_given: 2
+shows_sent: 1
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 3
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4,4,4]
+would_choose_hs: "5/5"
+output_clarity_mean: 4.2
+land_state_trust_mean: 5
+minutes_lost_to_hs_total: 14
+confusing_messages_total: 8
+review_usefulness_mean: 1.6

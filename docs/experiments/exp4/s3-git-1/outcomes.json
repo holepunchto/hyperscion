@@ -1,0 +1,240 @@
+{
+  "outcomes": {
+    "main_states": 31,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 2.3,
+    "acceptance_80_at_min": 2.3,
+    "acceptance_100_at_min": 2.3,
+    "final_state_min": 15.1
+  },
+  "rows": [
+    {
+      "id": "3f3cfa9f60",
+      "minute": 0,
+      "author": "hub",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "4c10e65152",
+      "minute": 0.7,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "3e1bd5502c",
+      "minute": 1.4,
+      "author": "a4",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "0908524968",
+      "minute": 1.4,
+      "author": "a5",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "492991558c",
+      "minute": 1.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "e14288859f",
+      "minute": 1.5,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "6a53e8f025",
+      "minute": 1.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "d5d9f266e6",
+      "minute": 2.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "bb451bf7d5",
+      "minute": 2.4,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "5dbf240710",
+      "minute": 2.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "eef97f2970",
+      "minute": 2.5,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "a4fc48b35b",
+      "minute": 2.7,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "9ed854e9fa",
+      "minute": 2.8,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "95086427ab",
+      "minute": 2.8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "b0925bca94",
+      "minute": 2.8,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "b02b4b1b5f",
+      "minute": 3,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "7a3860fb2f",
+      "minute": 3.1,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "eb09110fcd",
+      "minute": 3.2,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "6f2cd37015",
+      "minute": 3.3,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "a0cf71ad9c",
+      "minute": 3.4,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "f60b550530",
+      "minute": 3.8,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "558718dde7",
+      "minute": 3.8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "77bae966f5",
+      "minute": 3.9,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "418c052a27",
+      "minute": 4.2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "c05ed4b17d",
+      "minute": 5.3,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "1b560de3e9",
+      "minute": 5.5,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "be3bdde45f",
+      "minute": 12.7,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "dfce6f54fa",
+      "minute": 13.1,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "411fd8a7fe",
+      "minute": 13.5,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "41063b4f5d",
+      "minute": 14.1,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "eba749ed84",
+      "minute": 14.7,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "5e820f4212",
+      "minute": 15.1,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    }
+  ]
+}

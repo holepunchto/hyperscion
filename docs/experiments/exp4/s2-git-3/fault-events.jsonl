@@ -1,0 +1,3 @@
+{"t":"2026-10-15T09:10:27.824Z","do":"schedule","scenario":"s2","arm":"git","scale":1,"events":1}
+{"t":"2026-10-15T09:20:09.272Z","at":10,"do":"change-request","files":"change-request","minute":10,"attempt":1}
+{"t":"2026-10-15T09:41:02.454Z","do":"stop","stopped":[]}

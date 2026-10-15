@@ -1,0 +1,100 @@
+# hs usage: 156 calls since 2026-10-15T04:15:12.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 22 | 12 | 0 | 7 | 7 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a2 | 42 | 25 | 0 | 9 | 9 | 7 (6) | 0 | 1 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 30 | 16 | 0 | 5 | 6 | 8 (5) | 0 | 3 | 0 | 0 | 0 | 0 | 1.7m |
+| a4 | 27 | 14 | 0 | 6 | 7 | 7 (6) | 0 | 1 | 0 | 0 | 0 | 0 | 1.3m |
+| a5 | 35 | 17 | 0 | 11 | 11 | 7 (7) | 0 | 0 | 0 | 0 | 0 | 0 | 2.7m |
+
+totals: lands 32 (accepted 27), auto-rebased 0, real conflicts 5, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 1638/1749, status 135/135, land 2976/3177, show 79/79, watch 50728/1143906, log 91/91
+a2: sync 1630/2342, status 113/136, land 3145/3636, cat 96/101, show 1206/2532, restore 1536/1536, watch 104654/1665238, log 88/88
+a3: sync 1717/1739, log 106/106, land 3073/3707, watch 129413/1222478, show 96/1200, status 122/131, proposals 1945/1945
+a4: sync 1607/1721, land 3168/4133, watch 77368/1338208, status 129/131, show 80/80, log 109/109
+a5: sync 1540/1708, status 104/104, log 109/109, land 3193/3641, watch 98220/601167, show 106/106
+
+## command mix
+a1: sync=7 status=2 land=3 show=2 watch=7 log=1
+a2: sync=9 status=5 land=7 cat=3 show=7 restore=1 watch=9 log=1
+a3: sync=5 log=2 land=8 watch=6 show=4 status=4 proposals=1
+a4: sync=6 land=7 watch=7 status=3 show=2 log=2
+a5: sync=11 status=2 log=2 land=7 watch=11 show=2
+
+## land timeline
+  1.3m a1 landed #2                                               model: loadDay/loadDayFile + DayValidationError; Day shape pinned in C
+  1.3m a4 landed #3                                               pricing: formula pinned in CONTRACTS.md (EUR, 2.50 + 0.80/km depot->de
+  1.4m a2 landed #4                                               geo: distanceKm/travelMinutes/routeLengthKm/orderRoute (NN+2-opt) + te
+  1.7m a3 landed #5                                               scheduler: first plan() + Plan shape pinned in CONTRACTS.md (payload/r
+  1.7m a4 landed #6                                               pricing: use a1's Day (drone.home, pkg.express); test over real loadDa
+  2.0m a4 landed #7                                               pricing: test against real scheduler.plan(day1) — every delivered pkg 
+  2.7m a5 landed #8                                               cli + report skeleton: cli plan <file> [--json] wired loadDay->plan->p
+  2.8m a3 landed #9                                               scheduler: adopt a2's TIMING interface (timeTrip/scheduleDrone/directW
+  3.0m a1 landed #10                                              NOTES: a1 suggestion for cli error output
+  3.5m a5 landed #11                                              report: per-package eta/weight/EXPRESS/price/window lines, drones sort
+  3.6m a4 real conflicts in /src/report.js (#11 a5): fix the <<<< report money: per-package price detail (km, kg, express), trip subtota
+  3.7m a1 landed #12                                              model: test that a5's edge fixtures load/reject as expected
+  3.9m a2 real conflicts in /src/scheduler.js (#9 a3), /test/sche scheduler TIMING: real timeDrone (windows w/ waiting, EDF stop/trip fa
+  4.1m a4 landed #13                                              report money: trip subtotals under a5's price column, rates line, tota
+  4.5m a4 landed #14                                              pricing: throw if a package is in two trips (never double-bill); error
+  5.2m a2 landed #15                                              scheduler TIMING: real timeTrip/scheduleDrone/directWindowReason on a3
+  5.7m a2 landed #16                                              scheduler timing: pin stop timing fields (arrive/wait/eta/depart, dela
+  5.9m a5 landed #17                                              fixtures edge-empty + edge-crowded with integration tests (express-fir
+  6.5m a3 real conflicts in /test/scheduler.test.js (#16 a2): fix scheduler CAPACITY: spread work over drones (cost = extra km + finish 
+  6.8m a3 landed #18                                              scheduler CAPACITY: spread work over drones (cost = extra km + finish 
+  8.8m a3 landed #19                                              scheduler CAPACITY: overflow packages (fleet full) get 'no drone has c
+ 11.4m a5 landed #21                                              NOTES: a5 CR-1 plan; asks for field name flightMinutes (breakdown + st
+ 11.5m a2 landed #22                                              CR-1: plan stops carry flightMin (flight minutes from depot departure,
+ 11.7m a3 real conflicts in /src/scheduler.js (#22 a2), /test/sch CR-1 scheduler: stops[].flightMinutes (depot->stop flight time, no ser
+ 11.8m a2 landed #23                                              CR-1: rename stop field flightMin -> flightMinutes (a5's requested nam
+ 11.9m a5 landed #24                                              report (CR-1): each delivery line shows 'fly N.N min' (from priced.bre
+ 12.4m a3 real conflicts in /src/scheduler.js (#23 a2), /test/sch CR-1 scheduler: merge with a2's #22 — stops expose flightMinutes (a5's
+ 12.9m a3 landed #25                                              CR-1 scheduler: on top of a2's #22/#23 — add trips[].flightMinutes (wh
+ 13.7m a4 landed #26                                              CR-1 pricing: (2.00 + 0.25/flight-min + 0.40/kg) x1.5 express, flight 
+ 14.2m a5 landed #27                                              integration (CR-1): independent per-package price check vs flight-minu
+ 14.5m a5 landed #28                                              CONTRACTS: report/cli section matches what exists (all report exports,
+ 24.1m a2 landed #29                                              geo: drop unused orderStops alias (nobody uses it since #9); exports n
+
+## metrics (also in metrics.json)
+calls: 156
+minutes: 34.4
+lands: 32
+accepted: 27
+calls_per_accepted_land: 5.78
+auto_rebased: 0
+real_conflicts: 5
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 27
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 3168
+land_ms_p90: 3707
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+wait_min_total: 90.1
+vcs_min_total: 2.9
+vcs_share_pct: 2.3
+watch_calls: 40
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 11
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4,4,4]
+would_choose_hs: "5/5"
+output_clarity_mean: 4
+land_state_trust_mean: 5
+minutes_lost_to_hs_total: 25
+confusing_messages_total: 8
+review_usefulness_mean: 0

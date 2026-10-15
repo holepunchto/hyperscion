@@ -1,0 +1,212 @@
+{
+  "outcomes": {
+    "main_states": 27,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 2.2,
+    "acceptance_80_at_min": 2.2,
+    "acceptance_100_at_min": 2.2,
+    "final_state_min": 9.9
+  },
+  "rows": [
+    {
+      "id": "b82fb1cc08",
+      "minute": 0,
+      "author": "hub",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "a2296e350d",
+      "minute": 0.9,
+      "author": "a4",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "7cdc61dd75",
+      "minute": 1,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "fbfb4c901c",
+      "minute": 1.1,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "f17397237d",
+      "minute": 1.3,
+      "author": "a5",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "5075fc2301",
+      "minute": 1.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "8b0664e883",
+      "minute": 1.7,
+      "author": "a5",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "2f736a7408",
+      "minute": 1.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "e201260ec3",
+      "minute": 2,
+      "author": "a5",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "c4e58db04e",
+      "minute": 2.2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "ecea67fc34",
+      "minute": 6.2,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "269b1ab739",
+      "minute": 6.2,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "263af89951",
+      "minute": 6.6,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "4fdf565ab9",
+      "minute": 6.7,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "2b90425e45",
+      "minute": 6.8,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "98df68239b",
+      "minute": 7.2,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "83b9cb6582",
+      "minute": 7.6,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "1472eb1d32",
+      "minute": 8.2,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "cedc8c11bf",
+      "minute": 8.5,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "8c1810ddb0",
+      "minute": 8.5,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "681e53efed",
+      "minute": 8.8,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "bcd0eeb547",
+      "minute": 9.1,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "73888335aa",
+      "minute": 9.2,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "27c62d0fab",
+      "minute": 9.3,
+      "author": "a3b",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "136ab2f044",
+      "minute": 9.5,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "f9b078c3e0",
+      "minute": 9.7,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "7dbdf9636a",
+      "minute": 9.8,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "348d2b5d29",
+      "minute": 9.9,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    }
+  ]
+}

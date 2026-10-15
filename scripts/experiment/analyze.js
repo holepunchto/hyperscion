@@ -13,7 +13,21 @@ const startedFile = path.join(dir, 'started.txt')
 const started = fs.existsSync(startedFile)
   ? new Date(fs.readFileSync(startedFile, 'utf8').trim()).getTime()
   : Math.min(...recs.map((r) => new Date(r.t).getTime()))
-const runs = recs.filter((r) => /^a\d+$/.test(r.agent) && new Date(r.t).getTime() >= started)
+// agents are a1..aN plus stand-ins like a3b; the hub and the change-request pm are not agents
+const runs = recs
+  .filter((r) => /^a\d+[a-z]*$/.test(r.agent) && new Date(r.t).getTime() >= started)
+  .map(normalize)
+const isGit = runs.some((r) => r.tool === 'git')
+
+// git calls may start with global options (-C dir, -c k=v, --no-pager): drop them
+function normalize(r) {
+  if (r.tool !== 'git') return r
+  const argv = [...r.argv]
+  while (argv.length && argv[0].startsWith('-')) {
+    argv.splice(0, ['-C', '-c'].includes(argv[0]) ? 2 : 1)
+  }
+  return { ...r, argv }
+}
 
 const OBSERVE = new Set(['log', 'show', 'cat', 'ls', 'diff', 'status', 'info', 'watch', 'doctor'])
 const has = (r, re) => r.out.some((l) => re.test(l))
@@ -53,6 +67,9 @@ for (const r of runs) {
     helps: 0,
     unknownFlags: 0,
     oldHabits: 0,
+    pushRejected: 0,
+    waitMs: 0,
+    vcsMs: 0,
     first: r.t,
     last: r.t
   })
@@ -60,6 +77,14 @@ for (const r of runs) {
   a.cmds[cmd] = (a.cmds[cmd] || 0) + 1
   ;(a.ms[cmd] ||= []).push(r.ms)
   a.last = r.t
+  // time in the tool, minus watching: a background feed runs all session, and waits count
+  // separately (wait_min_total)
+  if (cmd !== 'watch') a.vcsMs += r.ms
+  if (cmd === 'watch' && r.argv.includes('--count')) a.waitMs += r.ms
+  if (r.tool === 'git') {
+    countGit(a, r, cmd)
+    continue
+  }
   if (r.exit === 1) a.errors++
   if (r.exit === 2) a.warnings++
   if (r.argv.includes('--help') || r.argv.includes('-h') || cmd === 'help') a.helps++
@@ -88,6 +113,32 @@ for (const r of runs) {
     if (has(r, /^#\d+ final/)) a.landFinal++
     else if (has(r, /^#\d+ settled/)) a.landSettled++
     else if (has(r, /^#\d+ provisional/)) a.landProvisional++
+  }
+}
+
+// the git arm: a push is a land, a rebasing pull an auto-rebase
+function countGit(a, r, cmd) {
+  if (r.exit !== 0) a.errors++
+  if (r.argv.includes('--help') || cmd === 'help') a.helps++
+  if (
+    has(r, /does not appear to be a git repository|Could not read from remote|this machine is gone/)
+  ) {
+    a.unavailable++
+  }
+  if (has(r, /^CONFLICT|Merge conflict in/)) a.realConflicts++
+  if (['pull', 'rebase'].includes(cmd) && has(r, /Successfully rebased/)) a.rebased++
+  if (cmd === 'push') {
+    const toMain = !r.argv.some((x) => /ask\/|:refs\/heads\/(?!main)|HEAD:(?!main)/.test(x))
+    if (!toMain) {
+      a.proposals += r.exit === 0 ? 1 : 0
+      return
+    }
+    a.lands++
+    if (has(r, /\[rejected\]|failed to push/)) a.pushRejected++
+    if (r.exit === 0 && !has(r, /Everything up-to-date/)) {
+      a.accepted++
+      if (!a.firstLand) a.firstLand = r.t
+    }
   }
 }
 
@@ -133,11 +184,14 @@ for (const [name, a] of rows) {
 }
 
 console.log('\n## land timeline')
-for (const r of runs.filter((r) => r.argv[0] === 'land')) {
-  const res =
-    r.out.find((l) =>
-      /landed #|real conflicts|refusing|rejected|conflict on|nothing to land|hs:/.test(l)
-    ) || ''
+for (const r of runs.filter((r) => r.argv[0] === (isGit ? 'push' : 'land'))) {
+  const res = isGit
+    ? r.exit === 0
+      ? 'pushed'
+      : r.out.find((l) => /rejected|fatal|error/.test(l)) || 'exit ' + r.exit
+    : r.out.find((l) =>
+        /landed #|real conflicts|refusing|rejected|conflict on|nothing to land|hs:/.test(l)
+      ) || ''
   const rebased = has(r, /rebasing onto main/) ? ' (rebased)' : ''
   const i = r.argv.indexOf('-m')
   const msg = i >= 0 ? r.argv[i + 1] : ''
@@ -149,7 +203,9 @@ for (const r of runs.filter((r) => r.argv[0] === 'land')) {
 // a machine-readable summary, so rounds can be compared (scripts/experiment/compare.js)
 const calls = runs.length
 const accepted = total('accepted')
-const landMs = runs.filter((r) => r.argv[0] === 'land' && r.exit === 0).map((r) => r.ms)
+const landMs = runs
+  .filter((r) => r.argv[0] === (isGit ? 'push' : 'land') && r.exit === 0)
+  .map((r) => r.ms)
 const span = runs.length
   ? (Math.max(...runs.map((r) => new Date(r.t).getTime())) - started) / 60000
   : 0
@@ -171,7 +227,20 @@ const metrics = {
   land_ended_provisional: total('landProvisional'),
   land_ms_p50: pct(landMs, 50),
   land_ms_p90: pct(landMs, 90),
+  tool: isGit ? 'git' : 'hs',
   polling_calls: runs.filter((r) => ['pull', 'fetch'].includes(r.argv[0])).length,
+  push_rejected: total('pushRejected'),
+  wait_min_total: Number((total('waitMs') / 60000).toFixed(1)),
+  vcs_min_total: Number((total('vcsMs') / 60000).toFixed(1)),
+  vcs_share_pct: Number(
+    (
+      (100 * total('vcsMs')) /
+      Math.max(
+        1,
+        rows.reduce((n, [, a]) => n + (new Date(a.last) - new Date(a.first)), 0)
+      )
+    ).toFixed(1)
+  ),
   watch_calls: runs.filter((r) => r.argv[0] === 'watch').length,
   proposals: total('proposals'),
   reviews_given: total('reviewsGiven'),
@@ -208,7 +277,8 @@ function readReports(rdir) {
   }
   return {
     usefulness_vs_git: cards.map((c) => c.usefulness_vs_git),
-    would_choose_hs: cards.filter((c) => c.would_choose_hs_over_git_for_this).length + '/' + cards.length,
+    would_choose_hs:
+      cards.filter((c) => c.would_choose_hs_over_git_for_this).length + '/' + cards.length,
     output_clarity_mean: mean('output_clarity'),
     land_state_trust_mean: mean('knew_when_my_land_was_safe'),
     minutes_lost_to_hs_total: nums('minutes_lost_to_hs').reduce((a, b) => a + b, 0),

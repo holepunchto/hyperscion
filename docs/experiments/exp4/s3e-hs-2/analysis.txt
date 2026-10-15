@@ -1,0 +1,100 @@
+# hs usage: 221 calls since 2026-10-15T08:31:11.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 43 | 25 | 0 | 7 | 7 | 8 (6) | 1 | 1 | 0 | 0 | 0 | 0 | 1.9m |
+| a2 | 36 | 17 | 0 | 13 | 10 | 6 (6) | 0 | 0 | 0 | 0 | 0 | 0 | 1.6m |
+| a3 | 8 | 6 | 0 | 1 | 1 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 2.8m |
+| a3b | 38 | 22 | 0 | 6 | 6 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 10.2m |
+| a4 | 53 | 27 | 0 | 14 | 8 | 5 (5) | 0 | 0 | 0 | 0 | 1 | 0 | 1.4m |
+| a5 | 43 | 22 | 0 | 8 | 10 | 7 (7) | 0 | 0 | 0 | 0 | 0 | 0 | 1.1m |
+
+totals: lands 29 (accepted 27), auto-rebased 1, real conflicts 1, flip banners 0, stalls 0, unavailable 1, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 2556/2937, status 97/126, land 4147/16740, watch 19288/653377, show 102/106, doctor 16876/16876, push 32513/32513, log 97/97, diff 98/126, restore 2343/2343, cat 88/88
+a2: sync 2884/16980, log 68/68, land 3471/4473, watch 12542/678637, status 117/127, doctor 16605/16605, show 16604/16604, cat 96/96
+a3: sync 2546/2546, status 70/70, log 62/62, show 4558/4558, cat 2255/2255, land 3456/3456, watch 206698/206698
+a3b: sync 16667/17323, doctor 17114/17114, log 90/90, proposals 2553/17181, status 127/133, restore 2213/2213, diff 129/129, cat 96/96, --help 2/2, commit 125/125, watch 213716/572073, land 4815/4815
+a4: sync 21123/21141, log 93/93, land 4269/36517, watch 20499/426897, status 113/129, doctor 21133/21133, show 111/21105, proposals 2818/2818, fetch 2485/2500
+a5: sync 2725/2927, status 121/128, log 105/106, land 4536/32445, watch 26089/786291, doctor 16596/16596, push 11706/12115, show 84/2472, proposals 2412/2412
+
+## command mix
+a1: sync=7 status=6 land=8 watch=7 show=3 doctor=1 push=2 log=2 diff=4 restore=1 cat=2
+a2: sync=13 log=1 land=6 watch=10 status=3 doctor=1 show=1 cat=1
+a3: sync=1 status=1 log=1 show=1 cat=2 land=1 watch=1
+a3b: sync=6 doctor=1 log=1 proposals=3 status=8 restore=2 diff=4 cat=2 --help=1 commit=2 watch=6 land=2
+a4: sync=14 log=2 land=5 watch=8 status=12 doctor=2 show=3 proposals=1 fetch=6
+a5: sync=8 status=4 log=4 land=7 watch=10 doctor=1 push=5 show=3 proposals=1
+
+## land timeline
+  1.1m a5 landed #2                                               cli: skeleton + pending integration test (skips until pipeline exists)
+  1.4m a4 landed #3                                               pricing: formula pinned in CONTRACTS.md (EUR 2.50 + 0.80/km + 0.50/kg 
+  1.6m a2 landed #4                                               geo: haversine, travelMinutes, routeKm, orderStops (NN+2-opt), planTri
+  1.7m a1 real conflicts in /CONTRACTS.md (#4 a2): fix the <<<<<< model: loadDay/loadDayFile + DayValidationError, Day shape pinned in C
+  1.9m a1 landed #5                                               model: loadDay/loadDayFile + DayValidationError, Day shape pinned in C
+  2.0m a5 landed #6                                               integration: property checks over day1 + edge fixtures (unreachable/em
+  2.4m a5 landed #7                                               integration: cross-check every price against the pinned pricing formul
+  2.4m a1 landed #8                                               model tests: cover a5's edge fixtures (empty/invalid/unreachable)
+  2.6m a2 landed #9                                               geo: planTrip waitForWindow + per-stop late/onTime flags (for schedule
+  2.8m a3 landed #10                                              scheduler: plan(day) greedy v1 + Plan shape pinned in CONTRACTS.md (tr
+  3.2m a1 landed #11                                              notes: model field names confirmed for scheduler
+  3.6m a5 landed #11                                              integration: day1 + edge fixtures now run for real against #10 schedul
+  5.4m a4 landed #4                                               report: renderReport(plan, priced, day) text + reportData() JSON-frien
+  7.0m a2 landed #12                                              geo tests: cross-check planTrip against every scheduler trip on day1 (
+  7.1m a1 landed #13 (rebased)                                    notes: model field names confirmed for scheduler
+  7.8m a2 landed #15                                              geo tests: dateline/antipode/duplicate-stop edge cases, 60-stop orderS
+  7.9m a1 landed #16                                              model: DayValidationError message is 'N problems: - ...' (cli already 
+  8.1m a2 landed #17                                              notes: scheduler idle-gap observation for a3
+  8.2m a5 landed #18                                              integration: edge-overbooked fixture (multi-trip, out-of-time, express
+  8.3m a4 landed #19                                              report: contract pinned (renderReport + reportData shape); test on rea
+  8.6m a5 landed #20                                              cli: keep 'invalid day file:' prefix now that model message is 'N prob
+  8.6m a1                                                         model: error message 'invalid day file (N problems): ...' to fit a5's 
+  8.8m a4 landed #21                                              report: flag LATE stops (eta after window end) in text + reportData st
+  9.3m a1 landed #22                                              model contract: error message format pinned ('N problems:', cli adds p
+ 10.2m a3b landed #23                                              scheduler (a3b takes over from a3): cap mid-trip hover at 15 min so la
+ 10.9m a3b landed #24                                              scheduler: fill idle gaps (join any trip / new trip before a later one
+ 11.3m a4 landed #25                                              notes: pricing depends on delivering depot (revenue moves with schedul
+ 11.4m a2 landed #26                                              geo tests: planTrip cross-check now runs over every valid fixture agai
+ 11.5m a5 landed #27                                              integration: edge-windows fixture (inverted/unreachable windows, waiti
+
+## metrics (also in metrics.json)
+calls: 221
+minutes: 20
+lands: 29
+accepted: 27
+calls_per_accepted_land: 8.19
+auto_rebased: 1
+real_conflicts: 1
+flips: 0
+stalls: 0
+unavailable: 1
+push_timeouts: 0
+land_ended_final: 24
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 4147
+land_ms_p90: 4743
+tool: "hs"
+polling_calls: 6
+push_rejected: 0
+wait_min_total: 27.4
+vcs_min_total: 15.1
+vcs_share_pct: 20.8
+watch_calls: 42
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 9
+exit_warnings: 17
+help_calls: 2
+unknown_flag_or_command: 1
+old_habits: 0
+usefulness_vs_git: [4,4,3,4,4]
+would_choose_hs: "4/5"
+output_clarity_mean: 3.6
+land_state_trust_mean: 4.6
+minutes_lost_to_hs_total: 48
+confusing_messages_total: 18
+review_usefulness_mean: 0

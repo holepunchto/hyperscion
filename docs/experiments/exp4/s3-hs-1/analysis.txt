@@ -1,0 +1,100 @@
+# hs usage: 203 calls since 2026-10-15T04:52:31.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 18 | 9 | 0 | 6 | 5 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.5m |
+| a2 | 27 | 16 | 0 | 7 | 7 | 4 (4) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 19 | 11 | 0 | 5 | 4 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 3.0m |
+| a3b | 26 | 13 | 0 | 3 | 4 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 14.5m |
+| a4 | 59 | 29 | 0 | 8 | 11 | 8 (6) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a5 | 54 | 31 | 0 | 9 | 13 | 9 (9) | 0 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+
+totals: lands 29 (accepted 27), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 2634/2698, status 113/117, land 3892/4771, watch 53561/349049, log 100/100
+a2: sync 2662/17129, status 118/126, log 76/76, land 4098/5061, watch 16137/601014, show 93/93, doctor 17094/17094
+a3: sync 2638/2666, log 84/88, land 4318/4318, show 105/105, status 123/123, proposals 2346/2346, watch 302082/663073, doctor 2578/2578
+a3b: info 67/67, sync 32322/32327, log 98/98, proposals 2554/32319, status 125/127, --help 2/2, doctor 32312/32312, land 63420/65820, watch 302092/1166086, show 2244/2244, review 32366/32366
+a4: sync 2660/21169, status 106/127, log 76/87, land 3983/36771, show 104/2284, watch 302079/633658, doctor 21108/21108, push 16133/32352, propose 2789/2789, proposals 2594/2594, diff 100/100
+a5: sync 2482/2771, status 104/127, log 84/107, land 4010/6008, watch 362227/976995, doctor 2594/2594, show 2092/2231, review 2680/2728, proposals 2586/2586
+
+## command mix
+a1: sync=6 status=3 land=3 watch=5 log=1
+a2: sync=7 status=5 log=2 land=4 watch=7 show=1 doctor=1
+a3: sync=5 log=3 land=2 show=1 status=2 proposals=1 watch=4 doctor=1
+a3b: info=1 sync=3 log=2 proposals=5 status=4 --help=1 doctor=1 land=3 watch=4 show=1 review=1
+a4: sync=8 status=7 log=3 land=8 show=5 watch=11 doctor=2 push=10 propose=2 proposals=2 diff=1
+a5: sync=9 status=6 log=7 land=9 watch=13 doctor=2 show=3 review=4 proposals=1
+
+## land timeline
+  1.2m a5 landed #2                                               cli: skeleton (plan <dayfile> [--json]) + pending integration test wit
+  1.4m a4 landed #3                                               pricing: formula + price(plan, day) pinned in CONTRACTS.md (EUR, 2.50 
+  1.4m a2 landed #4                                               geo: haversine distanceKm, travelMinutes, routeLengthKm, orderStops (N
+  1.5m a1 landed #5                                               model: loadDay/loadDayFile + DayValidationError; Day shape pinned in C
+  1.6m a5 landed #6                                               fixtures: edge-unreachable.json (too heavy / out of range / impossible
+  2.0m a5 landed #7                                               cli: --json adds currency; integration checks prices against a4's pinn
+  2.1m a1 landed #8                                               model: test that every fixture loads; NOTES suggestion to a5 on DayVal
+  2.7m a2 landed #9                                               geo: planTrip(drone, stops, opts) scheduler helper (order + ETAs + ran
+  2.9m a4 landed #10                                              report: renderReport + reportData (per-drone trips, ETAs, prices, flag
+  3.0m a3 landed #11                                              scheduler: plan(day) v1 (greedy, express first, payload/range/windows/
+  3.7m a1 landed #12                                              notes: a1 -> a4 report time rounding makes d3 trips look overlapping (
+  3.9m a5 landed #13                                              cli: DayValidationError printed as-is (exit 1), other errors exit 70; 
+  4.2m a2 landed #14                                              geo test: cross-check scheduler trips vs geo timing/range/windows on e
+  4.4m a5 landed #15                                              fixtures: edge-crowded.json (one drone, short day, overflow) + integra
+  4.7m a5 landed #16                                              contracts: cli section pinned (pipeline, exit codes 0/1/2/64/70, extra
+  5.7m a3 landed #17                                              scheduler: tight-window packages seeded by deadline (fixes edge-crowde
+  6.0m a2 landed #18                                              geo test: cross-check window[0] strictly after a3's #17 round-up fix (
+  6.0m a5 landed #19                                              integration: assert edge-crowded express c12 delivered (regression che
+  7.6m a4 landed #12                                              report: HH:MM truncates instead of rounding so back-to-back trips neve
+ 14.5m a3b landed #20                                              notes: a3b takes over the scheduler from a3
+ 15.7m a4 landed #21                                              report: HH:MM truncates instead of rounding so back-to-back trips neve
+ 16.3m a4 landed #22                                              report: no double rounding (reportData keeps 2-decimal minutes; HH:MM 
+ 17.0m a4 landed #23                                              cli (Show for a5): --json adds 'report' (reportData); report test runs
+ 16.4m a3b landed #24                                              scheduler: bundle later-window stops by delaying the whole trip (<=30 
+ 17.6m a5 landed #25                                              integration: --json report.totals agree with total/trips (a4 #23)
+ 18.1m a3b landed #26                                              scheduler: CONTRACTS lists 'invalid delivery window' reason (raw days 
+ 35.4m a4                                                         
+ 44.4m a4                                                         
+ 52.9m a5 landed #28                                              notes: a5 verified P1/#27 on main
+
+## metrics (also in metrics.json)
+calls: 203
+minutes: 59.4
+lands: 29
+accepted: 27
+calls_per_accepted_land: 7.52
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 26
+land_ended_settled: 1
+land_ended_provisional: 0
+land_ms_p50: 4054
+land_ms_p90: 63360
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+wait_min_total: 106.9
+vcs_min_total: 16.2
+vcs_share_pct: 9.5
+watch_calls: 44
+proposals: 2
+reviews_given: 5
+shows_sent: 2
+needs_review_rejections: 1
+exit_errors: 8
+exit_warnings: 19
+help_calls: 2
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4,3,3]
+would_choose_hs: "3/5"
+output_clarity_mean: 3.6
+land_state_trust_mean: 4.8
+minutes_lost_to_hs_total: 49
+confusing_messages_total: 16
+review_usefulness_mean: 1.8

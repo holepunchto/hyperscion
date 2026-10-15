@@ -1,0 +1,110 @@
+# hs usage: 164 calls since 2026-10-15T07:08:56.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 22 | 14 | 0 | 6 | 7 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.8m |
+| a2 | 32 | 17 | 0 | 6 | 6 | 8 (6) | 0 | 1 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 37 | 18 | 0 | 6 | 7 | 12 (10) | 1 | 1 | 0 | 0 | 0 | 0 | 3.9m |
+| a4 | 35 | 17 | 0 | 6 | 7 | 12 (11) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a5 | 38 | 15 | 0 | 12 | 10 | 8 (8) | 0 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+
+totals: lands 42 (accepted 37), auto-rebased 1, real conflicts 2, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 31535/32374, status 128/142, show 1464/3731, land 3056/3056, watch 52820/1437022
+a2: sync 1925/2505, log 103/111, land 3714/4146, status 126/133, watch 199584/1088300, show 95/1518, review 2511/2511
+a3: sync 1860/2629, log 87/87, land 3706/4297, show 111/117, cat 95/95, status 122/130, watch 275945/1419910, proposals 1753/1753
+a4: sync 1838/31602, status 107/115, land 3677/4006, show 84/114, watch 32546/1326426, log 100/100
+a5: sync 1888/2436, land 3471/3743, show 93/93, watch 26502/1419322, status 100/136, proposals 1750/1750, log 107/107, review 2646/2646
+
+## command mix
+a1: sync=6 status=3 show=4 land=2 watch=7
+a2: sync=6 log=4 land=8 status=4 watch=6 show=3 review=1
+a3: sync=6 log=1 land=12 show=4 cat=2 status=4 watch=7 proposals=1
+a4: sync=6 status=3 land=12 show=5 watch=7 log=2
+a5: sync=12 land=8 show=1 watch=10 status=3 proposals=1 log=1 review=2
+
+## land timeline
+  1.2m a5 landed #2                                               report.js skeleton: a5 layout+toJson / a4 money sections (see NOTES); 
+  1.3m a4 landed #3                                               pricing: formula + price(plan, day) + formatMoney, pinned in CONTRACTS
+  1.4m a2 landed #4                                               geo: distanceKm/travelMinutes/routeLengthKm/orderRoute(NN+2opt) + test
+  1.8m a4 landed #5                                               report: money section uses pricing.formatMoney (EUR), cents-exact sumM
+  1.8m a1 landed #6                                               model: loadDay/loadDayFile + DayError, Day shape pinned in CONTRACTS.m
+  2.0m a5 landed #7                                               integration test (skips until pipeline exists) + edge fixtures: unreac
+  2.1m a4 landed #8                                               pricing: use geo.distanceKm (a2 #4) instead of local haversine; CONTRA
+  2.3m a4 landed #9                                               pricing: test over real loadDay(day1) Day
+  2.6m a3                                                         scheduler: Plan shape pinned in CONTRACTS.md + first plan() (payload/r
+  2.9m a5 landed #10                                              report layout: per-stop rows (weight, priority, eta from trip.etas, pr
+  2.9m a2 landed #11                                              scheduler timing: buildTrip (route order, range, windows w/ ground wai
+  3.0m a3 real conflicts in /CONTRACTS.md (#11 a2), /src/schedule scheduler: Plan shape pinned in CONTRACTS.md + first plan() (payload/r
+  3.3m a4                                                         report money: moneyCell right-aligns the per-stop price column (EUR   
+  3.3m a1 landed #12                                              model tests over a5's edge fixtures (#7); NOTES: cli error message dou
+  3.5m a4 landed #13                                              report money: moneyCell right-aligns the per-stop price column (EUR   
+  3.7m a4 landed #14                                              pricing: accept trip.stops / {packageId} refs too (a2 buildTrip shape)
+  3.9m a3 landed #15                                              scheduler: plan() capacity side on top of a2's timing (#11): payload/r
+  4.4m a4 landed #16                                              pricing: test over real plan(day1) from a3's scheduler (#15)
+  4.5m a5 landed #17                                              cli: no doubled DayError text (a1 #12); --json passes through depot/en
+  4.7m a5 landed #18                                              CONTRACTS: cli section pinned (pipeline, exit codes, extra --json trip
+  4.8m a3 landed #19                                              scheduler capacity: each drone flies the trip that can leave soonest (
+  5.1m a3 landed #20                                              CONTRACTS scheduler (a3): capacity rules match #19 behaviour (trip ord
+  5.2m a5 landed #21                                              fixtures/edge-busy.json (1 drone, 9 trips, express-first, empty window
+  5.3m a2 landed #22                                              scheduler timing: buildTrip keeps the earliest-return feasible order (
+  5.6m a3 landed #23                                              scheduler capacity: standard trips fill the idle gap before a late exp
+  5.8m a2 landed #24                                              scheduler timing: buildTrip returns waitMinutes (mid-route window hove
+  6.0m a3 landed #25                                              scheduler capacity: leftover packages use a2's placeTrip (#22) so they
+  6.3m a3 landed #26                                              scheduler capacity: hover limit uses a2's buildTrip waitMinutes (#24) 
+  6.4m a2 landed #27                                              scheduler timing: clearer unassigned reasons — 'impossible window [5, 
+ 11.4m a4 landed #29                                              NOTES: CR-1 plan — pricing computes flight minutes itself; a2/a3 no ch
+ 11.7m a3 landed #30                                              CR-1 scheduler: Plan trips carry flightMinutes {pkgId: min} (flight on
+ 11.9m a2 real conflicts in /src/scheduler.js (#30 a3): fix the < CR-1: trip.flightMinutes {pkgId: exact flight minutes depot->stop, no 
+ 12.0m a5 landed #31                                              CR-1 (a5 part): report shows flight minutes per stop (lines[].flightMi
+ 12.0m a3 landed #32 (rebased)                                    NOTES: a3 ack a4 CR-1 plan; plan.flightMinutes kept as convenience
+ 12.2m a5 landed #33                                              report: fl-min column falls back to a3's trip.flightMinutes (#30); --j
+ 12.4m a2                                                         CR-1 timing: buildTrip returns flightMinutes (plan() from a3 #30 uses 
+ 12.5m a4 landed #34                                              pricing CR-1: per flight-minute formula (2.00 + 0.25/min + 0.40/kg, ex
+ 12.6m a2 landed #35                                              CR-1 timing: buildTrip returns flightMinutes (plan() from a3 #30 uses 
+ 12.9m a3 landed #36                                              scheduler test: plan.trips[].flightMinutes agrees with pricing.flightM
+ 13.2m a3 landed #37                                              scheduler capacity: drop duplicate flightMinutes fallback, use a2's bu
+ 13.0m a4 landed #38                                              pricing: cross-check test — pricing flight minutes match scheduler tri
+ 13.6m a4 landed #39                                              pricing: flight minutes via a2's geo.flightMinutesAlong (#35) — one im
+
+## metrics (also in metrics.json)
+calls: 164
+minutes: 24.5
+lands: 42
+accepted: 37
+calls_per_accepted_land: 4.43
+auto_rebased: 1
+real_conflicts: 2
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 37
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 3692
+land_ms_p90: 4205
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+wait_min_total: 75.9
+vcs_min_total: 6.2
+vcs_share_pct: 5.6
+watch_calls: 37
+proposals: 0
+reviews_given: 3
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 12
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4,4,4]
+would_choose_hs: "5/5"
+output_clarity_mean: 4.2
+land_state_trust_mean: 5
+minutes_lost_to_hs_total: 22
+confusing_messages_total: 9
+review_usefulness_mean: 0.8

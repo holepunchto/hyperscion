@@ -1,0 +1,3 @@
+- land1 (#3): --check ran on #1, "main moved to #2 while checking; checking again", merged CONTRACTS.md+NOTES.md with a4's #2 cleanly, "#3 final". Clear output.
+- land2 #8 final, clean. reviewed #2 (comment). #6 a2 adapted to drone.home.
+- land3 #13 final, auto-merged over #10-#12. idempotent loadDay prompted by a3 #9 'Day or raw' input.

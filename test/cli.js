@@ -241,6 +241,49 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok(
     /settled\s+through #\d+/.test(doc.stdout) && doc.stdout.includes('indexer      hub has seen')
   )
+  const one = await hs(A1, ['log', '-n', '2', '--oneline'], 'a1')
+  t.is(one.stdout.trim().split('\n').length, 2, 'log --oneline is one line per changeset')
+  const sp = await hs(A1, ['show', String(finSeq), '--path', 'src'], 'a1')
+  t.ok(sp.stdout.includes('+++ b/src/final.js'), 'show --path keeps matching files')
+  t.absent(sp.stdout.includes('NOTES.md\n@@'), 'and drops the rest')
+  t.ok(sp.stdout.includes('other path(s) not shown'))
+
+  // 9. watch --count counts changesets, not the settlement lines around them
+  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  const waitAny = background(A2, ['watch', '--count', '1', '--timeout', '60'], {
+    ...env,
+    USER: 'a2'
+  })
+  await sleep(3000)
+  fs.writeFileSync(path.join(A1, 'src', 'counted.js'), 'counted\n')
+  t.is((await hs(A1, ['land', '-m', 'counted'], 'a1')).code, 0)
+  await waitFor(() => waitAny.exited(), 60_000)
+  t.ok(waitAny.output().includes('counted'), 'the wait printed the changeset it counted')
+
+  // 10. land --check tests main + your changes before landing, and refuses when it fails
+  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  fs.writeFileSync(path.join(A1, 'src', 'checked.js'), 'checked\n')
+  fs.writeFileSync(path.join(A2, 'src', 'peer.js'), 'peer\n')
+  t.is((await hs(A2, ['land', '-m', 'peer'], 'a2')).code, 0)
+  const bad = await hs(A1, ['land', '-m', 'checked', '--check', 'exit 3'], 'a1')
+  t.is(bad.code, 2, 'a failing check exits 2')
+  t.absent(/landed #/.test(bad.stdout), 'and does not land')
+  t.ok(bad.stderr.includes('check failed (exit 3'))
+  // the check runs in the worktree after main (with a2's peer.js) was brought in
+  const good = await hs(A1, ['land', '-m', 'checked', '--check', 'test -f src/peer.js'], 'a1')
+  t.is(good.code, 0, good.stdout + good.stderr)
+  t.ok(/checking main #\d+ \+ your changes: test -f src\/peer.js/.test(good.stdout))
+  t.ok(good.stdout.includes('check passed') && /landed #\d+/.test(good.stdout))
+
+  // 11. export writes main as it was at a changeset
+  const landedSeq = Number(good.stdout.match(/landed #(\d+)/)[1])
+  const before = path.join(A1, '..', 'export-before')
+  const now = path.join(A1, '..', 'export-now')
+  t.is((await hs(A1, ['export', before, '--at', String(landedSeq - 1)], 'a1')).code, 0)
+  t.is((await hs(A1, ['export', now], 'a1')).code, 0)
+  t.ok(fs.existsSync(path.join(before, 'src', 'peer.js')), 'export --at has earlier files')
+  t.absent(fs.existsSync(path.join(before, 'src', 'checked.js')), 'but not later ones')
+  t.is(fs.readFileSync(path.join(now, 'src', 'checked.js'), 'utf8'), 'checked\n')
 })
 
 function run(cwd, args, env) {

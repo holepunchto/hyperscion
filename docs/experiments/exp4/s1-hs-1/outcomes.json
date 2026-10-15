@@ -1,0 +1,170 @@
+{
+  "outcomes": {
+    "main_states": 21,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 3.4,
+    "acceptance_80_at_min": 3.4,
+    "acceptance_100_at_min": 3.4,
+    "final_state_min": 14.7
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.7,
+      "author": "hub",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "#2",
+      "minute": 1.4,
+      "author": "a4",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "#3",
+      "minute": 1.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "#4",
+      "minute": 1.5,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0
+    },
+    {
+      "id": "#5",
+      "minute": 1.8,
+      "author": "a5",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "#6",
+      "minute": 2,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "#7",
+      "minute": 3.3,
+      "author": "a4",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "#8",
+      "minute": 3.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.08
+    },
+    {
+      "id": "#9",
+      "minute": 3.4,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#10",
+      "minute": 4.1,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#11",
+      "minute": 4.1,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#12",
+      "minute": 4.1,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#13",
+      "minute": 4.2,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#14",
+      "minute": 4.6,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#15",
+      "minute": 4.8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#16",
+      "minute": 5.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#17",
+      "minute": 5.4,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#18",
+      "minute": 5.7,
+      "author": "a4",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#19",
+      "minute": 6.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#20",
+      "minute": 7.2,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#21",
+      "minute": 8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1
+    },
+    {
+      "id": "#22",
+      "minute": 14.7,
+      "author": "a5",
+      "green": true,
+      "acceptance": 1
+    }
+  ]
+}

@@ -20,7 +20,7 @@ Bare.on('beforeExit', () => {
   running = false
   console.error(
     'hs: stalled: this command needs data that is not local and no connected peer provided it. ' +
-      'Run `hs pull` (needs a holder online: `hs seed --mirror` on a hub, or a blind peer), ' +
+      'Run `hs fetch` (needs a holder online: `hs seed` on a hub, or a blind peer), ' +
       'then retry. `hs doctor` checks connectivity.'
   )
   Bare.exitCode = 1

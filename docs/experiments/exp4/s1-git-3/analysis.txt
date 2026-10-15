@@ -1,0 +1,94 @@
+# hs usage: 309 calls since 2026-10-15T08:53:07.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 38 | 15 | 7 | 0 | 0 | 3 (3) | 1 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a2 | 41 | 15 | 7 | 0 | 0 | 4 (4) | 3 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a3 | 50 | 17 | 7 | 0 | 0 | 6 (6) | 5 | 0 | 0 | 0 | 0 | 0 | 0.5m |
+| a4 | 53 | 24 | 8 | 0 | 0 | 4 (4) | 4 | 0 | 0 | 0 | 0 | 0 | 1.0m |
+| a5 | 127 | 50 | 14 | 0 | 0 | 9 (9) | 6 | 0 | 0 | 0 | 0 | 0 | 0.8m |
+
+totals: lands 26 (accepted 26), auto-rebased 19, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: pull 24/39, log 8/10, add 8/9, commit 10/10, push 24/25, fetch 23/29, diff 7/7, status 8/8
+a2: pull 26/39, log 8/10, fetch 24/32, add 9/9, commit 11/11, push 26/27, diff 8/8, status 7/7
+a3: fetch 15/38, log 8/10, add 7/9, commit 9/10, pull 28/37, push 24/26, branch 9/9, diff 7/7, status 10/10
+a4: fetch 16/24, log 8/10, status 10/10, add 7/8, commit 10/10, pull 32/44, push 24/26, show 7/8
+a5: pull 30/37, log 7/10, add 9/10, commit 9/10, push 24/26, fetch 15/17, show 8/8, branch 8/8, status 7/7
+
+## command mix
+a1: pull=7 log=13 add=3 commit=3 push=3 fetch=7 diff=1 status=1
+a2: pull=7 log=13 fetch=7 add=4 commit=4 push=4 diff=1 status=1
+a3: fetch=7 log=14 add=6 commit=6 pull=7 push=6 branch=1 diff=2 status=1
+a4: fetch=9 log=19 status=2 add=4 commit=4 pull=8 push=4 show=3
+a5: pull=14 log=48 add=9 commit=9 push=9 fetch=35 show=1 branch=1 status=1
+
+## land timeline
+  0.5m a3 pushed                                                  
+  0.8m a5 pushed                                                  
+  1.0m a4 pushed                                                  
+  1.3m a2 pushed                                                  
+  1.3m a1 pushed                                                  
+  1.6m a1 pushed                                                  
+  1.6m a5 pushed                                                  
+  1.8m a5 pushed                                                  
+  2.0m a4 pushed                                                  
+  2.1m a2 pushed                                                  
+  2.3m a2 pushed                                                  
+  2.3m a4 pushed                                                  
+  2.6m a3 pushed                                                  
+  2.6m a5 pushed                                                  
+  3.0m a1 pushed                                                  
+  3.1m a5 pushed                                                  
+  3.2m a3 pushed                                                  
+  3.3m a2 pushed                                                  
+  3.4m a4 pushed                                                  
+  3.5m a3 pushed                                                  
+  3.7m a5 pushed                                                  
+  4.1m a3 pushed                                                  
+  4.3m a5 pushed                                                  
+  4.8m a3 pushed                                                  
+  5.5m a5 pushed                                                  
+  5.8m a5 pushed                                                  
+
+## metrics (also in metrics.json)
+calls: 309
+minutes: 15.9
+lands: 26
+accepted: 26
+calls_per_accepted_land: 11.88
+auto_rebased: 19
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 24
+land_ms_p90: 26
+tool: "git"
+polling_calls: 108
+push_rejected: 0
+wait_min_total: 0
+vcs_min_total: 0.1
+vcs_share_pct: 0.2
+watch_calls: 0
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,3,3,3,3]
+would_choose_hs: "0/5"
+output_clarity_mean: 4
+land_state_trust_mean: 3.6
+minutes_lost_to_hs_total: 39
+confusing_messages_total: 4
+review_usefulness_mean: 0.4

@@ -1,0 +1,13 @@
+running notes a1
+- push1 2e33c5b model+contracts; pull rebased onto 6122ee8 (geo) -- CONTRACTS.md auto-merged, no conflict
+- push2 3e17978 error msg tweak after reading cli.js (29c6c64) which prefixes "invalid day file X: " -> my message had double "invalid day file". rebased onto 217b483
+- friction: pull output "Rebasing (1/1)Successfully rebased and updated refs/heads/main." on one line; pull doesn't list what came in; after pull HEAD..origin/main is empty, had to read log -8 instead
+- wait loop 1: fetch loop ~ <5min, got scheduler a09db42, pricing b7448ea (uses model.loadDayFile), report 00e9c86
+- a09db42 scheduler has own normalize() shim, ignores model's Maps; noted to a3
+- push3 4fb341f notes to a3/a5; rebased onto 01707ba (a3 switched to geo)
+- bfa70e3/ad4659c a5 integration + edge-invalid fixture -> verified my error msgs render well through cli (4 problems list). a5 dropped dead day.errors branch after my note (my note -> their change)
+- ad4659c same message as bfa70e3 (a5 apparently amended/redid commit?), two commits with identical subject
+- observed duplicate work: a5 bug report -> a3 claimed it in NOTES (ec57dff) and fixed (6fe7e50), a2 also fixed it on timing side (962b977), both removed same `todo`. a2 apparently didn't see a3's claim/fix before starting. Git gave no signal of concurrent work-in-progress.
+- 5bc44f1 edge-empty fixture: checked model accepts empty packages (it does)
+- bfadc4a CR-1 pricing per flight-minute; a1 not named; no model change needed (flight minutes come from scheduler/geo). Checked.
+- CR-1: a4 said pricing computes flight minutes itself (00e2c1c, 'a2/a3 nothing needed'), a2 added stop.flightMinutes anyway (d957009) -> two sources of truth; NOTES race: a2 likely hadn't pulled a4's note

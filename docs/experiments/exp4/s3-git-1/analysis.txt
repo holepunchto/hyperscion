@@ -1,0 +1,106 @@
+# hs usage: 473 calls since 2026-10-15T05:54:25.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 34 | 12 | 7 | 0 | 0 | 4 (4) | 4 | 0 | 0 | 0 | 0 | 0 | 1.5m |
+| a2 | 37 | 14 | 8 | 0 | 0 | 5 (5) | 3 | 0 | 0 | 0 | 0 | 0 | 1.5m |
+| a3 | 56 | 20 | 9 | 0 | 0 | 7 (6) | 6 | 0 | 0 | 0 | 0 | 0 | 0.7m |
+| a3b | 68 | 30 | 6 | 0 | 0 | 3 (3) | 2 | 0 | 0 | 0 | 0 | 0 | 12.7m |
+| a4 | 38 | 15 | 8 | 0 | 0 | 4 (3) | 4 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a5 | 240 | 103 | 18 | 0 | 0 | 12 (10) | 7 | 0 | 0 | 0 | 9 | 0 | 1.4m |
+
+totals: lands 35 (accepted 31), auto-rebased 26, real conflicts 0, flip banners 0, stalls 0, unavailable 9, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: pull 33/40, log 10/10, add 7/9, commit 9/10, push 23/25, show 8/8, fetch 22/26, status 10/10
+a2: pull 34/40, log 8/11, add 9/9, commit 11/11, push 24/27, fetch 22/23, status 10/10, show 8/8, diff 7/7
+a3: log 7/10, fetch 16/31, add 7/8, commit 10/12, pull 32/43, push 25/26, show 10/11, diff 8/8, status 8/8
+a3b: pull 27/51, log 7/10, branch 8/8, ls-remote 12/12, add 8/9, commit 10/12, push 25/25, show 10/10, fetch 16/22, diff 10/10, status 9/9
+a4: pull 32/44, log 8/10, fetch 24/25, config 8/8, add 8/9, commit 11/12, push 26/27, show 8/8, diff 8/8, status 10/10
+a5: pull 25/39, log 7/9, config 8/8, add 8/9, commit 10/12, push 23/26, show 10/10, fetch 15/17, status 9/9, ls-remote 12/12
+
+## command mix
+a1: pull=7 log=10 add=4 commit=4 push=4 show=1 fetch=3 status=1
+a2: pull=8 log=9 add=2 commit=5 push=5 fetch=3 status=2 show=2 diff=1
+a3: log=15 fetch=8 add=6 commit=6 pull=9 push=7 show=3 diff=1 status=1
+a3b: pull=6 log=26 branch=2 ls-remote=1 add=3 commit=3 push=3 show=1 fetch=20 diff=2 status=1
+a4: pull=8 log=11 fetch=4 config=1 add=3 commit=3 push=4 show=2 diff=1 status=1
+a5: pull=18 log=100 config=1 add=10 commit=10 push=12 show=1 fetch=85 status=2 ls-remote=1
+
+## land timeline
+  0.7m a3 pushed                                                  
+  1.4m a4 pushed                                                  
+  1.4m a5 pushed                                                  
+  1.5m a1 pushed                                                  
+  1.5m a2 pushed                                                  
+  1.9m a1 pushed                                                  
+  2.3m a3 pushed                                                  
+  2.4m a5 pushed                                                  
+  2.4m a2 pushed                                                  
+  2.5m a4 pushed                                                  
+  2.7m a1 pushed                                                  
+  2.8m a5  ! [rejected]        main -> main (fetch first)         
+  2.8m a2 pushed                                                  
+  2.8m a3 pushed                                                  
+  2.8m a5 pushed                                                  
+  3.0m a2 pushed                                                  
+  3.1m a1 pushed                                                  
+  3.1m a4  ! [rejected]        main -> main (fetch first)         
+  3.2m a4 pushed                                                  
+  3.3m a5 pushed                                                  
+  3.3m a3  ! [rejected]        main -> main (fetch first)         
+  3.4m a3 pushed                                                  
+  3.8m a2 pushed                                                  
+  3.8m a3 pushed                                                  
+  3.8m a5  ! [rejected]        main -> main (fetch first)         
+  3.9m a5 pushed                                                  
+  4.2m a3 pushed                                                  
+  5.3m a5 pushed                                                  
+  5.5m a5 pushed                                                  
+ 12.7m a3b pushed                                                  
+ 13.1m a5 pushed                                                  
+ 13.5m a3b pushed                                                  
+ 14.1m a5 pushed                                                  
+ 14.7m a3b pushed                                                  
+ 15.1m a5 pushed                                                  
+
+## metrics (also in metrics.json)
+calls: 473
+minutes: 33.5
+lands: 35
+accepted: 31
+calls_per_accepted_land: 15.26
+auto_rebased: 26
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 9
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 25
+land_ms_p90: 26
+tool: "git"
+polling_calls: 179
+push_rejected: 4
+wait_min_total: 0
+vcs_min_total: 0.1
+vcs_share_pct: 0.2
+watch_calls: 0
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 13
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,3,3,3,3,3]
+would_choose_hs: "0/6"
+output_clarity_mean: 4
+land_state_trust_mean: 3.83
+minutes_lost_to_hs_total: 47
+confusing_messages_total: 6
+review_usefulness_mean: 0

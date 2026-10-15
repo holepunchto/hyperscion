@@ -52,18 +52,27 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    hs sync                                                  # then bring it in
    ```
 
+   `--count` counts changesets (with `--for-me`, review events). `--path` takes a file or a
+   folder and can be repeated.
+
 2. **Bring teammates' work in** before building on it: `hs sync`. This pulls main, fetches
    what you need, rebases your work on top, updates your files and lists what came in
    (`incoming from teammates: #18 a4 /src/report.js :: ...`).
-3. **Land small and often.** Write messages for your teammates, because they read them in
-   their feed:
+3. **Land small and often, tested.** Write messages for your teammates, because they read
+   them in their feed. `--check` first brings main into your files, runs the command on
+   main + your changes, and lands only if it passes. If main moves while it runs, it checks
+   again:
    ```sh
-   hs land -m "scheduler: Plan shape pinned in CONTRACTS.md; plan(day) handles windows"
+   hs land -m "scheduler: Plan shape pinned in CONTRACTS.md" --check "npm test"
    ```
+   Without `--check`, `land` still rebases onto teammates' work, but nobody has run the
+   combination; it says so (`your land sits on these untested`).
 4. **Learn from teammates' changes:**
-   - `hs show 27` — the changeset's message plus a unified diff of every file.
-   - `hs log -n 10` — recent changesets with their files (`--oneline` without). `hs log src/geo.js`
-     is the history of one file.
+   - `hs show 27` — the changeset's message plus a unified diff of every file;
+     `hs show 27 --path src/geo.js` for just that file.
+   - `hs log -n 10` — recent changesets with their files; `--oneline` for one line each.
+     `hs log src/geo.js` is the history of one file. If your feed knows main is further
+     ahead, `log` and `status` say so.
    - `hs cat /src/geo.js` — the latest landed version of a file, without touching your worktree.
 5. **When you see `!! your last land was undone by a concurrent land`** (or a `reorg` naming
    your land), run `hs sync && hs land`. Your changes were kept.
@@ -152,7 +161,8 @@ again.
 | `#n provisional: waiting for hub to ack`                                   | the hub (indexer) is slow, offline or behind                        | carry on; it settles on its own. If it persists, tell the team owner (`hs doctor`)                           |
 | `!! no peers online: landed locally only`                                  | nobody to push to                                                   | `hs push` when a holder is up                                                                                |
 | `main moved: /X (#18 a4) changed ...` then `rebasing ... (this is normal)` | a teammate landed the same file first; hs merges and retries        | nothing (if it ends in `landed #n`, you're done)                                                             |
-| `incoming from teammates (n): ...`                                         | what your sync or land brought into your files                      | skim; `hs show <n>` for details                                                                              |
+| `incoming from teammates (n): ...`                                         | what your sync or land brought into your files, oldest first        | skim; `hs show <n>` for details                                                                              |
+| `check failed (exit n) on main #m + your changes: not landed`              | your `--check` failed on the merged tree                            | your files now include main: fix, then `hs land --check ...` again                                           |
 | `real conflicts in X (#n author)`                                          | overlapping edits that couldn't be merged                           | fix markers in X (talk to that author if unsure), `hs land`                                                  |
 | `!! your last land was undone ...`                                         | lost a race                                                         | `hs sync && hs land`                                                                                         |
 | `stale  path (behind main ...)` in `status`                                | main has a newer version that couldn't be fetched                   | `hs fetch` once a holder is online. Stale files are never landed, so you can't revert a teammate by accident |

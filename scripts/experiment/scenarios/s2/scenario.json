@@ -1,0 +1,20 @@
+{
+  "name": "S2 overlap",
+  "about": "Two pairs share files (a2+a3 scheduler.js, a4+a5 report.js); at minute 10 a pm lands a change request that changes the pricing contract everyone consumes.",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "brief": "\n**Requirements can change mid-run.** The product manager (`pm`) posts change requests as a `- [pm] CHANGE REQUEST ...` line in NOTES.md plus a `CHANGE-REQUEST.md` file on main. When one arrives it takes priority over your current plan; it says who must do what.\n",
+  "roles": {
+    "a2": "**a2 owns `src/geo.js` (+ `test/geo.test.js`) and shares `src/scheduler.js` with a3: you own the scheduler's *timing* side.** Geo: `distanceKm(a, b)` (haversine), travel time given a drone speed, route ordering for a trip (nearest-neighbour then 2-opt), route length. Scheduler timing: ETA per stop including service minutes, delivery windows (waiting allowed), the day length, and when each trip starts (several trips per drone, never overlapping). a3 owns the capacity side of the same file. You both edit `src/scheduler.js`: agree on its internal structure early (NOTES.md / CONTRACTS.md), land small and often, and expect merges. Pin your CONTRACTS.md \"geo\" section early.",
+    "a3": "**a3 owns `src/scheduler.js` (+ `test/scheduler.test.js`) together with a2: you own the *capacity* side.** `plan(day)` assigns packages to drones and builds trips: payload per trip, range per trip, express priority, several trips per drone, and every undeliverable package in `unassigned` with a clear reason. a2 owns the timing side of the same file (ETAs, windows, day length, trip start times). You both edit `src/scheduler.js`: agree on its internal structure early, land small and often, and expect merges. **Define and land the `Plan` shape early** (CONTRACTS.md \"scheduler\" section + a first version), because a4 and a5 consume it. You depend on a1 (model): use the real API once landed, shim against the contract until then.",
+    "a4": "**a4 owns `src/pricing.js` (+ `test/pricing.test.js`) and shares `src/report.js` (+ `test/report.test.js`) with a5: you own the money parts of the report** (per-package prices, totals, currency formatting). Define the price formula (base fee + per-km + per-kg + express surcharge; explicit rounding and currency) and pin it in CONTRACTS.md early. a5 owns the report's layout and its JSON form; you both edit `src/report.js`, so agree on its structure early and expect merges. You consume a3's `Plan` and a1's model: build against their real shapes as they land.",
+    "a5": "**a5 owns `src/cli.js`, `test/integration.test.js` and extra fixtures, and shares `src/report.js` with a4: you own the report's layout and the `--json` output** (pinned in CONTRACTS.md: keep it exactly). a4 owns the money parts of the same file; agree on its structure early and expect merges. `node src/cli.js plan <dayfile> [--json]` runs model \u2192 scheduler (uses geo) \u2192 pricing \u2192 report. Write `test/integration.test.js` running the full pipeline on `fixtures/day1.json` with real property checks (every package assigned or unassigned-with-reason, no trip over payload/range, p19 unassigned as too heavy, totals add up, CLI exits 0), and add at least one edge-case fixture (`fixtures/edge-*.json`). You should probably finish last: iterate until `npm test` passes on the latest main. Allow yourself ~40 land/sync cycles."
+  },
+  "schedule": [
+    {
+      "at": 10,
+      "do": "change-request",
+      "files": "change-request"
+    }
+  ]
+}
