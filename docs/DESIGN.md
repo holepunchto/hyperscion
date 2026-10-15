@@ -592,3 +592,166 @@ were invisible, and a stand-in that started during the outage saw an empty main.
   but stay `provisional`, and they settle when it returns.
 - Every feed mirrors everything. That's fine at experiment scale. A large repo would want a
   sparse feed (mirror only the paths you watch).
+
+## 14. Open design: work-in-progress intents (not built)
+
+Duplicated effort was the biggest waste measured, on both arms. In experiment 4's S2 runs and
+in every q1 quick run, 2–4 agents built the change request's flight-minutes logic in
+parallel. "Announce what I'm working on" was the most-wanted feature on both arms.
+
+There are reasons for caution:
+
+- git has the same gap, and teams usually plan outside their SCM;
+- a Keet MCP server will give agents real messaging;
+- anything claim-shaped risks becoming svn-style locking.
+
+This section records the design thinking. **Decision so far:** brainstorm only. We revisit it
+after the Keet MCP lands, to see how much of the need messaging already covers. If it's
+built, an intent carries a topic or tags first, with optional paths. It is purely a heads-up:
+it never blocks, has a TTL, closes automatically on land, and others can join or take it over.
+
+### What the data actually says (it changes the design)
+
+1. **The duplication was conceptual, not per file.** In q1, a1 wrote
+   `geo.flightMinutesAlong`, a2 added `stops[].flightMinutes` to the scheduler, and a3
+   computed it in pricing. These are three different files, so **path claims would have
+   caught none of it.** The shared thing was the _topic_ ("CR-1 flight minutes").
+2. **Agents duplicated even when told not to.**
+   - The change request said "a3 leads; a2 only if pricing needs it", yet a1 built it too.
+   - In s2-git-2, a4 posted "I'll handle it" in NOTES.md and three others still did it.
+   - So announcing alone isn't enough: agents have to _look before they start_, and the tool
+     has to make looking cheaper than building.
+3. **It's a race at time zero.** Everyone sees the change request in the same few seconds and
+   starts at once. Any intent system has to handle simultaneous declarations ("you and a2
+   both declared this within 10 s"), not just later arrivals.
+4. **Same-file overlap is already handled well.** It merges, or `--check` catches it, and
+   real conflicts were rare and cheap (about 3 min). File locking would solve a problem we
+   barely have and slow the parallel work that's going well.
+
+### Brainstorm
+
+##### What someone communicates
+
+An **intent** is a short, public statement about a change that doesn't exist yet:
+
+- **who** declared it;
+- **what:** one line in the problem's terms ("CR-1: flight minutes per stop for pricing");
+- **where (optional):** paths or globs it will likely touch, or an interface it will change
+  (`CONTRACTS.md#scheduler`);
+- **kind:** implement / fix / change a contract or interface / refactor. Contract changes
+  matter most, because they ripple to other people;
+- **links:** to a change request, a proposal (`P3`), a changeset (`#27`), or a Keet thread;
+- **lifecycle:** active → done (landed) | dropped | expired.
+
+##### What it implies (the subtle part)
+
+- **It's a soft commitment.** Declaring tells teammates "don't build this". If the author
+  stalls or dies (S3's a3), the intent quietly blocks others. So intents must **expire**
+  (default TTL about 20–30 min, renewed by the author's lands that match it), must close
+  automatically on land, and must be easy for a teammate to take over (`hs intent take I4`,
+  which is visible and not silent).
+- **Chilling effect (the svn risk).** An agent may avoid a file or topic because someone
+  "has" it. Mitigation: never block. Use "heads-up" wording, show the intent's age and its
+  last activity, and make "join"/"+1"/"I'll do part X" one command. The tool's stance: **an
+  intent is information, never permission.**
+- **Over-claiming.** An agent that declares everything at start turns it into noise. Limit
+  active intents per agent (for example 3) and show unclaimed overlaps, not claim lists.
+- **Ordering.** Intents are oplog ops, so concurrent declarations are both kept and ordered
+  deterministically once settled. Show "also a2, declared 8 s after you" instead of picking a
+  winner; picking a winner is a lock.
+- **Offline / P2P.** An agent can declare while the hub is down (it travels through feeds like
+  a land). It's provisional like any op; that's fine for advisory data.
+
+##### How fine-grained
+
+- **Primary: the topic (free text plus optional tags).** It catches the duplication we
+  actually saw. Overlap is detected by people or agents: the feed and `status` show active
+  intents, and a new declaration lists similar ones (shared tags or words).
+- **Secondary: paths or contract sections.** These allow automatic, mechanical warnings
+  ("you're landing into a2's intent on /src/scheduler.js, declared 4 min ago"), but only as a
+  _note_ on land and sync.
+- **Not symbols or line ranges.** Too fine, it rots, and merges already handle same-file work.
+
+##### What lives in hs, and what doesn't
+
+**In hs** (anchored to repo content and resolved by a land):
+
+- declared upcoming changes to this repo;
+- their status;
+- links to the proposals or lands that fulfil them;
+- the "touching your intent" notes on land and sync.
+
+**Not in hs:**
+
+- conversation, debate and planning;
+- task assignment and backlogs;
+- questions and answers;
+- anything without an expected land.
+
+That belongs in Keet (or NOTES.md, or an issue tracker). Bridge it with a link (`--link
+keet:...`), not by rebuilding chat.
+
+**Rule of thumb:** if it ends with "…and then it lands", it can be an intent. Otherwise it's
+a message.
+
+##### Fit with what exists (reuse, not new machinery)
+
+- **Ops:** a new `OP_INTENT` next to `OP_PROPOSE`/`OP_REVIEW` in `lib/apply.js` (op types
+  1–5). Records go under a new `hs-intent` key in `lib/keys.js`, with feed events through
+  `tx.event` (the same `hs-ev` log as reviews).
+- **Review on intents:** a third review target, `TARGET_INTENT` (proposals and changesets are
+  the existing two), so "comment"/"+1"/"please wait" reuse the review op.
+- **Graduation:** an intent becomes a proposal (`hs propose --intent I4`) or closes when a
+  land references it (`hs land --intent I4`, or automatically when the land covers its
+  paths).
+- **Surfaces we already have:**
+  - the feed (`watch --json`: `{"type":"intent",...}`);
+  - `watch --for-me` (intents that overlap your owned paths or your own intents);
+  - `status` (active intents near your edits);
+  - `land`/`sync` notes (alongside the existing "merged teammates' changes" line);
+  - `.hsowners` (intents on owned paths notify the owner).
+
+##### Keet relationship
+
+With Keet MCP, agents can discuss. hs intents stay useful because they are:
+
+1. anchored to the code and tied to lands, so they close automatically and history shows
+   what was planned against what landed;
+2. available to swarms without Keet;
+3. surfaced _at the moment of landing or syncing_, which chat can't do.
+
+Bridging later: an optional Keet room per repo that hs posts intent lines to.
+
+### Decisions so far
+
+- **Brainstorm only for now.** Keep this as a design note. Revisit after the Keet MCP lands, to
+  see how much of the need agent messaging covers.
+- **Granularity:** a topic or tags first, with optional paths.
+- **Stance:** purely a heads-up, never blocking. It has a TTL, closes automatically on land,
+  and others can join or take over.
+
+### Recommendation for later: the smallest thing that could help, measured first
+
+**Decide with data before building the full system.**
+
+1. **Measure the baseline precisely.** Add a duplication metric to the quick loop:
+   - in S2/q1, count change-request implementations (files defining flight-minutes logic),
+     read from the final tree and the trace;
+   - give `q1` a duplication-prone change request (it already is).
+2. **A no-code arm:** "intents by convention". Give agents `NOTES.md` lines tagged
+   `- [a2] INTENT CR-1 flight minutes (scheduler)` and the instruction "check for intents
+   before starting; if someone declared first, coordinate". This shows whether the value is
+   in _the habit_ or in _the tool_. The user's doubt says test this first.
+3. **A minimal hs intent (if step 2 shows the habit helps but agents miss lines in NOTES):**
+   - `hs intent "CR-1 flight minutes per stop" [--paths p...] [--tag cr-1]` declares it,
+     prints active intents that overlap (topic tag or words, paths), and says when someone
+     else declared within the last minute;
+   - `hs intents` lists active intents with age and last activity;
+   - `hs intent done|drop|take <I>`, plus a TTL and closing on a land that references or
+     covers it;
+   - feed and `status` lines, and land/sync notes;
+   - never blocks.
+4. **Measure the same quick run with the tool.** Success means fewer duplicate
+   implementations with **no** rise in time to acceptance, blocked time or calls per land.
+   If it doesn't beat the NOTES.md convention, don't ship it as a feature. Document the
+   convention instead.
