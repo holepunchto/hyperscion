@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "schema": [
     {
       "name": "head",
@@ -119,6 +119,11 @@
           "name": "policy",
           "type": "string",
           "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
         }
       ]
     },
@@ -302,6 +307,11 @@
           "name": "proposal",
           "type": "uint",
           "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
         }
       ]
     },
@@ -509,6 +519,11 @@
           "name": "policy",
           "type": "string",
           "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
         }
       ]
     },

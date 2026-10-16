@@ -148,6 +148,70 @@ It is parked as an option (DESIGN.md §8). M7 now asks the P2P question:
 - **What remains scales with the writer count** (each peer applies every writer's ops). Past
   about 50 on one box needs runs across machines.
 
+**Check, first attempt (q2-hs-1): ran, found hub-availability bugs; rerun after fixes.**
+Three LLM agents plus pm worked q1's task while a scripted swarm of 20 writers landed under
+`/swarm/` (scenario q2, `scripts/experiment/swarm-load.js`). Data:
+`docs/experiments/quick/q2-hs-1`.
+
+- **The swarm itself was fine:** 375/375 lands, p50 17 ms, p90 46 ms, 2.2 GB for 20 writers.
+- **Outcome was fine:** main 100% green throughout, acceptance 100%, no regressions.
+- **The hub's mirror is the headline bug.** It mirrors changesets in order and stops at the
+  first it can't fetch. For a changeset's blobs it fetches the blobs core's _current_ length,
+  not the length at land time, so an author who commits again and then goes offline blocks
+  that changeset, and every later one, for good. The mirror's watermark is also only in memory,
+  so a restarted hub re-mirrors from #1 and hits this again.
+  - In the run the mirror stopped at #375, so #376–#381 (the change request and every CR-1
+    implementation) were held only by their authors. Scoring needed the authors' watches
+    restarted.
+  - Before the outage the hub was already behind (mirrored #62 while main was at #66+), so
+    a1's #66 was not on the hub when it went down, and a2 and a3 couldn't fetch it for minutes
+    while a1's feed was up. Not yet explained; a crowded fallback topic (24 feeds) is one
+    candidate.
+  - Why #376 stalled while the hub was up is not pinned: a land from a worktree with no watch
+    does reach the hub in a small repro.
+- **A busy main costs agents a lot** (vs q1-hs: about 5 min, land p50 2–10 s, 0–2 min lost):
+  18.6 min, land p50 58 s / p90 122 s, 17 min lost, ratings 4/3/3 (1/3 would choose hs).
+  - `land --check` re-runs on every unrelated `/swarm/` land and never converged for a3.
+  - Read-only commands (`status`, `show`, `doctor`) are locked out while a land runs, with a
+    misleading "hs seed running here" hint.
+  - `sync` folds teammates' lands into "… and 220 later", hidden by swarm noise.
+  - `push` timing out while `doctor` says a holder is online.
+- **Not comparable with q1:** the injector failed to land the change request (pm's NOTES.md
+  was stale after an outage sync) and it was landed by hand at minute 13.9. So CR timing and
+  the duplicate count (2, vs 3 in q1) say nothing yet. Injector fixed (async tool calls,
+  restore and resync on a stale copy), untested until the rerun.
+- **Hub mirror fixed (done):** blobs held up to the length recorded in the land op (schema
+  v10), skip and retry instead of stopping at the first unfetchable changeset, and the
+  watermark persisted up to settled (DESIGN.md §11 "The mirror stuck behind one changeset";
+  probe in `test/net.js`).
+
+**Check, second attempt (q2-hs-2): the hub holds up; a busy main is slow for agents.** Data:
+`docs/experiments/quick/q2-hs-2`.
+
+- **Fixed and confirmed:**
+  - the hub mirrored every changeset (#447), and scoring read every state from the stopped hub;
+  - the injector restarted the hub on time and landed the change request on its first try.
+- **Outcome:** main 100% green, acceptance 100% at minute 12.8 (q1: about 4), ratings
+  3/3/4. Duplicate CR-1 implementations: 3, as in q1.
+- **The cost is `settle`, not the checks.** Every `sync` took about 30 s, even "up to date",
+  and every `land --check` about 243 s: four 0.3 s checks with about 60 s between them.
+  `Network.settle` waits for 300 ms of quiet across every writer, capped at 30 s. A polling
+  round can take up to 2 s, and the swarm lands about every 1.6 s, so it never sees quiet and
+  always pays the cap.
+- **Next:**
+  - `settle` catches up to what peers held when it started, instead of waiting for quiet
+    (done: probe in `test/net.js`; the old rule times out on it);
+  - `--check` re-runs only when main changed what the check can see: the land's paths, or
+    the sparse checkout minus paths marked `-check` in `/.hsattributes` (done:
+    `test/check.js`; q2 marks `/swarm/ -check`);
+  - read-only commands during a land (done: they open the store read-only, offline;
+    `test/check.js`);
+  - teammates first in `sync` (done: busy directories fold into one line; `test/incoming.js`);
+  - found on the way, not fixed: `hs push` can time out while the hub has everything. It
+    reads the hub's contiguous length of our oplog from stale peer state (14 of 30 while
+    the hub held all 30);
+  - then a third q2 run.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

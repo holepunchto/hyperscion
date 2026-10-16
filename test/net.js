@@ -111,6 +111,122 @@ test('a mirror keeps main readable after its authors go offline', async (t) => {
   await drive.close()
 })
 
+// The q2 run's hub: mirroring in order stopped for good at a changeset whose author went
+// offline, and it fetched the author's blobs core to its current length (later commits too)
+test('a mirror skips what it cannot fetch yet, holds blobs as landed, survives a restart', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+
+  const a = await peer(t, null, bootstrap)
+  const b = await peer(t, a.repo.key, bootstrap)
+  await b.net.waitForPeers()
+  await a.repo.addWriter(b.repo.writerKey)
+  await b.net.settle()
+  t.ok(b.repo.writable, 'b is a writer')
+
+  // a lands, then keeps committing: its blobs core grows past what the land references
+  const wa = await a.repo.workspace('w')
+  await wa.commit([put('/a.txt', 'a\n')])
+  t.is((await wa.land()).outcome.status, 'accepted')
+  const landedLength = wa.blobs.core.length
+  await wa.commit([put('/wip.txt', 'x'.repeat(200_000))])
+  t.ok(wa.blobs.core.length > landedLength, 'a committed more after landing')
+
+  await b.net.settle()
+  const wb = await b.repo.workspace('w')
+  await wb.commit([put('/b.txt', 'b\n')])
+  t.is((await wb.land()).outcome.status, 'accepted')
+  t.ok(await b.net.uploaded(), "a has b's land")
+  await a.net.settle()
+
+  // a goes offline: nobody else holds #1's content
+  await a.net.close()
+
+  const c = await peer(t, a.repo.key, bootstrap, { mirror: true })
+  const seen = []
+  c.net.on('mirrored', (cs) => seen.push(cs.seq))
+  await c.net.waitForPeers()
+  await c.net.settle()
+  await waitFor(() => seen.includes(2))
+  t.is(c.net.mirrored, 0, '#1 is not held yet (its author is offline)')
+  t.pass('#2 was mirrored anyway')
+
+  // a is back: #1 gets mirrored on retry, blobs only up to what the land referenced
+  a.net = new Network(a.repo, { bootstrap })
+  await a.net.ready()
+  await waitFor(() => c.net.mirrored === 2, 30_000)
+  t.pass('#1 mirrored once its author is back')
+  const blobs = c.store.get({ key: wa.blobs.core.key })
+  await blobs.ready()
+  t.is(blobs.contiguousLength, landedLength, 'blobs held up to the landed length, not the WIP')
+  await blobs.close()
+
+  // everyone else gone, the mirror restarts and still holds (and serves) all of main
+  await waitFor(() => c.net.mirrored === 2)
+  await a.net.close() // the helper's close() only knows the first Network
+  await a.close()
+  await b.close()
+  await c.net.close()
+  c.net = new Network(c.repo, { bootstrap, mirror: true })
+  t.teardown(() => c.net.close(), { order: -2 })
+  await c.net.ready()
+  await waitFor(() => c.net.mirrored === 2, 10_000)
+  t.pass('restarted mirror holds #1 and #2 with nobody else online')
+  const drive = c.repo.drive()
+  t.alike(await drive.get('/a.txt', { wait: false }), b4a.from('a\n'))
+  t.alike(await drive.get('/b.txt', { wait: false }), b4a.from('b\n'))
+  await drive.close()
+})
+
+// q2-hs-2: with a swarm landing every second or so, settle waited for a quiet moment that
+// never came, so every sync and every --check round paid its full 30 s timeout
+test('settle returns on a busy main, with at least what peers held when it started', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+
+  const a = await peer(t, null, bootstrap)
+  const ws = await a.repo.workspace('w')
+  await ws.commit([put('/first.txt', 'first\n')])
+  await ws.land()
+  const b = await peer(t, a.repo.key, bootstrap)
+  await b.net.waitForPeers()
+  t.ok(await b.net.settle(), 'b caught up')
+
+  // a lands continuously, faster than settle could ever see 300 ms of quiet
+  let n = 0
+  let busy = true
+  const landing = (async () => {
+    while (busy) {
+      await ws.commit([put(`/busy/${n}.txt`, `${n}\n`)])
+      await ws.land({ message: 'busy ' + n++ })
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+  })()
+  t.teardown(
+    async () => {
+      busy = false
+      await landing
+    },
+    { order: -2 }
+  )
+
+  await waitFor(() => n >= 10)
+  for (let round = 0; round < 3; round++) {
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // main moves on meanwhile
+    const before = (await a.repo.meta()).seq
+    const started = Date.now()
+    const ok = await b.net.settle({ timeout: 10_000 })
+    const ms = Date.now() - started
+    const seq = (await b.repo.meta()).seq
+    t.comment(`round ${round}: settled=${ok} in ${ms} ms, b at #${seq}, a was at #${before}`)
+    t.ok(ok, 'settle returned true')
+    t.ok(ms < 5000, 'without waiting for quiet: ' + ms + ' ms')
+    t.ok(seq >= before, 'b has every land a had when settle started')
+  }
+  busy = false
+  await landing
+})
+
 test('after prefetch, everything in the sparse set works offline', async (t) => {
   const Worktree = require('../lib/worktree')
   const testnet = await createTestnet(3, t.teardown)

@@ -669,6 +669,82 @@ blocked mirroring later lands (`push timed out`). Every mirror step is now bound
 changeset whose content can't be fetched yet isn't marked mirrored and is retried every 2 s.
 View cores and proposals are mirrored best-effort, one core at a time.
 
+**The mirror stuck behind one changeset (milestone 7 check, q2-hs-1).** The hub mirrored
+changesets strictly in order and fetched each blobs core to its _current_ length. An author
+who committed again after landing and then went offline left a length nobody online could
+serve. Every later changeset waited behind it, and a restarted hub started again from #1 and
+hit the same wall. Now:
+
+- land and propose ops record the blobs core's length (schema v10, `blobsLength`, plus one so
+  0 means an older writer), and the mirror holds the blobs only up to there;
+- a changeset that can't be fetched is skipped and retried (briefly) on later passes, so an
+  offline author holds up only their own changesets;
+- the watermark (every changeset up to #n is held) is kept in the local writer core's user
+  data, capped at the settled point, since provisional changesets past it can be reordered.
+  In memory, changesets mirrored past settled keep their hash and are mirrored again if a
+  reorg replaces them.
+
+`test/net.js` covers it: the old loop times out on the probe.
+
+**Catching up on a busy main (q2-hs-2).** `sync`, `land`, `clone`, `doctor` and `watch` first
+"settle": catch up with main as connected peers hold it. Settling used to wait for 300 ms in
+which no writer appended anything. A 20-writer swarm lands about every 1.6 s, and a polling
+round (asking each writer's peers for its length) can take up to 2 s, so that moment never
+came. Every sync paid the 30 s cap, and a `land --check` paid it in every round. Now there
+is a second way out. Each writer's target is what its peers held the first time we heard from
+them (only peers that have sent their first sync message count). Once every writer reached
+its target, lands arriving after that aren't chased for more than 1.5 s: they are newer than
+the command. The quiet window still applies first. Reaching the targets alone isn't enough,
+because a peer's contiguous length arrives after its first sync message, so an early target
+can be just our own length; returning on targets alone made a fresh `watch` miss a land that
+had just landed.
+
+**`land --check` on a busy main.** `--check` re-runs when main moves during the check, so
+what lands is what was tested. In q2-hs-2 the swarm moved main during every check, so every
+land re-ran until `--retries` ran out. Now it re-runs only when the new changesets touch a
+path the check could see:
+
+- one of the land's own paths;
+- or a path in the sparse checkout that `/.hsattributes` doesn't mark `-check`, e.g.
+  `/swarm/ -check`.
+
+A changeset too big to list every path counts as seen. Otherwise it lands on the checked
+state, and peers still concurrency-check the land's own paths. When it does re-run, it says
+why (`while checking (/src/c.js #4 a2); checking again`). Probe: `test/check.js`.
+
+Found on the way: `/.hsattributes` read through the CLI arrives as a string, and under Bare
+`b4a.toString` of a string is `''`. So the CLI never saw any attributes, and union-merged
+`NOTES.md` showed up in "merged teammates' changes" on every land.
+
+**Reading while a land runs.** A worktree's store is locked by the process using it, so in
+q2 `status`, `show` and `doctor` refused to run during an agent's own multi-minute
+`land --check`, with a hint about `hs seed`. Now:
+
+- the commands that only read (`status`, `diff`, `log`, `show`, `ls`, `cat`, `export`,
+  `proposals`, `ws list`, `info`) fall back to opening the store read-only. They run on what
+  the land has written so far, offline, and say so: ``(`hs land` (pid 123) is using this
+worktree: showing local data, offline)``. Anything they'd need the network for fails
+  with the same reason;
+- commands that write, and `doctor`, say who holds the worktree (`` `hs land` (pid 123,
+running 40s) is using this worktree; wait for it to finish ``). The holder writes
+  `.hs/busy.json` (pid, command, start), ignored once that pid is gone.
+
+Probe: `test/check.js`.
+
+**Teammates first in incoming lists.** `sync` and `land` list what came in from teammates,
+up to 25 lines and then "… and N later". In q2 the swarm filled those lines, and a1 found a3's
+land only by grepping the feed. Now, when the list doesn't fit, the busiest top-level
+directories fold into one line each, largest first, until the rest fits:
+
+```
+incoming from teammates (31):
+  #30 a3 /src/b.js :: teammate b
+  /swarm/: 30 changeset(s) by 1 writer(s), #2..#32, only under /swarm/ (hs log -n 31)
+```
+
+Root files (NOTES.md, CONTRACTS.md) and changesets spanning several directories never fold.
+Short lists are unchanged. Probe: `test/incoming.js`.
+
 **Several indexers, and removing a dead one (milestone 7).**
 
 - **Settlement needs every indexer, never a quorum.**
