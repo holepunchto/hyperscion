@@ -49,7 +49,18 @@ test('outage: feeds keep the team working while the hub is down', async (t) => {
   // the feeds still have each other, so what says "the hub is down" is lands not settling
   await waitFor(() => /hub not settling/.test(feed2.output()), 60_000)
   t.pass('feed says the hub is not settling')
-  t.ok(/hub not settling/.test((await tm.as('a1', ['status'])).stderr), 'status says so too')
+  const agentStatus = await tm.as('a1', ['status'])
+  t.ok(/hub not settling/.test(agentStatus.stderr), 'status says so too')
+  // replacing the hub is the owner's call: agents are told there is nothing to do (q2-hs-6)
+  t.ok(/Nothing to do: keep working/.test(agentStatus.stderr), agentStatus.stderr)
+  t.absent(/add-writer/.test(agentStatus.stderr), 'no owner-only command for an agent')
+  const ownerDir = require('bare-path').join(tm.dir, 'owner')
+  await tm.hs(ownerDir, ['sync'], 'owner') // the owner has to see the stalled lands too
+  const ownerStatus = await tm.hs(ownerDir, ['status'], 'owner')
+  t.ok(
+    /add-writer <new key> --indexer/.test(ownerStatus.stderr),
+    'the owner gets the fix: ' + ownerStatus.stderr
+  )
   await tm.startHub()
   await waitFor(() => /hub settling again/.test(feed2.output()), 60_000)
   t.pass('feed says the hub is back')

@@ -42,3 +42,42 @@ test('incoming: a busy directory folds into one line, teammates stay listed', as
   t.absent(/#\d+ a2 \/swarm\//.test(synced.stdout), 'no swarm lines listed one by one')
   t.absent(/and \d+ later/.test(synced.stdout), 'nothing hidden')
 })
+
+// q2s-hs-3, q2-hs-6: agents asked to hide the swarm's /swarm/ from incoming lists and the feed.
+// Paths /.hsattributes marks `quiet` become a count; `hs watch --all` (or --path) shows them.
+test('quiet paths stay out of incoming lists and the feed', async (t) => {
+  t.timeout(240_000)
+  const tm = await team(t, {
+    files: { '.hsattributes': 'NOTES.md merge=union\n/swarm/ quiet\n', 'src/a.js': 'a\n' }
+  })
+  await tm.as('a1', ['sync'])
+  await tm.as('a2', ['sync'])
+  const feed = tm.bgAs('a1', ['watch'])
+  await waitFor(() => /watching main/.test(feed.output()), 60_000)
+
+  for (let i = 0; i < 3; i++) {
+    tm.write('a2', `swarm/s${i}.txt`, `${i}\n`)
+    await tm.as('a2', ['land', '-m', 'swarm ' + i])
+  }
+  tm.write('a2', 'src/b.js', 'b\n')
+  await tm.as('a2', ['land', '-m', 'teammate b'])
+  await waitFor(() => /teammate b/.test(feed.output()), 60_000)
+
+  const synced = await tm.as('a1', ['sync'])
+  t.ok(/incoming from teammates \(1\), \+3 under quiet paths:/.test(synced.stdout), synced.stdout)
+  t.ok(/teammate b/.test(synced.stdout))
+  t.absent(/swarm \d/.test(synced.stdout), 'no swarm lines in sync')
+  t.absent(/swarm \d/.test(feed.output()), 'no swarm lines in the feed: ' + feed.output())
+
+  const all = await tm.as('a1', [
+    'watch',
+    '--all',
+    '--since',
+    '0',
+    '--count',
+    '4',
+    '--timeout',
+    '20'
+  ])
+  t.ok(/swarm 0/.test(all.stdout), '--all shows them: ' + all.stdout)
+})

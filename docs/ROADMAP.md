@@ -313,11 +313,13 @@ did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
 - **Outcome:** acceptance 100% at minute 4.2 (q1-hs about 4, q2-hs-2 12.8), main 100% green.
 - **Lands:** p50 3.0 s, p90 8.2 s (243 s in q2-hs-2); 3.75 calls per accepted land.
 - **Agents:** ratings 4/4/4, all three would choose hs; 2 minutes lost.
-- **Left for later:**
-  - `hs status` suggests an owner-only fix (`add-writer --indexer`) to every agent during an
-    outage;
-  - a way to hide `/swarm/` from incoming lists and the feed;
-  - duplicate implementations of the change request (3): M8.
+- **Fixed after it:**
+  - during an outage, only the team owner (the bootstrap writer) is shown the
+    `add-writer --indexer` / `remove-writer` fix; agents get "Nothing to do: keep working";
+  - `/.hsattributes` `quiet` (q2 marks `/swarm/ -check quiet`): changesets only under quiet
+    paths become a count in incoming lists and stay out of the feed (`hs watch --all` or
+    `--path` shows them).
+- **Left for later:** duplicate implementations of the change request (3): M8.
 
 ### M8: the coordination layer
 

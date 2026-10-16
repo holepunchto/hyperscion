@@ -73,7 +73,9 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    them in their feed. `--check` first brings main into your files, runs the command on
    main + your changes, and lands only if it passes. If main moves while it runs in a way the
    check could see, it checks again. Changes outside your sparse checkout, or under paths
-   `/.hsattributes` marks `-check` (e.g. `/swarm/ -check`), don't re-run it:
+   `/.hsattributes` marks `-check` (e.g. `/swarm/ -check`), don't re-run it. Paths marked
+   `quiet` (e.g. a bot's `/swarm/`) stay out of `sync`/`land` incoming lists and the feed (a
+   count instead; `hs watch --all` shows them):
    ```sh
    hs land -m "scheduler: Plan shape pinned in CONTRACTS.md" --check "npm test"
    ```
