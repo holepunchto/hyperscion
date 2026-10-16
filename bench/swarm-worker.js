@@ -47,7 +47,7 @@ async function main() {
     // the same repo can't share a store. The daemon model is therefore one writer per machine
     // with every agent's workspace landing through it.
     root = new Corestore(opts.dir)
-    const repo = new Repo(root, { key })
+    const repo = new Repo(root, { key, bootstrapWeight: opts.bootstrapWeight || 2 })
     await repo.ready()
     for (let i = 0; i < opts.count; i++) writers.push({ name: `${opts.id}.${i}`, repo })
     swarm = new Hyperswarm({
@@ -59,7 +59,7 @@ async function main() {
   } else {
     for (let i = 0; i < opts.count; i++) {
       const store = new Corestore(path.join(opts.dir, 'w' + i))
-      const repo = new Repo(store, { key })
+      const repo = new Repo(store, { key, bootstrapWeight: opts.bootstrapWeight || 2 })
       // --shared-dht: writers keep their own swarm (own peer identity and connections, as on
       // separate hosts) but share one DHT node per process, so 100-200 of them fit in memory
       const net = new Network(repo, {

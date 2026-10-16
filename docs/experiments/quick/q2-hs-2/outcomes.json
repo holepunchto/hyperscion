@@ -1,0 +1,98 @@
+{
+  "outcomes": {
+    "main_states": 7,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 7.6,
+    "acceptance_80_at_min": 7.6,
+    "acceptance_100_at_min": 12.8,
+    "final_state_min": 12.8,
+    "duplicate_implementations": 3,
+    "duplicate_implementations_max": 3,
+    "change_request_at_min": 3.6,
+    "change_request_done_after_min": 9.2
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.4,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#84",
+      "minute": 2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#92",
+      "minute": 2.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#115",
+      "minute": 3.6,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#281",
+      "minute": 7.6,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#309",
+      "minute": 8.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 1
+    },
+    {
+      "id": "#442",
+      "minute": 12,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 2
+    },
+    {
+      "id": "#448",
+      "minute": 12.8,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 3
+    },
+    {
+      "id": "#449",
+      "minute": 14.2,
+      "author": "a3",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    }
+  ]
+}

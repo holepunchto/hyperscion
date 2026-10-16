@@ -1,0 +1,3 @@
+NOTES.md merge=union
+# the scripted swarm writes here; no check reads it
+/swarm/ -check

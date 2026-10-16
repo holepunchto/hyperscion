@@ -1,0 +1,119 @@
+{
+  "outcomes": {
+    "main_states": 10,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 12.9,
+    "acceptance_80_at_min": 12.9,
+    "acceptance_100_at_min": 15.5,
+    "final_state_min": 18,
+    "duplicate_implementations": 2,
+    "duplicate_implementations_max": 2,
+    "change_request_at_min": 13.9,
+    "change_request_done_after_min": 1.6
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.4,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#66",
+      "minute": 2.1,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#323",
+      "minute": 10.6,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#349",
+      "minute": 11.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#375",
+      "minute": 12.9,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#376",
+      "minute": 13.9,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#377",
+      "minute": 14.2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#378",
+      "minute": 14.7,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#379",
+      "minute": 15.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 1
+    },
+    {
+      "id": "#380",
+      "minute": 16.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 1
+    },
+    {
+      "id": "#381",
+      "minute": 18,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 2
+    }
+  ]
+}

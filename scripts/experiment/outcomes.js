@@ -73,7 +73,12 @@ function states() {
 }
 
 const rows = []
-for (const s of states().filter((st, i, all) => i === 0 || st.id !== all[i - 1].id)) {
+// scenarios with a scripted swarm (q2) skip its states: hundreds of lands under /swarm/ that
+// don't touch the agents' code, and would take minutes each to replay
+const skip = scenario.skipAuthors ? new RegExp(scenario.skipAuthors) : null
+for (const s of states().filter(
+  (st, i, all) => (i === 0 || st.id !== all[i - 1].id) && !(skip && skip.test(st.author))
+)) {
   const to = path.join(work, s.id.replace('#', 'n'))
   fs.mkdirSync(to, { recursive: true })
   const ex = s.export(to)

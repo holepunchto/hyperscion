@@ -5,7 +5,7 @@
 // --scale shrinks the timeline (0.1: minute 10 happens after 1 minute) for dry runs.
 // Every action is logged to <teamdir>/faults/events.jsonl. The process exits after the last
 // event, so whoever runs the agents can be woken by it (S3 ends with killing a3).
-const { spawn, spawnSync } = require('child_process')
+const { spawn } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
@@ -65,10 +65,24 @@ function stopFeed(agent) {
   return stopPid(readPid(path.join(root, '.hs', 'watch.pid')))
 }
 
+// async: a blocking spawn would hold up the schedule (an origin-up due while pm retries)
 function tool(agent, args, cwd) {
   const bin = path.join(dir, 'bin', (hs ? 'hs-' : 'git-') + agent)
-  const r = spawnSync(bin, args, { cwd, encoding: 'utf8', timeout: 120_000 })
-  return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }
+  return new Promise((resolve) => {
+    const child = spawn(bin, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] })
+    let out = ''
+    child.stdout.on('data', (d) => (out += d))
+    child.stderr.on('data', (d) => (out += d))
+    const timer = setTimeout(() => child.kill('SIGKILL'), 120_000)
+    child.on('error', (err) => {
+      clearTimeout(timer)
+      resolve({ code: -1, out: String(err) })
+    })
+    child.on('close', (code) => {
+      clearTimeout(timer)
+      resolve({ code, out })
+    })
+  })
 }
 
 const actions = {
@@ -127,22 +141,24 @@ const actions = {
     const message = 'CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)'
     // keep trying for up to 10 minutes: the origin may be down when the request is due
     for (let attempt = 1; attempt <= 60; attempt++) {
-      const steps = hs ? [['sync']] : [['pull']]
-      for (const s of steps) tool('pm', s, cwd)
+      await tool('pm', hs ? ['sync'] : ['pull'], cwd)
       if (!fs.existsSync(path.join(cwd, 'CHANGE-REQUEST.md'))) {
         fs.copyFileSync(path.join(src, 'CHANGE-REQUEST.md'), path.join(cwd, 'CHANGE-REQUEST.md'))
-        fs.appendFileSync(path.join(cwd, 'NOTES.md'), line)
       }
+      const notes = path.join(cwd, 'NOTES.md')
+      if (!fs.readFileSync(notes, 'utf8').includes(line.trim())) fs.appendFileSync(notes, line)
       let res
       if (hs) {
-        res = tool('pm', ['land', '-m', message], cwd)
+        res = await tool('pm', ['land', '-m', message], cwd)
         if (/landed #\d+/.test(res.out)) return { attempt, out: res.out.split('\n').slice(-4) }
+        // a sync during an outage can leave NOTES.md behind main: drop the edit, resync, redo
+        if (/stale copy/.test(res.out)) await tool('pm', ['restore', 'NOTES.md'], cwd)
       } else {
-        tool('pm', ['add', '-A'], cwd)
-        tool('pm', ['commit', '-q', '-m', message], cwd)
-        res = tool('pm', ['push', '-q', 'origin', 'HEAD:main'], cwd)
+        await tool('pm', ['add', '-A'], cwd)
+        await tool('pm', ['commit', '-q', '-m', message], cwd)
+        res = await tool('pm', ['push', '-q', 'origin', 'HEAD:main'], cwd)
         if (res.code === 0) return { attempt }
-        tool('pm', ['pull'], cwd)
+        await tool('pm', ['pull'], cwd)
       }
       log({ do: 'change-request', retry: attempt, out: res.out.slice(-300) })
       await sleep(10_000)

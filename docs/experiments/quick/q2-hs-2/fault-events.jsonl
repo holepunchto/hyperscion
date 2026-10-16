@@ -1,0 +1,4 @@
+{"t":"2026-10-16T01:24:29.390Z","do":"schedule","scenario":"q2","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-16T01:26:29.701Z","at":2,"do":"origin-down","minute":2.01,"stopped":true}
+{"t":"2026-10-16T01:28:29.103Z","at":4,"do":"origin-up","minute":4,"pid":75097}
+{"t":"2026-10-16T01:28:31.864Z","at":3,"do":"change-request","files":"change-request","minute":4.05,"attempt":1,"out":["landed #115","pushed: a holder has the changes","#115 final",""]}
