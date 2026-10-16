@@ -323,11 +323,15 @@ did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
 
 ### M8: the coordination layer
 
-- **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is
-  available.
-- **Measure first:** the duplication metric, a no-code NOTES.md intent habit, and only then a
-  minimal `hs intent`.
-- **Check:** a quick run comparing duplication, time to acceptance and calls per land.
+- **Claims ([CLAIMS.md](CLAIMS.md), proposal):** work is an item (a change request, a
+  suggestion, a part). A claim travels as a signed signal over the swarm connections (in
+  milliseconds, with a snapshot on connect) and as a record in main (for stragglers). The
+  lead is computed from the claims' content, it never blocks, and lands close items.
+- **Phase 1:** signals, records, `hs claim`/`claims`/`item`, TTL, notes. Gate: q2s/q2 with
+  `duplicate_implementations` 3 → 1 and no rise in time to acceptance or calls per land.
+- **Phase 2:** humans in the loop: `human` writers, `item` rules in `/.hsreview`, `hs suggest`
+  with approval, `hs inbox`, standing grants, and "approve the plan" (an approved claim
+  satisfies `/.hsreview` on its paths).
 
 ### The next big experiment (after M6–M8)
 

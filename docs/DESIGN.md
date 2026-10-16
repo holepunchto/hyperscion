@@ -901,6 +901,10 @@ were invisible, and a stand-in that started during the outage saw an empty main.
 
 ## 14. Open design: work-in-progress intents (not built)
 
+**Superseded by [CLAIMS.md](CLAIMS.md)** (milestone 8 proposal): items, claims as signed
+signals over the swarm plus records in main, a content-determined lead, and humans in the
+loop through review and standing grants. The data and reasoning below still stand.
+
 Duplicated effort was the biggest waste measured, on both arms. In experiment 4's S2 runs and
 in every q1 quick run, 2–4 agents built the change request's flight-minutes logic in
 parallel. "Announce what I'm working on" was the most-wanted feature on both arms.
