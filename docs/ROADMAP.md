@@ -127,7 +127,14 @@ It is parked as an option (DESIGN.md §8). M7 now asks the P2P question:
 
    Then re-measure 10, 25 and 50 agents per machine.
 
-3. **Settlement at scale:** replacing a dead indexer, and a quorum of indexers instead of all.
+3. **Settlement at scale: done, with a finding.**
+   - **A dead indexer is replaced** by adding a new one and removing the old (`hs remove-writer`).
+   - **A quorum is not possible** under autobee's ordering: indexers' concurrent nodes tie on
+     weight and fall back to timestamps. `test/settle-indexers.js` shows a majority rule being
+     reordered (seed 7); every indexer is still required.
+   - **New repos have a light bootstrap writer** (autobee `bootstrapWeight: 1`, carried in the
+     invite). `hs init --hub <dir>` makes the hub a separate, removable indexer. With no
+     indexer left, settlement waits for every writer (DESIGN.md §11).
 
 **Progress: the cheaper per-agent model (item 2, done).**
 

@@ -52,14 +52,17 @@ team with one command (an always-on holder plus N writable worktrees):
 scripts/team.sh ./team 5      # hub runs `hs seed --admit`, agents in team/agents/a1..a5
 ```
 
-Every team needs a **holder**: a hub running `hs seed`, or a blind peer. It keeps landed
-work available when its author is offline, and it settles lands (see below).
+Every team needs a **hub**: a worktree running `hs seed`. It is the repo's indexer: it keeps
+landed work available when its author is offline, and it settles lands (see below). Create
+it with the repo, `hs init --as me --hub ../my-hub`, so that a hub that dies for good can be
+replaced (`hs add-writer <new> --indexer`, then `hs remove-writer hub`). A blind peer can
+hold data too.
 
 Collaborating across machines by hand:
 
 ```sh
-# machine A
-hs seed                      # stay online, hold all landed content, settle lands
+# machine A: the hub created by `hs init --hub ../my-hub`
+cd ../my-hub && hs seed       # stay online, hold all landed content, settle lands
 
 # machine B
 hs clone <invite> work --sparse src   # only materialize src/
@@ -82,26 +85,27 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 (settled and accepted by review). `land` waits up to 10 s for the hub, so it usually ends with
 `#27 final`.
 
-| command                                                                         | what                                                                               |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `init [dir] [--as handle] [--encrypt]`                                          | create a repo                                                                      |
-| `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`                | join a repo, request write access, sparse checkout                                 |
-| `status`                                                                        | your edits, unlanded work, stale files, lands not yet final, reviews for you       |
-| `diff [--stat]`                                                                 | what `land` would send, as a unified diff                                          |
-| `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]`  | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle |
-| `sync [--offline]`                                                              | bring main into your files and rebase your work onto it                            |
-| `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`       | stream lands, reviews and settlement as they happen                                |
-| `log [path] [-n n] [--oneline]`, `show <#n\|Pn> [--stat] [--path p]`            | history with files and states; a changeset or proposal with its diff               |
-| `propose [-m] [-r handles] [-q n]`, `review <Pn\|#n> approve\|changes\|comment` | Ask and review (Ship / Show / Ask, see docs/AGENTS.md)                             |
-| `proposals [--all]`                                                             | open proposals: waiting for you, yours                                             |
-| `ls [prefix]`, `cat <path>`                                                     | read main (or `--ws`, your workspace) without a checkout                           |
-| `commit`, `restore <path…>`, `checkout [prefix…]`                               | checkpoint edits, discard edits, materialize files (optionally sparse)             |
-| `export <dir> [--at n]`                                                         | write main as it was at changeset #n into a directory (like `git archive`)         |
-| `ws new\|switch\|list`                                                          | workspaces                                                                         |
-| `fetch`, `push`                                                                 | download main without touching files; make sure a holder has your lands            |
-| `seed [--admit dir] [--no-mirror] [--updates]`                                  | be the team's holder: stay online, hold everything, settle lands, admit writers    |
-| `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                    | identity, connectivity and settlement, access                                      |
-| `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`       | configure blind peers; replay a git branch's first-parent history                  |
+| command                                                                         | what                                                                                                     |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `init [dir] [--as handle] [--encrypt]`                                          | create a repo                                                                                            |
+| `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`                | join a repo, request write access, sparse checkout                                                       |
+| `status`                                                                        | your edits, unlanded work, stale files, lands not yet final, reviews for you                             |
+| `diff [--stat]`                                                                 | what `land` would send, as a unified diff                                                                |
+| `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]`  | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle                       |
+| `sync [--offline]`                                                              | bring main into your files and rebase your work onto it                                                  |
+| `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`       | stream lands, reviews and settlement as they happen                                                      |
+| `log [path] [-n n] [--oneline]`, `show <#n\|Pn> [--stat] [--path p]`            | history with files and states; a changeset or proposal with its diff                                     |
+| `propose [-m] [-r handles] [-q n]`, `review <Pn\|#n> approve\|changes\|comment` | Ask and review (Ship / Show / Ask, see docs/AGENTS.md)                                                   |
+| `proposals [--all]`                                                             | open proposals: waiting for you, yours                                                                   |
+| `ls [prefix]`, `cat <path>`                                                     | read main (or `--ws`, your workspace) without a checkout                                                 |
+| `commit`, `restore <path…>`, `checkout [prefix…]`                               | checkpoint edits, discard edits, materialize files (optionally sparse)                                   |
+| `export <dir> [--at n]`                                                         | write main as it was at changeset #n into a directory (like `git archive`)                               |
+| `ws new\|switch\|list`                                                          | workspaces                                                                                               |
+| `fetch`, `push`                                                                 | download main without touching files; make sure a holder has your lands                                  |
+| `seed [--admit dir] [--no-mirror] [--updates]`                                  | be the team's holder: stay online, hold everything, settle lands, admit writers                          |
+| `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                    | identity, connectivity and settlement, access                                                            |
+| `remove-writer <handle or key>`                                                 | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first |
+| `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`       | configure blind peers; replay a git branch's first-parent history                                        |
 
 ## Library
 

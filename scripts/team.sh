@@ -9,7 +9,8 @@
 # that handle's wrapper points hs at a dead DHT; <dir>/faults/<handle>.dead makes it refuse to run.
 #
 # Creates:
-#   <dir>/hub              hub worktree (seeding; do not run other hs commands in it)
+#   <dir>/owner            the repo creator's worktree (lands the skeleton, then idle)
+#   <dir>/hub              hub worktree: the indexer (seeding; do not run other hs commands in it)
 #   <dir>/agents/a1..aN    agent worktrees, writable
 #   <dir>/bin/hs-aN        per-agent hs wrapper (sets USER/HS_AGENT, traces to <dir>/trace.jsonl)
 #   <dir>/hub-seed.pid     stop the hub with: kill -INT $(cat <dir>/hub-seed.pid)
@@ -54,21 +55,30 @@ EOF
 }
 
 wrapper hub
+wrapper owner
 HUB="$DIR/bin/hs-hub"
+OWNER="$DIR/bin/hs-owner"
 
-echo "== hub"
-cd "$DIR/hub"
-if [ -n "$SKELETON" ]; then cp -r "$SKELETON"/. "$DIR/hub/"; fi
+# the owner creates the repo (a light bootstrap writer) and the hub, a separate indexer
+# (`init --hub`), so a hub that dies for good can be removed and replaced
+echo "== owner and hub"
+rmdir "$DIR/hub"
+mkdir -p "$DIR/owner"
+cd "$DIR/owner"
+if [ -n "$SKELETON" ]; then cp -r "$SKELETON"/. "$DIR/owner/"; fi
 if [ ! -f .hsattributes ]; then printf 'NOTES.md merge=union\n' > .hsattributes; fi
-"$HUB" init $ENCRYPT > "$DIR/init.out"
+"$OWNER" init --as owner --hub "$DIR/hub" $ENCRYPT > "$DIR/init.out"
 INVITE=$(grep '^repo' "$DIR/init.out" | awk '{print $2}')
-if [ -n "$BLIND" ]; then "$HUB" blind-peer "$BLIND" > /dev/null; fi
-"$HUB" land --offline -m "project skeleton" > /dev/null
+if [ -n "$BLIND" ]; then (cd "$DIR/hub" && "$HUB" blind-peer "$BLIND" > /dev/null); fi
 echo "repo invite: $INVITE"
 
+cd "$DIR/hub"
 "$BARE" "$ROOT/bin.mjs" seed --admit "$DIR/admit" > "$DIR/hub-seed.log" 2>&1 &
 echo $! > "$DIR/hub-seed.pid"
 sleep 2
+
+# the skeleton lands from the owner while the hub is up, so the hub holds and settles it
+(cd "$DIR/owner" && "$OWNER" land -m "project skeleton" > /dev/null)
 
 HANDLES=
 i=1

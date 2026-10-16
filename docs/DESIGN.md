@@ -669,12 +669,50 @@ blocked mirroring later lands (`push timed out`). Every mirror step is now bound
 changeset whose content can't be fetched yet isn't marked mirrored and is retried every 2 s.
 View cores and proposals are mirrored best-effort, one core at a time.
 
-**Not done:**
+**Several indexers, and removing a dead one (milestone 7).**
 
-- An indexer that is gone for good stalls settlement. `doctor` and `status` say so, but there
-  is no writer removal yet.
-- Quorums below "all indexers".
-- Finality for review ops themselves.
+- **Settlement needs every indexer, never a quorum.**
+  - autobee inserts a new node by walking back from the end of the order. It passes every
+    node it outranks and hasn't seen, and stops at the first node that outranks it.
+  - A lighter agent node always stops at an indexer's ack, which is why one ack protects a
+    land.
+  - Nodes from different indexers have equal weight, so they compare by timestamp. An indexer
+    that hasn't seen land C can make a node with an older timestamp, which then passes the
+    other indexers' acks and C itself.
+  - So "a majority acked" can still be reordered by the indexer outside the majority.
+  - `test/settle-indexers.js` runs 3 indexers and 2 agents under random partitions, with
+    indexers acking while cut off. At seed 7 the shadow majority rule made 123 settled claims
+    that were later reordered; the every-indexer rule had 0 on every seed tried.
+- **Remove a dead indexer instead (`hs remove-writer`, op type 6).**
+  - The last indexer can't be removed.
+  - `apply` ignores ops from removed writers. autobee keeps applying them, because a removed
+    writer stays "added", so this is where removal takes effect.
+  - After removal autobee gives a writer weight 0, so its late nodes sort after everything.
+  - `test/settle.js` covers a hub (a second indexer) that dies:
+    1. lands stall;
+    2. the other indexer removes it, and settlement resumes;
+    3. the hub's later land never reaches main, and the settled land keeps its number.
+- **The bootstrap writer and hubs (option B).**
+  - autobee keeps a removed genesis writer's weight (`lib/witness.js`: `currentWeight` returns
+    `maxWeight` for genesis, and `approverQualified` trusts the bootstrap key regardless).
+  - When the hub was the bootstrap writer, a removed hub that came back got its land sorted
+    ahead of an already-settled land, which took its number (#1 → #2). That was seen before
+    the guards existed.
+  - **New repos are light.** autobee's `bootstrapWeight: 1` makes the repo's creator a plain
+    writer, carried in the invite (`<key>~1`) and in the config, since every peer must order
+    the same way. `hs init --hub <dir>` creates the hub as a separate writer and the repo's
+    indexer, which `team.sh` and the test helpers use.
+  - **A removed hub is harmless.** It gets weight 0 from autobee, and `apply` ignores its ops.
+  - **When there's no indexer** (a solo repo, or a team whose last hub was removed),
+    settlement waits for every writer. That's the rule `test/settle-property.js` checks as its
+    control. A solo writer acks its own lands, and a new hub can be added later.
+  - **Removal rules:**
+    - a light bootstrap writer can be removed while an indexer remains (its ops still stop at
+      any indexer's ack);
+    - a heavy one (repos from before) can never be removed.
+  - `status` and `doctor` name the writers a stall is waiting for, and how to replace a hub.
+
+**Not done:** finality for review ops themselves.
 
 ## 12. CLI defaults (before experiment 3)
 

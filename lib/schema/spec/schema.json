@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "schema": [
     {
       "name": "head",
@@ -182,6 +182,11 @@
           "name": "seen",
           "type": "@hs/base",
           "version": 8
+        },
+        {
+          "name": "removeWriter",
+          "type": "@hs/remove-writer",
+          "version": 9
         }
       ]
     },
@@ -562,6 +567,11 @@
           "name": "indexer",
           "type": "bool",
           "version": 8
+        },
+        {
+          "name": "removed",
+          "type": "bool",
+          "version": 9
         }
       ]
     },
@@ -782,6 +792,20 @@
           "name": "text",
           "type": "string",
           "version": 7
+        }
+      ]
+    },
+    {
+      "name": "remove-writer",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 9
         }
       ]
     }

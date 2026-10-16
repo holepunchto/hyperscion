@@ -18,15 +18,17 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
     HS_BOOTSTRAP: testnet.bootstrap.map((b) => b.host + ':' + b.port).join(',')
   }
   const dir = await tmp(t)
+  // the owner creates the repo and the hub (its indexer, `init --hub`); the hub seeds
+  const owner = path.join(dir, 'owner')
   const hub = path.join(dir, 'hub')
   const admit = path.join(dir, 'admit')
-  fs.mkdirSync(path.join(hub, 'src'), { recursive: true })
-  fs.writeFileSync(path.join(hub, '.hsattributes'), 'NOTES.md merge=union\n')
-  fs.writeFileSync(path.join(hub, 'NOTES.md'), '# notes\n')
-  fs.writeFileSync(path.join(hub, 'src', 'a.js'), 'a\n')
-  fs.writeFileSync(path.join(hub, 'src', 'pricing.js'), 'price = 1\n')
-  fs.writeFileSync(path.join(hub, 'CONTRACTS.md'), '# contracts\n')
-  fs.writeFileSync(path.join(hub, '.hsowners'), 'src/pricing.js a1\n')
+  fs.mkdirSync(path.join(owner, 'src'), { recursive: true })
+  fs.writeFileSync(path.join(owner, '.hsattributes'), 'NOTES.md merge=union\n')
+  fs.writeFileSync(path.join(owner, 'NOTES.md'), '# notes\n')
+  fs.writeFileSync(path.join(owner, 'src', 'a.js'), 'a\n')
+  fs.writeFileSync(path.join(owner, 'src', 'pricing.js'), 'price = 1\n')
+  fs.writeFileSync(path.join(owner, 'CONTRACTS.md'), '# contracts\n')
+  fs.writeFileSync(path.join(owner, '.hsowners'), 'src/pricing.js a1\n')
 
   const timings = []
   const hs = async (cwd, args, user = 'hub') => {
@@ -42,14 +44,19 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
     }
   })
 
-  const init = await hs(hub, ['init'])
+  const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
   t.is(init.code, 0, 'init')
+  t.ok(/~1$/m.test(init.stdout.match(/^repo (\S+)/m)[1]), 'the invite carries the light bootstrap')
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
-  t.is((await hs(hub, ['land', '--offline', '-m', 'skeleton'])).code, 0)
 
   const seed = background(hub, ['seed', '--admit', admit], { ...env, USER: 'hub' })
   t.teardown(() => seed.stop(), { order: 1 })
   await waitFor(() => seed.output().includes('admitting'))
+  const skeleton = await hs(owner, ['land', '-m', 'skeleton'], 'owner')
+  t.ok(
+    /#\d+ final/.test(skeleton.stdout),
+    'the skeleton settles through the hub: ' + skeleton.stdout
+  )
 
   for (const a of ['a1', 'a2']) {
     const res = await hs(dir, ['clone', invite, a, '--as', a, '--admit', admit], a)

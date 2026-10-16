@@ -19,24 +19,25 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
     ...extraEnv
   }
   const dir = await tmp(t)
+  // the owner creates the repo (a light bootstrap writer) and the hub (its indexer)
+  const owner = path.join(dir, 'owner')
   const hub = path.join(dir, 'hub')
   const admit = path.join(dir, 'admit')
-  fs.mkdirSync(hub, { recursive: true })
+  fs.mkdirSync(owner, { recursive: true })
   for (const [p, content] of Object.entries({
     '.hsattributes': 'NOTES.md merge=union\n',
     ...files
   })) {
-    fs.mkdirSync(path.dirname(path.join(hub, p)), { recursive: true })
-    fs.writeFileSync(path.join(hub, p), content)
+    fs.mkdirSync(path.dirname(path.join(owner, p)), { recursive: true })
+    fs.writeFileSync(path.join(owner, p), content)
   }
 
   const hs = (cwd, args, user = 'hub') => run(cwd, args, { ...env, USER: user })
   const bg = (cwd, args, user = 'hub') => background(cwd, args, { ...env, USER: user })
 
-  const init = await hs(hub, ['init'])
+  const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
   if (init.code !== 0) throw new Error('init: ' + init.stderr)
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
-  await hs(hub, ['land', '--offline', '-m', 'skeleton'])
 
   const self = {
     env,
@@ -79,6 +80,9 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
   }
 
   await self.startHub()
+  // the skeleton lands from the owner while the hub is up, so the hub holds and settles it
+  const skeleton = await hs(owner, ['land', '-m', 'skeleton'], 'owner')
+  if (!/landed #\d+/.test(skeleton.stdout)) throw new Error('skeleton: ' + skeleton.stderr)
   for (const a of agents) {
     const res = await hs(dir, ['clone', invite, a, '--as', a, '--admit', admit], a)
     if (res.code !== 0) throw new Error(`${a} clone: ${res.stderr}`)
