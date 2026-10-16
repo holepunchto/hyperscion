@@ -1,0 +1,7 @@
+{"t":"2026-10-16T16:59:49.312Z","do":"schedule","scenario":"q2","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-16T17:01:49.397Z","at":2,"do":"origin-down","minute":2.01,"stopped":true}
+{"t":"2026-10-16T17:03:49.111Z","at":4,"do":"origin-up","minute":4,"pid":395128}
+{"t":"2026-10-16T17:05:06.312Z","do":"change-request","retry":1,"out":"!! 1 file(s) were edited on top of a stale copy and not committed:\n     /NOTES.md\n   run `hs sync` to bring in main's version first\nhs: refusing to land while files are edited on top of stale copies (see above)\n"}
+{"t":"2026-10-16T17:07:20.015Z","do":"change-request","retry":2,"out":"!! 1 file(s) were edited on top of a stale copy and not committed:\n     /NOTES.md\n   run `hs sync` to bring in main's version first\nhs: refusing to land while files are edited on top of stale copies (see above)\n"}
+{"t":"2026-10-16T17:08:05.975Z","do":"change-request","retry":3,"out":"!! 1 file(s) were edited on top of a stale copy and not committed:\n     /NOTES.md\n   run `hs sync` to bring in main's version first\nhs: refusing to land while files are edited on top of stale copies (see above)\n"}
+{"t":"2026-10-16T17:08:20.294Z","at":3,"do":"change-request","files":"change-request","minute":8.52,"attempt":4,"out":["landed #277","pushed: a holder has the changes","#277 final",""]}

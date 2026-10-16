@@ -257,6 +257,23 @@ Data: `docs/experiments/quick/q2-hs-3`.
 - **No synthetic probe yet:** in-process and CLI setups kept autobee opening the writer, so
   the fix is verified on the real worktree only. A fifth q2 run is the check.
 
+**Check, fifth attempt (q2-hs-5): the outage gap is still open.** Data:
+`docs/experiments/quick/q2-hs-5`.
+
+- Acceptance 100% at minute 17.9 (9.3 in q2-hs-3). Ratings 3/4/3, 18 minutes lost. The
+  change request landed late again (minute 8.5).
+- a2 landed #80 with the hub down. All three feeds showed it within a second, a2's own
+  included, but none held its content within push's 30 s. It stayed unfetchable for
+  minutes after the hub came back, blocking a3 (~10 min) and pm (stale NOTES.md).
+  `test/outage-swarm.js` does not reproduce this: there, feeds hold an outage land in about
+  0.5 s.
+- **Likely, not verified:** a feed's mirror pass works on view cores (one at a time, up to
+  10 s each) and oplogs after its changesets. During an outage that is slow, and a land
+  arriving mid-pass waits for the pass to end. The probe's feeds may never hit the slow path.
+- **Next:** log a feed's mirror steps during a real run (HS_DEBUG), or run views and oplogs
+  in their own loop so they never hold up a new changeset. Also two `land`s that exited
+  "stalled" within 200 ms.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

@@ -1,0 +1,98 @@
+{
+  "outcomes": {
+    "main_states": 7,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 17.9,
+    "acceptance_80_at_min": 17.9,
+    "acceptance_100_at_min": 17.9,
+    "final_state_min": 17.9,
+    "duplicate_implementations": 3,
+    "duplicate_implementations_max": 3,
+    "change_request_at_min": 8.5,
+    "change_request_done_after_min": 9.4
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.6,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#47",
+      "minute": 1.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#52",
+      "minute": 1.4,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#80",
+      "minute": 2.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#277",
+      "minute": 8.5,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#303",
+      "minute": 9.1,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 1
+    },
+    {
+      "id": "#335",
+      "minute": 9.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 2
+    },
+    {
+      "id": "#412",
+      "minute": 17.9,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 3
+    },
+    {
+      "id": "#413",
+      "minute": 21.3,
+      "author": "a2",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    }
+  ]
+}
