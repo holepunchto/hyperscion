@@ -31,8 +31,13 @@ test('outage: feeds keep the team working while the hub is down', async (t) => {
 
   // a1 lands while the hub is down: a feed holds it
   tm.write('a1', 'src/two.js', 'two while the hub is down\n')
+  const landStarted = Date.now()
   const second = await tm.as('a1', ['land', '-m', 'two'])
+  const landMs = Date.now() - landStarted
   t.ok(/landed #\d+/.test(second.stdout), 'land while the hub is down: ' + second.stderr)
+  // no hub to settle it: say so instead of waiting the full settle wait (10 s) for nothing
+  t.ok(/provisional: the hub is not reachable/.test(second.stdout), second.stdout)
+  t.ok(landMs < 9000, `no settle wait with the hub down (${landMs} ms)`)
   t.absent(NO_TRACE.test(second.stdout + second.stderr), 'no stack trace')
 
   // a2 gets the content from a feed, not just the news

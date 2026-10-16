@@ -224,11 +224,15 @@ Data: `docs/experiments/quick/q2-hs-3`.
     changes yet"): no teammate's feed took the content within 30 s, so it stayed on a2's
     machine until a2's next land, 5.6 minutes later. a1's and a3's syncs spent 75–122 s
     each failing to fetch it.
-  - Likely cause, not verified: feeds mirror every changeset, the swarm's included, and
-    during the outage the swarm's content is often unreachable, so each feed works through
-    10 s timeouts before it gets to a teammate's land. Candidates: mirror changesets from
-    connected writers first, or a feed takes its own worktree's lands first; and the stale
-    peer view behind `hs push` timing out (above).
+  - **Fixed** (DESIGN.md §7 "Star mesh"; probe `test/outage-swarm.js`): feeds dropped
+    their outage links in the first 20 s of every outage, and mirrored changesets one at a
+    time, oldest first, behind the swarm's backlog. Now a feed holds a teammate's outage land
+    about 0.5 s after it lands (was 9–14 s, or never).
+  - **Fixed:** `land` no longer waits 10 s for a settle while no hub is reachable (outage
+    land about 1 s, 7 s with the swarm).
+  - Still open: `hs push` trusting a stale peer view (above). It hits online lands too: after
+    offline lands, each later `land` waits its full 30 s for "a holder has the changes"
+    though the hub has them within a second (`test/incoming.js`).
   - The change request landed late (minute 7.5). pm's land was refused for "edited on top
     of a stale copy", naming NOTES.md and a `/swarm/` file pm never touched. That suggests
     a stale file that was never written counts as an edit. Needs a probe.

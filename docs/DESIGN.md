@@ -420,9 +420,31 @@ each runs 60–120 s with a 30 s think time.
 
 So normally each agent keeps one connection, to the hub. When a feed loses everyone (the hub is
 down) it also dials the fallback topic, so feeds mesh only during an outage. Once settling
-resumes, each feed closes the outage links it dialed (never a teammate's command, and only
-while another connection remains). The hub looks up the fallback topic too, so it finds feeds
-again after a restart.
+resumes (settlement moves past where it stood when the links appeared), each feed closes the
+outage links it dialed (never a teammate's command, and only while another connection
+remains). The hub looks up the fallback topic too, so it finds feeds again after a restart.
+
+**Found in the milestone 7 check (q2-hs-3), fixed:** a land made during an outage reached no
+feed, so it stayed on its author's machine. Two causes, reproduced without LLMs in
+`test/outage-swarm.js` (20 scripted writers, hub down):
+
+- feeds closed their outage links whenever the hub wasn't _flagged_ stalled, which includes
+  the first `HS_HUB_STALL_S` (20 s) of every outage;
+- a feed mirrored changesets one at a time, oldest first. In an outage each of the swarm's
+  changesets took about 1 s to fetch from its writer, so a teammate's fresh land waited behind
+  the backlog: 9–14 s, or past `land`'s 30 s push wait in q2. Now four workers mirror at once,
+  each taking the newest changeset waiting (re-read before every pick), so the land an author
+  is waiting on goes next.
+
+With both fixes a feed holds the land about 0.5 s after the land op (was 9–14 s, or never).
+A teammate's `sync` has it within about 6 s.
+
+`land` also no longer waits out its 10 s settle wait when no hub is reachable. A command
+reaches holders only by dialing the main topic (feeds meet on the fallback topic), so no
+connection dialed there means no hub to settle it. `land` then says so (`#n provisional: the
+hub is not reachable, so it settles once the hub is back`) and exits. A land during an outage
+takes about 1 s in `test/outage.js` (11 s before) and about 7 s with the 20-writer swarm
+(12–15 s). `--wait-final` still waits, since it was asked for.
 
 **Per-writer mode, star vs. the full mesh before** (`--mesh full`; same machine, 30 s think;
 raw output in `docs/experiments/swarm/m7-4/`):

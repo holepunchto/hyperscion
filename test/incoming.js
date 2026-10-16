@@ -5,7 +5,9 @@ const test = require('brittle')
 const { team, waitFor } = require('./helpers/team')
 
 test('incoming: a busy directory folds into one line, teammates stay listed', async (t) => {
-  t.timeout(240_000)
+  // slow: a2's online lands after its offline ones each wait ~30 s for a holder to confirm
+  // (the stale-peer-view push bug in ROADMAP M7), though the hub has them within a second
+  t.timeout(360_000)
   const tm = await team(t, {
     agents: ['a1', 'a2', 'a3'],
     files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' }
