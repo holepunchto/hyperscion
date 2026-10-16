@@ -343,6 +343,70 @@ test('a mirror holds a fresh land within seconds while older changesets are unre
   t.ok(ms !== null && ms < 6000, `held within seconds (${ms} ms)`)
 })
 
+// claims (docs/CLAIMS.md): a claim signal reaches a teammate through the hub in well under a
+// second, and a command that connects later gets it in the snapshot
+test('claim signals: relayed by the hub, and in the snapshot for a late command', async (t) => {
+  const claims = require('../lib/claims')
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+  const hub = await peer(t, null, bootstrap, { role: 'holder', keepAlive: true })
+  const a = await peer(t, hub.repo.key, bootstrap, { role: 'feed', keepAlive: true })
+  const b = await peer(t, hub.repo.key, bootstrap, { role: 'feed', keepAlive: true })
+  for (const x of [a, b]) {
+    await x.net.waitForPeers()
+    await hub.repo.addWriter(x.repo.writerKey)
+  }
+  await waitFor(() => a.repo.writable && b.repo.writable, 20_000).catch(() => {})
+  for (const x of [a, b]) await x.net.settle()
+  t.ok(a.repo.writable && b.repo.writable, 'writers')
+
+  const heard = []
+  b.net.on('signal', (p) => heard.push({ p, at: Date.now() }))
+  const time = Date.now()
+  const item = claims.itemId({ writer: a.repo.writerKey, time, title: 'CR-1' })
+  const signed = claims.sign(
+    { item, action: claims.CLAIM, writer: a.repo.writerKey, time, at: time, ttl: claims.TTL_MS },
+    a.repo.main.local.keyPair
+  )
+  const sent = Date.now()
+  a.net.signal(signed)
+  await waitFor(() => heard.length > 0, 5000).catch(() => {})
+  t.ok(heard.length > 0, 'b heard it')
+  t.ok(
+    heard.length && heard[0].at - sent < 1000,
+    `within a second (${heard.length && heard[0].at - sent} ms)`
+  )
+  t.ok(
+    heard.length && b4a.equals(b.net.board.lead(item).lead.writer, a.repo.writerKey),
+    'b sees a lead'
+  )
+
+  // a forged signal (b's key, a's writer) is dropped
+  const forged = claims.sign(
+    { item, action: claims.CLAIM, writer: a.repo.writerKey, time: time - 1000, at: time },
+    b.repo.main.local.keyPair
+  )
+  t.exception(
+    () => b.net.signal(forged),
+    /does not verify/,
+    'signal() refuses a payload that does not verify'
+  )
+  b.net._sendSignals([forged]) // and if one is sent anyway, receivers drop it
+  await new Promise((resolve) => setTimeout(resolve, 500))
+  // an earlier time would have taken the lead if the hub had accepted it
+  t.is(hub.net.board.lead(item).lead.time, time, 'the hub ignored the forgery')
+
+  // a command connecting now gets the claim from a snapshot
+  const c = await peer(t, hub.repo.key, bootstrap)
+  await c.net.waitForPeers()
+  await waitFor(() => c.net.board.lead(item) !== null, 5000).catch(() => {})
+  const lead = c.net.board.lead(item)
+  t.ok(
+    lead && b4a.equals(lead.lead.writer, a.repo.writerKey),
+    'the late command sees a lead from the snapshot'
+  )
+})
+
 test('after prefetch, everything in the sparse set works offline', async (t) => {
   const Worktree = require('../lib/worktree')
   const testnet = await createTestnet(3, t.teardown)

@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "schema": [
     {
       "name": "head",
@@ -124,6 +124,12 @@
           "name": "blobsLength",
           "type": "uint",
           "version": 10
+        },
+        {
+          "name": "items",
+          "array": true,
+          "type": "fixed32",
+          "version": 11
         }
       ]
     },
@@ -192,6 +198,11 @@
           "name": "removeWriter",
           "type": "@hs/remove-writer",
           "version": 9
+        },
+        {
+          "name": "item",
+          "type": "@hs/item-op",
+          "version": 11
         }
       ]
     },
@@ -794,6 +805,11 @@
           "name": "time",
           "type": "uint",
           "version": 7
+        },
+        {
+          "name": "item",
+          "type": "fixed32",
+          "version": 11
         }
       ]
     },
@@ -821,6 +837,149 @@
           "required": true,
           "type": "fixed32",
           "version": 9
+        }
+      ]
+    },
+    {
+      "name": "item-op",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 3,
+      "fields": [
+        {
+          "name": "item",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "action",
+          "required": true,
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "writer",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "at",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "ttl",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "parent",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "paths",
+          "array": true,
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "with",
+          "array": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "signer",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "sig",
+          "type": "buffer",
+          "version": 11
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "id",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "author",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "parent",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "paths",
+          "array": true,
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "done",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "doneBy",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "dropped",
+          "type": "bool",
+          "version": 11
         }
       ]
     }

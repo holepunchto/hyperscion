@@ -150,7 +150,19 @@ const actions = {
       let res
       if (hs) {
         res = await tool('pm', ['land', '-m', message], cwd)
-        if (/landed #\d+/.test(res.out)) return { attempt, out: res.out.split('\n').slice(-4) }
+        if (/landed #\d+/.test(res.out)) {
+          // claims (docs/CLAIMS.md): the change request is also an item agents can claim
+          let item = null
+          if (scenario.claims) {
+            const made = await tool(
+              'pm',
+              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', 'implement'],
+              cwd
+            )
+            item = (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
+          }
+          return { attempt, out: res.out.split('\n').slice(-4), ...(item ? { item } : {}) }
+        }
         // a sync during an outage can leave NOTES.md behind main: drop the edit, resync, redo
         if (/stale copy/.test(res.out)) await tool('pm', ['restore', 'NOTES.md'], cwd)
       } else {

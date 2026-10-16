@@ -93,6 +93,26 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    `your land #11 is now #14` is different: nothing was undone. A land made offline (or one
    that lost a race) was given a later number when peers met.
 
+## Claims: say what you're about to build
+
+Duplicate work is the costliest mistake in a team: three people building the same thing in
+three files, unaware of each other. Before you start something new:
+
+```sh
+hs claims                      # open items and who is on them (a change request is an item)
+hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claiming at the same time
+hs claim --new "cache the distance matrix"     # something that isn't an item yet
+```
+
+- **You lead** (the earliest claim): build it, and land with `--item C1a2b3c` so it closes.
+- **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too.
+  Take an open part (`hs item part C1a2b3c "the scheduler side"`, then claim that), review
+  their land when it comes, or share it (`hs claim C1a2b3c --with a2`).
+- **A claim never blocks anyone,** and nobody's claim stops you landing. A land into
+  someone's claimed paths just prints a `note:`.
+- **Claims expire** after 20 min without activity; your `land` and `sync` keep yours alive.
+  Hold at most 3. `hs claim C1a2b3c --release` when you stop, `--take` for a stale one.
+
 ## Ship, Show or Ask
 
 Every change is one of three kinds. Pick deliberately; it's how teammates learn what you need
