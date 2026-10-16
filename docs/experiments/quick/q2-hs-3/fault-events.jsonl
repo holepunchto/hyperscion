@@ -1,0 +1,6 @@
+{"t":"2026-10-16T12:49:33.536Z","do":"schedule","scenario":"q2","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-16T12:51:34.007Z","at":2,"do":"origin-down","minute":2.02,"stopped":true}
+{"t":"2026-10-16T12:53:33.110Z","at":4,"do":"origin-up","minute":4,"pid":267386}
+{"t":"2026-10-16T12:54:49.933Z","do":"change-request","retry":1,"out":"!! 2 file(s) were edited on top of a stale copy and not committed:\n     /NOTES.md\n     /swarm/sw3.2/11.txt\n   run `hs sync` to bring in main's version first\nhs: refusing to land while files are edited on top of stale copies (see above)\n"}
+{"t":"2026-10-16T12:56:48.936Z","do":"change-request","retry":2,"out":"!! 1 file(s) were edited on top of a stale copy and not committed:\n     /NOTES.md\n   run `hs sync` to bring in main's version first\nhs: refusing to land while files are edited on top of stale copies (see above)\n"}
+{"t":"2026-10-16T12:57:02.506Z","at":3,"do":"change-request","files":"change-request","minute":7.49,"attempt":3,"out":["landed #261","pushed: a holder has the changes","#261 final",""]}

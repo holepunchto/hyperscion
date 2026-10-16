@@ -1,0 +1,73 @@
+# hs usage: 54 calls since 2026-10-16T12:49:33.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 17 | 10 | 0 | 5 | 6 | 2 (2) | 0 | 0 | 0 | 0 | 3 | 0 | 1.5m |
+| a2 | 18 | 10 | 0 | 4 | 5 | 3 (2) | 0 | 1 | 0 | 0 | 0 | 0 | 2.4m |
+| a3 | 19 | 10 | 0 | 4 | 3 | 5 (5) | 0 | 0 | 0 | 0 | 3 | 0 | 0.9m |
+
+totals: lands 10 (accepted 9), auto-rebased 0, real conflicts 1, flip banners 0, stalls 0, unavailable 6, stale refusals 0, push timeouts 1, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 8168/121791, land 13731/13731, watch 49409/559385, doctor 65866/65866, log 1771/1771, show 15259/15259, status 2706/2706
+a2: sync 4291/15065, land 9901/49237, status 5644/7461, push 30231/30231, doctor 599/599, watch 60172/566831
+a3: sync 74910/121712, land 10087/18939, watch 42497/591651, doctor 68746/68746, status 2943/5012, log 3603/3603, cat 121/121
+
+## command mix
+a1: sync=5 land=2 watch=6 doctor=1 log=1 show=1 status=1
+a2: sync=4 land=3 status=4 push=1 doctor=1 watch=5
+a3: sync=4 land=5 watch=3 doctor=1 status=4 log=1 cat=1
+
+## land timeline
+  0.9m a3 landed #40                                              pricing: formula + price(plan, day) pinned in CONTRACTS.md, unit tests
+  1.5m a1 landed #58                                              a1: model.js (loadDay/DayError) + geo.js (distanceKm, travelMinutes, o
+  1.6m a3 landed #62                                              report + cli plan <day> [--json] + integration test (skips until sched
+  1.8m a2 !! not landed: real conflicts in /CONTRACTS.md (#58 a1) scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  2.4m a2 landed #94                                              scheduler: greedy plan(day) on a1's geo + tests; Plan shape pinned in 
+  8.0m a3 landed #287                                             integration: edge1 fixture (heavy/range/window), no more skip; day1 en
+  8.0m a2 landed #290                                             scheduler CR-1: stops[].flightMinutes + plan.flightMinutes[id] for per
+  8.2m a1 landed #293                                             geo: flightMinutesAlong(origin, stops, speedKmh) for CR-1 per-package 
+  9.0m a3 landed #336                                             CR-1: price by flight minute (2+0.25/min+0.4/kg, express x1.5); report
+  9.6m a3 landed #358                                             pricing: use plan.flightMinutes from scheduler when present (CR-1 sing
+
+## metrics (also in metrics.json)
+calls: 54
+minutes: 10.1
+lands: 10
+accepted: 9
+calls_per_accepted_land: 6
+auto_rebased: 0
+real_conflicts: 1
+flips: 0
+stalls: 0
+unavailable: 6
+push_timeouts: 1
+land_ended_final: 8
+land_ended_settled: 0
+land_ended_provisional: 1
+land_ms_p50: 10087
+land_ms_p90: 18939
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 1
+wait_min_total: 7.4
+vcs_min_total: 12.6
+vcs_share_pct: 43.9
+watch_calls: 14
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 1
+exit_warnings: 9
+help_calls: 1
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 3.67
+land_state_trust_mean: 4.67
+minutes_lost_to_hs_total: 7
+confusing_messages_total: 5
+review_usefulness_mean: null

@@ -212,6 +212,27 @@ Three LLM agents plus pm worked q1's task while a scripted swarm of 20 writers l
     the hub held all 30);
   - then a third q2 run.
 
+**Check, third attempt (q2-hs-3): a busy main no longer slows agents; the outage still does.**
+Data: `docs/experiments/quick/q2-hs-3`.
+
+- **Busy main, fixed:** land p50 10 s / p90 19 s (243 s in q2-hs-2), normal syncs 1–8 s
+  (about 30 s). `--check` landed on the checked state past `/swarm/` lands, and the swarm
+  folded into one line in incoming lists. Acceptance 100% at minute 9.3 (12.8). Ratings
+  4/4/4, and all three would choose hs (1 of 3 before). 7 minutes lost (14).
+- **Remaining, the outage with a swarm:**
+  - a2 landed #94 just after the hub went down. Its push timed out ("no holder has your
+    changes yet"): no teammate's feed took the content within 30 s, so it stayed on a2's
+    machine until a2's next land, 5.6 minutes later. a1's and a3's syncs spent 75–122 s
+    each failing to fetch it.
+  - Likely cause, not verified: feeds mirror every changeset, the swarm's included, and
+    during the outage the swarm's content is often unreachable, so each feed works through
+    10 s timeouts before it gets to a teammate's land. Candidates: mirror changesets from
+    connected writers first, or a feed takes its own worktree's lands first; and the stale
+    peer view behind `hs push` timing out (above).
+  - The change request landed late (minute 7.5). pm's land was refused for "edited on top
+    of a stale copy", naming NOTES.md and a `/swarm/` file pm never touched. That suggests
+    a stale file that was never written counts as an edit. Needs a probe.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is
