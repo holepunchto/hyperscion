@@ -288,6 +288,11 @@ Data: `docs/experiments/quick/q2-hs-3`.
   while six older changesets are unreachable. Still open: why the swarm's content was
   unreachable during that outage (fetched in about 1 s in `test/outage-swarm.js`), and two
   `land`s that exited "stalled" within 200 ms.
+- **Confirmed (q2s-hs-2):** with the workers fix every outage land was held in 1.7–4.4 s,
+  the change request landed on its first attempt, and there were no alerts. Ratings 4/4/4,
+  0 minutes lost. Found on the way: the hub's view-core pass (one core at a time, 10 s
+  waits) hadn't reached a departed teammate's view core when the run stopped, so main past
+  that land was unreadable from the hub. Now parallel, with 3 s bounds.
 - **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
   `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").
 

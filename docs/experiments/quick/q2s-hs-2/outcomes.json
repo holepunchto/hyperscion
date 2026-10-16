@@ -1,0 +1,86 @@
+{
+  "outcomes": {
+    "main_states": 3,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 7.4,
+    "acceptance_50_at_min": null,
+    "acceptance_80_at_min": null,
+    "acceptance_100_at_min": null,
+    "final_state_min": 1.5,
+    "duplicate_implementations": 0,
+    "duplicate_implementations_max": 0,
+    "change_request_at_min": null,
+    "change_request_done_after_min": null
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.5,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#55",
+      "minute": 1.2,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#57",
+      "minute": 1.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#62",
+      "minute": 1.5,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#65",
+      "minute": 1.6,
+      "author": "pm",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    },
+    {
+      "id": "#66",
+      "minute": 1.6,
+      "author": "a2",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    },
+    {
+      "id": "#73",
+      "minute": 1.9,
+      "author": "a1",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    },
+    {
+      "id": "#79",
+      "minute": 2,
+      "author": "a2",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    },
+    {
+      "id": "#93",
+      "minute": 2.6,
+      "author": "a3",
+      "error": "hs: not local, and no online peer holds it. It comes back when the team hub (`hs seed`, run by the team owner) or a teammate's running `hs watch` is online; `hs doctor` shows who is reachable\n"
+    }
+  ]
+}

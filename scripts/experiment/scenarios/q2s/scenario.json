@@ -1,6 +1,6 @@
 {
   "name": "Q2 short: swarm + outage, stop early",
-  "about": "Q2 compressed for quick turnaround while fixing bugs: the same team, task split, swarm and outage, but the hub is down from minute 1 to 2.5, the change request lands at minute 1.5, and agents stop as soon as their module and their part of the change request are on main (about 6 minutes). Use q2 for the full check.",
+  "about": "Q2 compressed for quick turnaround while fixing bugs: the same team, task split, swarm and outage, but the hub is down from minute 1 to 2.5, the change request lands at minute 1.5, and agents stop as soon as their module and their part of the change request are on main (about 6 minutes; waiting for their last land to be final means they see the hub come back). Use q2 for the full check.",
   "agents": 3,
   "localDht": true,
   "template": "quick",
@@ -38,5 +38,5 @@
     "think": 30,
     "minutes": 7
   },
-  "stop": "Stop as soon as your module and your part of the change request are on main and `npm test` passes there, or at minute 7 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
+  "stop": "Stop as soon as your module and your part of the change request are on main, `npm test` passes there, and `hs status` shows your last land as final (the shared server may be down for a while; keep going and check again), or at minute 7 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
 }
