@@ -5,21 +5,17 @@ const test = require('brittle')
 const { team, waitFor } = require('./helpers/team')
 
 test('incoming: a busy directory folds into one line, teammates stay listed', async (t) => {
-  // slow: a2's online lands after its offline ones each wait ~30 s for a holder to confirm
-  // (the stale-peer-view push bug in ROADMAP M7), though the hub has them within a second
-  t.timeout(360_000)
+  t.timeout(240_000)
   const tm = await team(t, {
     agents: ['a1', 'a2', 'a3'],
     files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' }
   })
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
 
-  // a2 is a busy bot: 30 lands under /swarm/
+  // a2 is a busy bot: 30 lands under /swarm/, landed offline and pushed
   for (let i = 0; i < 30; i++) {
     tm.write('a2', `swarm/s${i}.txt`, `${i}\n`)
-    // offline (fast) until a3's change, online after it (an offline tail pushed with
-    // `hs push` doesn't always reach the hub under load: the push bug in ROADMAP M7)
-    const res = await tm.as('a2', ['land', '-m', 'swarm ' + i, ...(i <= 27 ? ['--offline'] : [])])
+    const res = await tm.as('a2', ['land', '-m', 'swarm ' + i, '--offline'])
     t.ok(/landed #\d+/.test(res.stdout), res.stdout + res.stderr)
     if (i === 27) {
       // a3's teammate change lands in the middle of it
@@ -30,6 +26,8 @@ test('incoming: a busy directory folds into one line, teammates stay listed', as
       await tm.as('a2', ['sync'])
     }
   }
+  const pushed = await tm.as('a2', ['push'])
+  t.is(pushed.code, 0, 'push: ' + pushed.stdout + pushed.stderr)
   // wait until the hub serves all of it (a1 sees main at #32: skeleton + 30 swarm + a3)
   await waitFor(async () => {
     await tm.as('a1', ['fetch'])

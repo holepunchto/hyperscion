@@ -185,8 +185,8 @@ at 4 writers / 200 workspaces.
   against any such stall.
 - **Who holds what.** Other peers replicate a writer's oplog eagerly. Workspace trees and blobs
   are fetched lazily, so **content needs a holder after its author goes offline**:
-  - `hs seed --mirror` downloads every landed workspace's tree and blobs core **and every
-    writer's view core**. The view cores matter because autobee views share subtrees across
+  - `hs seed --mirror` downloads every landed workspace's tree and blobs core, **every
+    writer's view core**, and every writer's oplog. The view cores matter because autobee views share subtrees across
     writers' view cores. A star-topology landing benchmark hung where a full mesh did not,
     most likely while reading view blocks that only an unreachable writer held. The exact
     blocks were not traced.
@@ -707,6 +707,14 @@ hit the same wall. Now:
   reorg replaces them.
 
 `test/net.js` covers it: the old loop times out on the probe.
+
+**A hub that applied a writer's lands without holding its oplog (found chasing `hs push`
+timeouts).** Peers catch up through the writers' view cores, so the hub can apply lands
+without fetching the oplog blocks they came from. After 27 offline lands and a `push`, the
+hub was at #28 but held blocks 0–13 and 27 of that writer's oplog. Every later `push` and
+`land` then waited its full 30 s for "a holder has the changes", correctly, since no holder
+had them. A mirror now also holds every writer's whole oplog. Push takes 0.8 s, and the lands
+after it 1.4 s (31 s). Probe: `test/net.js` "a mirror holds the whole oplog".
 
 **Catching up on a busy main (q2-hs-2).** `sync`, `land`, `clone`, `doctor` and `watch` first
 "settle": catch up with main as connected peers hold it. Settling used to wait for 300 ms in

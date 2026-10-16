@@ -227,6 +227,43 @@ test('settle returns on a busy main, with at least what peers held when it start
   await landing
 })
 
+// `hs push` and `land` waited their full 30 s for "a holder has the changes" after a writer
+// had landed offline: the hub caught up through the view cores and never fetched the middle
+// of the writer's oplog, so no holder had all of it. A mirror now holds every oplog too.
+test('a mirror holds the whole oplog of a writer that landed offline', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+
+  const hub = await peer(t, null, bootstrap, { role: 'holder', mirror: true, keepAlive: true })
+  const a = await peer(t, hub.repo.key, bootstrap)
+  await a.net.waitForPeers()
+  await hub.repo.addWriter(a.repo.writerKey)
+  await a.net.settle()
+  t.ok(a.repo.writable, 'a is a writer')
+  const ws = await a.repo.workspace('w')
+  await ws.commit([put('/0.txt', '0')])
+  await ws.land()
+  t.ok(await a.net.landed(ws), 'online land held')
+
+  // offline: 27 lands (with 10 the hub happened to fetch everything)
+  await a.net.close()
+  for (let i = 1; i <= 27; i++) {
+    await ws.commit([put(`/${i}.txt`, 'x'.repeat(2000) + i)])
+    await ws.land()
+  }
+
+  a.net = new Network(a.repo, { bootstrap })
+  t.teardown(() => a.net.close(), { order: -2 })
+  await a.net.ready()
+  await a.net.waitForPeers()
+  const local = a.repo.main.local
+  t.ok(await a.net.uploaded([local], { timeout: 15_000 }), 'the hub holds our whole oplog')
+  const held = hub.store.get({ key: local.key })
+  await held.ready()
+  t.is(held.contiguousLength, local.length, 'every block, not just what applying needed')
+  await held.close()
+})
+
 test('after prefetch, everything in the sparse set works offline', async (t) => {
   const Worktree = require('../lib/worktree')
   const testnet = await createTestnet(3, t.teardown)

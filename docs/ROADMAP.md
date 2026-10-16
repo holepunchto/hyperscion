@@ -207,9 +207,9 @@ Three LLM agents plus pm worked q1's task while a scripted swarm of 20 writers l
   - read-only commands during a land (done: they open the store read-only, offline;
     `test/check.js`);
   - teammates first in `sync` (done: busy directories fold into one line; `test/incoming.js`);
-  - found on the way, not fixed: `hs push` can time out while the hub has everything. It
-    reads the hub's contiguous length of our oplog from stale peer state (14 of 30 while
-    the hub held all 30);
+  - found on the way: `hs push` can time out after offline lands. First read as stale peer
+    state; it turned out the hub really lacked the middle of the writer's oplog (fixed after
+    q2-hs-3: mirrors hold every oplog);
   - then a third q2 run.
 
 **Check, third attempt (q2-hs-3): a busy main no longer slows agents; the outage still does.**
@@ -230,9 +230,10 @@ Data: `docs/experiments/quick/q2-hs-3`.
     about 0.5 s after it lands (was 9–14 s, or never).
   - **Fixed:** `land` no longer waits 10 s for a settle while no hub is reachable (outage
     land about 1 s, 7 s with the swarm).
-  - Still open: `hs push` trusting a stale peer view (above). It hits online lands too: after
-    offline lands, each later `land` waits its full 30 s for "a holder has the changes"
-    though the hub has them within a second (`test/incoming.js`).
+  - **Fixed, the `hs push` timeouts:** the peer view wasn't stale. The hub applied a writer's
+    lands through the view cores without fetching the middle of the writer's oplog, so no
+    holder really had it. Mirrors now hold every writer's oplog (push 0.8 s, was a 30 s
+    timeout).
   - The change request landed late (minute 7.5). pm's land was refused for "edited on top
     of a stale copy", naming NOTES.md and a `/swarm/` file pm never touched. That suggests
     a stale file that was never written counts as an edit. Needs a probe.
