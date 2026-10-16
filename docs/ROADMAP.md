@@ -240,6 +240,23 @@ Data: `docs/experiments/quick/q2-hs-3`.
     stat cache. `status` now treats a stale file with main's content (or unchanged
     content) as not edited (`test/stale.js`).
 
+**Check, fourth attempt (q2-hs-4): the change request was lost in the outage.** Data:
+`docs/experiments/quick/q2-hs-4`.
+
+- pm landed the change request as #95 during the outage. Its push timed out, and pm, which
+  has no `hs watch`, exited, so nobody held its content. The agents never read it,
+  acceptance stopped at 92.6%, and their NOTES.md stayed stale (lands touching it refused).
+  Ratings 4/3/2, 22 minutes lost.
+- **Root cause, on pm's worktree:** no peer ever opened pm's oplog. autobee opens only the
+  writers it is linearizing, and peers had applied pm's single land through the view cores.
+  So nothing replicated pm's oplog, and push waited for a holder that couldn't come. The
+  mirror now opens every writer's oplog by key (`Repo.writerKeys`) and keeps the sessions
+  open. Against the restarted hub, pm's push: timeout → 0.7 s.
+- **And:** a push that succeeded then hung on exit ("stalled"). `saveBase` read main's event
+  count after the network had closed; it now reads local only.
+- **No synthetic probe yet:** in-process and CLI setups kept autobee opening the writer, so
+  the fix is verified on the real worktree only. A fifth q2 run is the check.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

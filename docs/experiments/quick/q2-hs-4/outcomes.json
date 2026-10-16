@@ -1,0 +1,65 @@
+{
+  "outcomes": {
+    "main_states": 4,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 92.6,
+    "acceptance_50_at_min": 9.3,
+    "acceptance_80_at_min": 9.3,
+    "acceptance_100_at_min": null,
+    "final_state_min": 9.3,
+    "duplicate_implementations": 0,
+    "duplicate_implementations_max": 0,
+    "change_request_at_min": 3.1,
+    "change_request_done_after_min": null
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.4,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#52",
+      "minute": 1.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#69",
+      "minute": 1.7,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#95",
+      "minute": 3.1,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#332",
+      "minute": 9.3,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    }
+  ]
+}

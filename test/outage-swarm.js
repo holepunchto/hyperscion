@@ -18,10 +18,17 @@ const { team, waitFor, sleep } = require('./helpers/team')
 
 const WRITERS = Number(process.env.HS_OUTAGE_SWARM_WRITERS || 20)
 const THINK_S = Number(process.env.HS_OUTAGE_SWARM_THINK || 5)
+// how long into the outage the land comes (q2-hs-4: pm landed ~60 s in, after feeds' mirror
+// passes had started walking every writer's cores)
+const LAND_AFTER_S = Number(process.env.HS_OUTAGE_SWARM_LAND_AFTER || 5)
 
 test('outage with a swarm: a teammate land reaches a feed in seconds', async (t) => {
   t.timeout(300_000)
-  const tm = await team(t, { files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' } })
+  // a3 lands without a feed of its own, like q2's pm: only a1's and a2's feeds can hold it
+  const tm = await team(t, {
+    agents: ['a1', 'a2', 'a3'],
+    files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' }
+  })
   const feed1 = tm.bgAs('a1', ['watch'])
   const feed2 = tm.bgAs('a2', ['watch'])
   await waitFor(() => /watching main/.test(feed1.output()), 60_000)
@@ -36,22 +43,22 @@ test('outage with a swarm: a teammate land reaches a feed in seconds', async (t)
     () => /no peers reachable|peers reachable again/.test(feed1.output()),
     60_000
   ).catch(() => {})
-  await sleep(5000) // let the outage mesh form and the swarm land a few more
+  await sleep(LAND_AFTER_S * 1000) // let the outage mesh form and the swarm land some more
 
-  tm.write('a2', 'src/outage.js', 'landed while the hub is down\n')
+  tm.write('a3', 'src/outage.js', 'landed while the hub is down\n')
   const started = Date.now()
-  const landed = await tm.as('a2', ['land', '-m', 'outage land'])
+  const landed = await tm.as('a3', ['land', '-m', 'outage land'])
   const landMs = Date.now() - started
   t.ok(/landed #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
   const pushed = /pushed: a holder has the changes/.test(landed.stdout)
   t.comment(
-    `a2 land took ${landMs} ms, pushed=${pushed}: ${landed.stdout
+    `a3 land took ${landMs} ms, pushed=${pushed}: ${landed.stdout
       .split('\n')
       .filter((l) => /push|holder/.test(l))
       .join(' | ')}`
   )
 
-  // a2's land process is gone: the content must come from a feed now
+  // a3's land process is gone: the content must come from a feed now
   const readStart = Date.now()
   let read = null
   await waitFor(async () => {
@@ -74,7 +81,7 @@ test('outage with a swarm: a teammate land reaches a feed in seconds', async (t)
       fs.writeFileSync(process.env.HS_OUTAGE_SWARM_DUMP + '.feed1', feed1.output())
       fs.writeFileSync(process.env.HS_OUTAGE_SWARM_DUMP + '.feed2', feed2.output())
     }
-    t.comment('a2 land:\n' + landed.stdout + landed.stderr)
+    t.comment('a3 land:\n' + landed.stdout + landed.stderr)
     t.comment(
       'feed1 tail:\n' +
         feed1

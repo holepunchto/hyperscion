@@ -718,7 +718,10 @@ without fetching the oplog blocks they came from. After 27 offline lands and a `
 hub was at #28 but held blocks 0–13 and 27 of that writer's oplog. Every later `push` and
 `land` then waited its full 30 s for "a holder has the changes", correctly, since no holder
 had them. A mirror now also holds every writer's whole oplog. Push takes 0.8 s, and the lands
-after it 1.4 s (31 s). Probe: `test/net.js` "a mirror holds the whole oplog".
+after it 1.4 s (31 s). Probe: `test/net.js` "a mirror holds the whole oplog". The first version mirrored only autobee's _active_
+writers. q2-hs-4 showed that a writer whose single land peers had applied through the view
+cores is never opened at all, so its oplog had no peer and its push could never succeed. The
+mirror now opens every writer's oplog by key and keeps those sessions open.
 
 **Catching up on a busy main (q2-hs-2).** `sync`, `land`, `clone`, `doctor` and `watch` first
 "settle": catch up with main as connected peers hold it. Settling used to wait for 300 ms in

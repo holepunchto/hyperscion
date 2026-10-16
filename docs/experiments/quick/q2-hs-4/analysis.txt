@@ -1,0 +1,70 @@
+# hs usage: 65 calls since 2026-10-16T16:04:43.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 13 | 8 | 0 | 4 | 4 | 1 (1) | 0 | 0 | 0 | 0 | 5 | 0 | 1.5m |
+| a2 | 22 | 14 | 0 | 3 | 4 | 4 (1) | 0 | 1 | 0 | 1 | 7 | 0 | 8.0m |
+| a3 | 30 | 18 | 0 | 9 | 10 | 2 (1) | 0 | 0 | 0 | 0 | 10 | 1 | 1.2m |
+
+totals: lands 7 (accepted 3), auto-rebased 0, real conflicts 1, flip banners 0, stalls 1, unavailable 22, stale refusals 1, push timeouts 0, unresolved 4
+
+## latency p50/p90 (ms)
+a1: sync 66533/69059, land 7637/7637, watch 300301/702414, status 6256/6256, doctor 32629/32629, cat 15180/15180
+a2: sync 30333/90407, land 48632/107764, status 2531/26767, cat 15191/15191, doctor 33592/33592, log 4664/4664, show 15235/15235, watch 120195/803406, restore 298/298
+a3: sync 75239/75354, log 2061/2061, land 10131/10131, watch 30143/1341035, status 205/8312, cat 15267/15267, doctor 35382/35382, show 15253/15253, restore 15178/15178
+
+## command mix
+a1: sync=4 land=1 watch=4 status=2 doctor=1 cat=1
+a2: sync=3 land=4 status=6 cat=1 doctor=1 log=1 show=1 watch=4 restore=1
+a3: sync=9 log=1 land=2 watch=10 status=3 cat=2 doctor=1 show=1 restore=1
+
+## land timeline
+  1.2m a3 landed #52                                              pricing/report/cli: price formula pinned in CONTRACTS.md, cli plan [--
+  1.3m a2 !! not landed: real conflicts in /CONTRACTS.md (#52 a3) scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  1.5m a1 landed #69                                              model+geo: loadDay (DayValidationError w/ errors[]), distanceKm, trave
+  3.3m a2 hs: content for /NOTES.md is not available from any con scheduler: greedy plan(day) + tests (uses a1 geo); Plan shape pinned i
+  6.7m a2 hs: content for /NOTES.md is not available from any con scheduler: greedy plan(day) + tests (uses a1 geo); Plan shape pinned i
+  8.0m a2 landed #332                                             scheduler: greedy plan(day) + tests (uses a1 geo); Plan shape pinned i
+ 13.1m a3 hs: refusing to land while files are edited on top of s notes: a3 asks for CR-1 content
+
+## metrics (also in metrics.json)
+calls: 65
+minutes: 22.7
+lands: 7
+accepted: 3
+calls_per_accepted_land: 21.67
+auto_rebased: 0
+real_conflicts: 1
+flips: 0
+stalls: 1
+unavailable: 22
+push_timeouts: 0
+land_ended_final: 3
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 10131
+land_ms_p90: 10131
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 1
+wait_min_total: 17.8
+vcs_min_total: 21.4
+vcs_share_pct: 45.3
+watch_calls: 18
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 13
+exit_warnings: 26
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,3,2]
+would_choose_hs: "1/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.67
+minutes_lost_to_hs_total: 22
+confusing_messages_total: 5
+review_usefulness_mean: null

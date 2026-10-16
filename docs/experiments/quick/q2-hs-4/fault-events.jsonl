@@ -1,0 +1,4 @@
+{"t":"2026-10-16T16:04:43.219Z","do":"schedule","scenario":"q2","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-16T16:06:43.805Z","at":2,"do":"origin-down","minute":2.01,"stopped":true}
+{"t":"2026-10-16T16:08:20.356Z","at":3,"do":"change-request","files":"change-request","minute":3.62,"attempt":1,"out":["landed #95","!! push timed out: no holder has your changes yet. Run `hs push` while a holder is online","#95 provisional: the hub is not reachable, so it settles once the hub is back (on its own; `hs status` shows it)",""]}
+{"t":"2026-10-16T16:08:43.118Z","at":4,"do":"origin-up","minute":4,"pid":373265}
