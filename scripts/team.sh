@@ -39,13 +39,15 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 BARE=$(cd "$ROOT" && node -p "require('bare-runtime')()")
 mkdir -p "$DIR"
 DIR=$(cd "$DIR" && pwd)
-mkdir -p "$DIR/hub" "$DIR/agents" "$DIR/bin" "$DIR/admit" "$DIR/faults"
+mkdir -p "$DIR/hub" "$DIR/agents" "$DIR/bin" "$DIR/admit" "$DIR/faults" "$DIR/debug"
 
 wrapper() {
   cat > "$DIR/bin/hs-$1" <<EOF
 #!/bin/sh
 # hs for $1; every call is traced to $DIR/trace.jsonl
 export USER=$1 HS_AGENT=$1 HS_TRACE=$DIR/trace.jsonl
+# debug logs the agent never sees: mirror steps (feeds) and land/sync phase timings
+export HS_DEBUG_MIRROR=$DIR/debug/mirror-$1.log HS_DEBUG_LAND=$DIR/debug/land-$1.log
 ${HS_BOOTSTRAP:+export HS_BOOTSTRAP=$HS_BOOTSTRAP}
 if [ -f $DIR/faults/$1.dead ]; then echo "hs: this machine is gone" >&2; exit 1; fi
 if [ -f $DIR/faults/$1.offline ]; then export HS_BOOTSTRAP=127.0.0.1:9; fi

@@ -47,7 +47,11 @@ const vars = {
     ? path.join(dir, 'playbook.md')
     : path.join(repo, 'docs', arm === 'git' ? 'AGENTS-git.md' : 'AGENTS.md'),
   REPORT: path.join(dir, 'reports', agent + '.md'),
-  SCENARIO: scenario.brief || ''
+  SCENARIO: scenario.brief || '',
+  // when to stop; short scenarios (q2s) stop as soon as the part under test is exercised
+  STOP:
+    scenario.stop ||
+    'Stop when your part works on the latest main and `npm test` passes, or after about 15 land/sync cycles.'
 }
 if (!vars.ROLE) {
   console.error('no role for ' + agent + ' in ' + scenarioName)

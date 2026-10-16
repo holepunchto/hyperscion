@@ -50,6 +50,31 @@ Use it before a full round. There are two tiers.
    `inject.js --scale 0.1` replays a scenario's schedule ten times faster, for dry runs
    without agents.
 
+3. **While fixing a bug, use the shortest tier that shows it.**
+   - **Scripted replay of a q2 run (about 70 s, no LLM):** the q2 team, a 20-writer swarm,
+     the hub going down, a land made during the outage, and a teammate syncing until it
+     arrives.
+
+     ```sh
+     scripts/experiment/setup.sh <teamdir> hs q2
+     node scripts/experiment/outage-replay.js <teamdir> [--like-q2-hs-5]
+     ```
+
+     The last line is a summary: land time, whether a holder took it, when the teammate had
+     it, and the land's phases.
+
+   - **Debug logs, the agents never see them:** the wrappers set `HS_DEBUG_LAND` (land and
+     sync phase timings) and `HS_DEBUG_MIRROR` (a feed's mirror steps), written to
+     `<teamdir>/debug/`.
+   - **Short LLM run, `q2s` (about 6 minutes):** q2 with the outage from minute 1 to 2.5,
+     the change request at 1.5, and agents told to stop once their module and their part of
+     the change request are on main. Run `swarm-load.js --minutes 7` alongside.
+   - **Cut runs short:** `node scripts/experiment/alerts.js <teamdir> --follow` prints one
+     line per problem (push timeouts, unfetchable content, stale-copy refusals, stalls,
+     lands or syncs over 30 s) and when the change request lands. Stop the agents as soon as
+     a run has shown the problem, or that the fix works. Save full q2 runs for when the known
+     issues are fixed.
+
 ## Pieces
 
 - **Arms:**

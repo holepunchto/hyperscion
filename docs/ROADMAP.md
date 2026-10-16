@@ -270,9 +270,19 @@ Data: `docs/experiments/quick/q2-hs-3`.
 - **Likely, not verified:** a feed's mirror pass works on view cores (one at a time, up to
   10 s each) and oplogs after its changesets. During an outage that is slow, and a land
   arriving mid-pass waits for the pass to end. The probe's feeds may never hit the slow path.
-- **Next:** log a feed's mirror steps during a real run (HS_DEBUG), or run views and oplogs
-  in their own loop so they never hold up a new changeset. Also two `land`s that exited
-  "stalled" within 200 ms.
+- **Measured (scripted replay, `scripts/experiment/outage-replay.js`, about 70 s):** mirror
+  passes take milliseconds; that guess was wrong. A replay of a2's q2-hs-5 sequence
+  instead stalled about 30 s _before_ the land op, inside `settle`. A writer whose oplog no
+  connected peer had never got a target, so every settle on a busy main ran to its
+  timeout. Fixed: after one round of asking, such a writer's target is what we hold. Also,
+  `land --check` no longer re-pulls when no peer is connected (solo or offline: 19 s → 4 s).
+  The replayed outage land: 31.8 s → 1.6–2.3 s, and a teammate has it 4 s later.
+- **Still unexplained:** q2-hs-5's own failure: the land op went out at once and every feed
+  saw it, but none held it within 30 s. The wrappers now log mirror steps and land phases
+  (`<teamdir>/debug/`) in every run, so the next one will show it. Also two `land`s that
+  exited "stalled" within 200 ms.
+- **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
+  `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").
 
 ### M8: the coordination layer
 
