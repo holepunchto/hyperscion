@@ -72,6 +72,72 @@ test('content that could not be fetched is stale, never an edit', async (t) => {
   await disconnect()
 })
 
+// q2-hs-3: a sync killed mid-checkout wrote files it had fetched but not the stat cache, so a
+// file cached as stale (never written) sat on disk with exactly main's content, and `land`
+// refused it as "edited on top of a stale copy" though nobody had touched it
+test('a stale file that already has the wanted content is up to date, not an edit', async (t) => {
+  const { a, b, connect } = await pair(t)
+  let disconnect = connect()
+
+  const wa = await a.workspace('wa')
+  await wa.commit([put('/old.txt', 'old v1\n')])
+  await wa.land()
+  await settle(a, b)
+
+  const dir = await tmp(t)
+  const wt = new Worktree(dir)
+  const wb = await b.workspace('wb')
+  await wt.checkout(wb, { wait: true, timeout: 5000 })
+
+  // a new file and a new version land; b goes offline before fetching either
+  await wa.commit([put('/new.txt', 'new v1\n'), put('/old.txt', 'old v2\n')])
+  await wa.land()
+  await settle(a, b)
+  await disconnect()
+  wb.io = { wait: false }
+  await wb.sync()
+  const co = await wt.checkout(wb)
+  t.alike(co.missing.sort(), ['/new.txt', '/old.txt'], 'both stale')
+
+  // what a checkout killed before saving its cache leaves: main's content on disk, the cache
+  // still saying stale
+  fs.writeFileSync(path.join(dir, 'new.txt'), 'new v1\n')
+  fs.writeFileSync(path.join(dir, 'old.txt'), 'old v2\n')
+  const st = await wt.status(wb)
+  t.alike([...st], [], 'not edits: ' + st.map((ch) => ch.status + ' ' + ch.path).join(', '))
+  t.alike(st.stale, [], 'and no longer stale')
+  const res = await wt.commit(wb)
+  t.alike(res.blocked, [], 'nothing held back')
+
+  // the version we waited for arrives after main moved on again: behind, still not an edit
+  disconnect = connect()
+  await wa.commit([put('/new.txt', 'new v2\n')])
+  await wa.land()
+  await settle(a, b)
+  await disconnect()
+  await wb.sync()
+  await wt.checkout(wb) // new.txt v2 can't be fetched: stale, wanting v2
+  fs.writeFileSync(path.join(dir, 'new.txt'), 'new v1\n') // rewritten, same content
+  const behind = await wt.status(wb)
+  t.alike([...behind], [], 'content unchanged since marked stale: not an edit')
+  t.alike(behind.stale, ['/new.txt'], 'still behind main')
+
+  // a file someone really did create over a stale one is still held back
+  disconnect = connect()
+  await wa.commit([put('/more.txt', 'more v1\n')])
+  await wa.land()
+  await settle(a, b)
+  await disconnect()
+  await wb.sync()
+  await wt.checkout(wb)
+  fs.writeFileSync(path.join(dir, 'more.txt'), 'my own more\n')
+  const mine = await wt.status(wb)
+  t.alike(
+    mine.map((ch) => ch.status + ' ' + ch.path),
+    ['modified (stale base) /more.txt']
+  )
+})
+
 test('offline sync over missing content fails fast and leaves the workspace untouched', async (t) => {
   const { a, b, connect } = await pair(t)
   const disconnect = connect()

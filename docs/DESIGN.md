@@ -538,6 +538,10 @@ but hit availability and safety bugs. Milestone 2 turns those into rules.
     (`modified (stale base)`), and `land` refuses while they exist.
   - `checkout` never overwrites a locally edited file; `hs restore` does that on request.
   - This closes the near-silent revert three agents hit.
+  - A stale file counts as edited only if its content is neither main's version nor what
+    was there when it was marked. In q2-hs-3 a sync killed mid-checkout had written a file
+    it fetched without saving the stat cache. `land` then refused a file nobody had touched
+    as "edited on top of a stale copy" (probe in `test/stale.js`).
 - **A land isn't done until a holder has it.**
   - `land -o` and `push` wait until a peer holds the oplog _and_ the landed workspace's tree
     and blobs.

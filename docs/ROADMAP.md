@@ -234,9 +234,11 @@ Data: `docs/experiments/quick/q2-hs-3`.
     lands through the view cores without fetching the middle of the writer's oplog, so no
     holder really had it. Mirrors now hold every writer's oplog (push 0.8 s, was a 30 s
     timeout).
-  - The change request landed late (minute 7.5). pm's land was refused for "edited on top
-    of a stale copy", naming NOTES.md and a `/swarm/` file pm never touched. That suggests
-    a stale file that was never written counts as an edit. Needs a probe.
+  - **Fixed, the late change request** (minute 7.5): pm's land was refused for "edited on
+    top of a stale copy" on a `/swarm/` file pm never touched. The injector had killed a
+    sync stuck in the outage (120 s) after it wrote the fetched file but before it saved the
+    stat cache. `status` now treats a stale file with main's content (or unchanged
+    content) as not edited (`test/stale.js`).
 
 ### M8: the coordination layer
 
