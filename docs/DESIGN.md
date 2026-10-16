@@ -436,7 +436,11 @@ feed, so it stayed on its author's machine. Two causes, reproduced without LLMs 
   each taking the newest changeset waiting (re-read before every pick), so the land an author
   is waiting on goes next.
 
-With both fixes a feed holds the land about 0.5 s after the land op (was 9–14 s, or never).
+With both fixes a feed holds the land about 0.5 s after the land op (was 9–14 s, or never). A third cause showed up in the first short run (q2s-hs-1): content that couldn't be
+fetched at all cost 10 s per changeset, and the pass's workers returned once nothing was
+pending, leaving one worker newest-first behind a stream of unreachable changesets. The mirror
+now runs long-lived workers (3 s attempts, backoff for failures) and does view cores, oplogs
+and proposals in a separate pass.
 A teammate's `sync` has it within about 6 s.
 
 `land` also no longer waits out its 10 s settle wait when no hub is reachable. A command

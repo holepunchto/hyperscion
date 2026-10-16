@@ -1,0 +1,32 @@
+2026-10-16T18:42:26.845Z 462798 - +621ms checkout: written 0 missing 14
+2026-10-16T18:42:32.853Z 463000 fetch +3ms start
+2026-10-16T18:42:32.986Z 463000 fetch +136ms pull: peers 1 holder=true
+2026-10-16T18:42:33.314Z 463000 fetch +464ms pull: settled=true
+2026-10-16T18:42:33.320Z 463000 fetch +470ms prefetch: fetched 0 missing 0
+2026-10-16T18:42:33.834Z 463036 info +3ms start
+2026-10-16T18:43:06.620Z 463592 sync +3ms start
+2026-10-16T18:43:06.761Z 463592 sync +144ms pull: peers 12 holder=true
+2026-10-16T18:43:28.726Z 463592 sync +22109ms pull: settled=true
+2026-10-16T18:43:28.746Z 463592 sync +22129ms prefetch: fetched 3 missing 0
+2026-10-16T18:43:28.766Z 463592 sync +22149ms checkout: written 19 missing 0
+2026-10-16T18:44:06.050Z 464147 land +4ms start
+2026-10-16T18:44:06.287Z 464147 land +241ms pull: peers 9 holder=false
+2026-10-16T18:44:21.113Z 464147 land +15067ms pull: settled=true
+2026-10-16T18:44:21.142Z 464147 land +15096ms prefetch: fetched 9 missing 0
+2026-10-16T18:44:21.156Z 464147 land +15110ms check round 0: synced to #50
+2026-10-16T18:44:21.175Z 464147 land +15129ms checkout: written 35 missing 0
+2026-10-16T18:44:21.175Z 464147 land +15129ms check round 0: materialized
+2026-10-16T18:44:21.546Z 464147 land +15500ms check round 0: check ran
+2026-10-16T18:44:21.546Z 464147 land +15500ms pull: peers 23 holder=false
+2026-10-16T18:44:21.852Z 464147 land +15806ms pull: settled=true
+2026-10-16T18:44:21.852Z 464147 land +15806ms land op
+2026-10-16T18:44:21.875Z 464147 land +15829ms land op: accepted #51
+2026-10-16T18:44:21.926Z 464147 land +15880ms checkout: written 0 missing 0
+2026-10-16T18:44:51.955Z 464147 land +45909ms push: held=false
+2026-10-16T18:44:56.663Z 464523 push +4ms start
+2026-10-16T18:45:32.168Z 464813 status +4ms start
+2026-10-16T18:45:32.352Z 464813 status +187ms pull: peers 7 holder=true
+2026-10-16T18:45:35.593Z 464813 status +3428ms pull: settled=true
+2026-10-16T18:45:42.343Z 465009 sync +4ms start
+2026-10-16T18:45:42.571Z 465009 sync +231ms pull: peers 5 holder=true
+2026-10-16T18:45:48.223Z 465009 sync +5883ms pull: settled=true

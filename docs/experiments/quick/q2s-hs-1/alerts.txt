@@ -1,0 +1,8 @@
+ALERT m1.2 a2 land 46s exit 2 landed #51: push timed out, slow
+ALERT m1.6 pm land 31s exit 2 landed #55: push timed out, slow
+ALERT m2.0 a2 push 30s exit 2: push timed out, slow
+ALERT m1.1 a3 land 94s exit 1: content unfetchable, slow
+ALERT m1.7 a1 sync 67s exit 2: content unfetchable, slow
+EVENT m1.01 origin-down
+EVENT m2.12 change request landed (attempt 1)
+EVENT m2.5 origin-up

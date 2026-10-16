@@ -277,10 +277,17 @@ Data: `docs/experiments/quick/q2-hs-3`.
   timeout. Fixed: after one round of asking, such a writer's target is what we hold. Also,
   `land --check` no longer re-pulls when no peer is connected (solo or offline: 19 s → 4 s).
   The replayed outage land: 31.8 s → 1.6–2.3 s, and a teammate has it 4 s later.
-- **Still unexplained:** q2-hs-5's own failure: the land op went out at once and every feed
-  saw it, but none held it within 30 s. The wrappers now log mirror steps and land phases
-  (`<teamdir>/debug/`) in every run, so the next one will show it. Also two `land`s that
-  exited "stalled" within 200 ms.
+- **Explained by the first short run (q2s-hs-1), and fixed:** the q2-hs-5 failure, where the
+  land op went out at once and every feed saw it but none held it. From the outage start,
+  each feed's mirror tried one swarm changeset every 10 s: the content was unreachable and
+  each attempt timed out after 10 s. It went newest first, with a single worker left,
+  because the others returned when nothing was pending at the start of the pass. A
+  teammate's land was never the newest, so it was never tried. Now four long-lived
+  workers, 3 s attempts, backoff for what fails, and view cores, oplogs and proposals in
+  their own pass. Probe in `test/net.js`: a fresh land is held after 2.6 s (9.6 s before)
+  while six older changesets are unreachable. Still open: why the swarm's content was
+  unreachable during that outage (fetched in about 1 s in `test/outage-swarm.js`), and two
+  `land`s that exited "stalled" within 200 ms.
 - **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
   `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").
 

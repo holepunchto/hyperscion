@@ -1,0 +1,130 @@
+{"type":"changeset","seq":12,"hash":"8dfp3owtr4qauztgxaehsrjaxbqpgeu8t3qb4co69pg88jbbcrso","author":"sw3-4","time":1792176188184,"message":"sw3.4 3","files":["/swarm/sw3.4/3.txt"]}
+{"type":"settled","seq":12,"text":"@ settled through #12"}
+{"type":"changeset","seq":13,"hash":"ao8fe8uqpurd4j34awjsxb6etzf7sn634pjbn9o4opnr19ir68dy","author":"sw1-2","time":1792176193106,"message":"sw1.2 2","files":["/swarm/sw1.2/2.txt"]}
+{"type":"settled","seq":13,"text":"@ settled through #13"}
+{"type":"changeset","seq":14,"hash":"3xbfwmcjggqutkcxxkfnr543yomyxa1o5dpn3xpma8kpycpj8c5y","author":"sw2-2","time":1792176193697,"message":"sw2.2 2","files":["/swarm/sw2.2/2.txt"]}
+{"type":"changeset","seq":15,"hash":"sdg8faeeem7yto1y8p7u78uhzgg6stqisxe18o3tue9ixsm6th9y","author":"sw3-1","time":1792176193932,"message":"sw3.1 1","files":["/swarm/sw3.1/1.txt"]}
+{"type":"settled","seq":15,"text":"@ settled through #15"}
+{"type":"changeset","seq":16,"hash":"5ad4796b4o3i1gdq86upc7xfhfhke4rrr6thir3a1eitffnbkwiy","author":"sw0-0","time":1792176197395,"message":"sw0.0 1","files":["/swarm/sw0.0/1.txt"]}
+{"type":"settled","seq":16,"text":"@ settled through #16"}
+{"type":"changeset","seq":17,"hash":"r5yigfn5sn4n4rtgju6p31yc8qooh13kx38rh6ww3zqx5ndzfqwo","author":"sw2-3","time":1792176198952,"message":"sw2.3 2","files":["/swarm/sw2.3/2.txt"]}
+{"type":"settled","seq":17,"text":"@ settled through #17"}
+{"type":"changeset","seq":18,"hash":"et3inykugegget3i9y9jq5syyrxzdfngfiaty43jqewjck1qy3wy","author":"sw2-3","time":1792176201204,"message":"sw2.3 3","files":["/swarm/sw2.3/3.txt"]}
+{"type":"settled","seq":18,"text":"@ settled through #18"}
+{"type":"changeset","seq":19,"hash":"tyeer6toc6foons6zyfhw9to7wib4sazqiapepth6m19gaxbutqy","author":"sw1-0","time":1792176203061,"message":"sw1.0 2","files":["/swarm/sw1.0/2.txt"]}
+{"type":"settled","seq":19,"text":"@ settled through #19"}
+{"type":"changeset","seq":20,"hash":"qsfd735bi5p7axzd5onuu975t6hp6rrgf78pgpwa9i77cqthbseo","author":"sw3-1","time":1792176207111,"message":"sw3.1 2","files":["/swarm/sw3.1/2.txt"]}
+{"type":"settled","seq":20,"text":"@ settled through #20"}
+{"type":"changeset","seq":21,"hash":"g4dyjr9ag8ynbh98sig6iasot36cyk97gdkajhp461orgpxhzyzo","author":"sw2-0","time":1792176209505,"message":"sw2.0 2","files":["/swarm/sw2.0/2.txt"]}
+{"type":"settled","seq":21,"text":"@ settled through #21"}
+{"type":"changeset","seq":22,"hash":"xkaqsr88878rzbssuyr6wde6ymbzq78oqt7qmown8xp86ftsfeqo","author":"sw2-1","time":1792176210224,"message":"sw2.1 1","files":["/swarm/sw2.1/1.txt"]}
+{"type":"settled","seq":22,"text":"@ settled through #22"}
+{"type":"changeset","seq":23,"hash":"uywy8xoai84j5m3pyp7z8c34ex4ai4orertacydew6cj34k5zisy","author":"sw3-4","time":1792176212379,"message":"sw3.4 4","files":["/swarm/sw3.4/4.txt"]}
+{"type":"settled","seq":23,"text":"@ settled through #23"}
+{"type":"changeset","seq":24,"hash":"pwmbt5nh8gjsshqokjd3hkeabmiyw5ri44dzxed4ggtyn78sbapo","author":"sw3-4","time":1792176214377,"message":"sw3.4 5","files":["/swarm/sw3.4/5.txt"]}
+{"type":"settled","seq":24,"text":"@ settled through #24"}
+{"type":"changeset","seq":25,"hash":"gi68n6ohgtswxw8a8qumyibqkdzhyp1rxnyzgbnohnq83ydnzsoy","author":"sw1-4","time":1792176221478,"message":"sw1.4 2","files":["/swarm/sw1.4/2.txt"]}
+{"type":"settled","seq":25,"text":"@ settled through #25"}
+{"type":"changeset","seq":26,"hash":"qymfzqfw8qkq9dzgwdjuqqhumwkkz7okirnahe6n1t9jxuen9sry","author":"sw1-0","time":1792176223776,"message":"sw1.0 3","files":["/swarm/sw1.0/3.txt"]}
+{"type":"settled","seq":26,"text":"@ settled through #26"}
+{"type":"changeset","seq":27,"hash":"bcuojgdrhdmidcczsr8chb8ztx3wh66b3hm199gsyitzsxgd4nuo","author":"sw3-3","time":1792176224211,"message":"sw3.3 1","files":["/swarm/sw3.3/1.txt"]}
+{"type":"settled","seq":27,"text":"@ settled through #27"}
+{"type":"changeset","seq":28,"hash":"do1e6wgxfp8iq84qmi6447q8xhdt48kkiodxqrgwz5xfysgned3o","author":"sw0-4","time":1792176224484,"message":"sw0.4 1","files":["/swarm/sw0.4/1.txt"]}
+{"type":"settled","seq":28,"text":"@ settled through #28"}
+{"type":"changeset","seq":29,"hash":"xz66b7swox4b4oz6xkktogb5drei4agr74fgjegom81yk1o4omiy","author":"sw0-2","time":1792176225258,"message":"sw0.2 1","files":["/swarm/sw0.2/1.txt"]}
+{"type":"settled","seq":29,"text":"@ settled through #29"}
+{"type":"changeset","seq":30,"hash":"ums89ydet8tfystocb3emtxm7o1uqifq6rz7f46ktqykrwjysbxo","author":"sw2-1","time":1792176225576,"message":"sw2.1 2","files":["/swarm/sw2.1/2.txt"]}
+{"type":"settled","seq":30,"text":"@ settled through #30"}
+{"type":"changeset","seq":31,"hash":"dz41a5u8zpjygdecfj5wc3br5x67znq6o4xb5yqw7975rqgg398o","author":"sw2-1","time":1792176226526,"message":"sw2.1 3","files":["/swarm/sw2.1/3.txt"]}
+{"type":"changeset","seq":32,"hash":"m1qajats9pwx61b31rrn8iq7uwh1k4th8rz9115bmyauccyypw7o","author":"sw0-1","time":1792176226704,"message":"sw0.1 1","files":["/swarm/sw0.1/1.txt"]}
+{"type":"settled","seq":32,"text":"@ settled through #32"}
+{"type":"changeset","seq":33,"hash":"w37tmhad68ecw9q4pr3h4wsuggb145ndxkcmodezakas65zrnf3y","author":"sw0-4","time":1792176228334,"message":"sw0.4 2","files":["/swarm/sw0.4/2.txt"]}
+{"type":"settled","seq":33,"text":"@ settled through #33"}
+{"type":"changeset","seq":34,"hash":"38sfi74u3ffo1s5159eqgosaa5wu5dtuk3bo8s4byxuwn8451dxo","author":"sw0-4","time":1792176229430,"message":"sw0.4 3","files":["/swarm/sw0.4/3.txt"]}
+{"type":"changeset","seq":35,"hash":"eafycowumgt4mrxx6x7i8c5j1ti3hwas99pykugs34mjhc6y31zy","author":"sw2-3","time":1792176229439,"message":"sw2.3 4","files":["/swarm/sw2.3/4.txt"]}
+{"type":"changeset","seq":36,"hash":"uwht43kxzhq966zu3pjpo8o3esuunuantg9p6bk7qf81u9ky7qzo","author":"sw3-3","time":1792176229691,"message":"sw3.3 2","files":["/swarm/sw3.3/2.txt"]}
+{"type":"settled","seq":36,"text":"@ settled through #36"}
+{"type":"changeset","seq":37,"hash":"x49toy5sjftiui6379tfe5pm6xq7jnfd7u1pbcyiprgej8tymmcy","author":"sw3-2","time":1792176229840,"message":"sw3.2 1","files":["/swarm/sw3.2/1.txt"]}
+{"type":"changeset","seq":38,"hash":"ucnu4yz7atgkco6d8scy6a4cbo97xjnh3n4hfs9uzpr4jfk1kqwo","author":"a1","time":1792176229919,"message":"model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops, routeKm; contracts pinned","files":["/CONTRACTS.md","/NOTES.md","/src/geo.js","/src/model.js","/test/geo.test.js","/test/model.test.js"]}
+{"type":"settled","seq":37,"text":"@ settled through #37"}
+{"type":"changeset","seq":39,"hash":"rfopfijqhzsmumkk8cqw7ksw7z6skbejqg8ffoszpmqacui8oqro","author":"sw3-4","time":1792176230160,"message":"sw3.4 6","files":["/swarm/sw3.4/6.txt"]}
+{"type":"settled","seq":39,"text":"@ settled through #39"}
+{"type":"changeset","seq":40,"hash":"19mrunqytuwtci53puypi8ne5qf87xgo56gqu1aejjy8bstrhigo","author":"sw0-2","time":1792176230791,"message":"sw0.2 2","files":["/swarm/sw0.2/2.txt"]}
+{"type":"changeset","seq":41,"hash":"e7qccqic6d7km1zxsktk8y6eemg9fx6cfgc83w4jh3sui45j4neo","author":"sw1-2","time":1792176230863,"message":"sw1.2 3","files":["/swarm/sw1.2/3.txt"]}
+{"type":"settled","seq":41,"text":"@ settled through #41"}
+{"type":"changeset","seq":42,"hash":"rcchbn9d4uofh6rxmtoa5nufz9w61tz7pzdfbkn4myr4ji54y4po","author":"sw2-3","time":1792176231277,"message":"sw2.3 5","files":["/swarm/sw2.3/5.txt"]}
+{"type":"settled","seq":42,"text":"@ settled through #42"}
+{"type":"changeset","seq":43,"hash":"ee5sa5ait13gg6edmh6exjbczyba8mypi3modtngfe6c9ytgo8uo","author":"sw1-3","time":1792176232687,"message":"sw1.3 2","files":["/swarm/sw1.3/2.txt"]}
+{"type":"settled","seq":43,"text":"@ settled through #43"}
+{"type":"changeset","seq":44,"hash":"myapi4qmp8esjhw3n5ysuwckqew6z8aw76hd8jasmxmsxs8zxjmy","author":"sw3-2","time":1792176233664,"message":"sw3.2 2","files":["/swarm/sw3.2/2.txt"]}
+{"type":"changeset","seq":45,"hash":"tqrbsyr51oxowb9xoptp5x1se5nxxubkrn3uuq9c6coirzr53juy","author":"sw1-3","time":1792176233904,"message":"sw1.3 3","files":["/swarm/sw1.3/3.txt"]}
+{"type":"settled","seq":45,"text":"@ settled through #45"}
+{"type":"changeset","seq":46,"hash":"5asf9fqk9ofe35icx989chjckozty9j1ft35haxpeufbbyhxxzpo","author":"sw1-2","time":1792176235698,"message":"sw1.2 4","files":["/swarm/sw1.2/4.txt"]}
+{"type":"changeset","seq":47,"hash":"idozic9fpa9zyjbax9cof8g4ucfsxmrhnebo8tk6n7jon46oc46o","author":"sw0-3","time":1792176239440,"message":"sw0.3 1","files":["/swarm/sw0.3/1.txt"]}
+{"type":"changeset","seq":48,"hash":"8tiy4xrxcny58un681wp69i8ggpfhh1we7pkkr3npfhd315ewdxo","author":"sw0-2","time":1792176239611,"message":"sw0.2 3","files":["/swarm/sw0.2/3.txt"]}
+{"type":"changeset","seq":49,"hash":"rb9pbtk8fqhjue8ykhrrg1j4aqyr65m85k3rpquhhqi9u6uryr6y","author":"sw1-0","time":1792176241447,"message":"sw1.0 4","files":["/swarm/sw1.0/4.txt"]}
+{"type":"changeset","seq":50,"hash":"io1scms5e4ynyzqkec9gdqee3841njgc3ngo9rh8r4gejom7qyyo","author":"sw3-3","time":1792176243540,"message":"sw3.3 3","files":["/swarm/sw3.3/3.txt"]}
+{"type":"changeset","seq":51,"hash":"cuaxu3xitrkxe3z7iefdq7caogrdmu38ojpu4supgt6oca9i5quo","author":"sw0-1","time":1792176260496,"message":"sw0.1 2","files":["/swarm/sw0.1/2.txt"]}
+{"type":"changeset","seq":52,"hash":"73ityehkxzmos3y6r8jpq6uwiks59j5pjq8z7ymseoatxiwikqgy","author":"sw3-1","time":1792176260737,"message":"sw3.1 3","files":["/swarm/sw3.1/3.txt"]}
+{"type":"hub","state":"stalled","settled":45,"head":52,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":53,"hash":"rhrjn31fugeoj61eanputbppoppm79ckjar3ewupbrqph57f1iqy","author":"sw2-2","time":1792176262270,"message":"sw2.2 3","files":["/swarm/sw2.2/3.txt"]}
+{"type":"changeset","seq":54,"hash":"iqmycnbb34383myjmqosa3wq5wba8i1m69tsyyoyamxzzbojbm5o","author":"sw0-0","time":1792176262320,"message":"sw0.0 2","files":["/swarm/sw0.0/2.txt"]}
+{"type":"changeset","seq":55,"hash":"fki4tmg1kprab6zd4zxnymnzzcif6rm8kuemjkucixy7owbjeify","author":"pm","time":1792176272176,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"changeset","seq":56,"hash":"ep8horyrikhzg8nstk5hbwcnxjrangtnr4nt6bbh6gmnosxpitmo","author":"sw1-2","time":1792176272475,"message":"sw1.2 5","files":["/swarm/sw1.2/5.txt"]}
+{"type":"changeset","seq":57,"hash":"pokbbx3yihkmoyanydxh7xpabc6t5kif86peodf5a719er7ddb1o","author":"sw2-4","time":1792176272595,"message":"sw2.4 1","files":["/swarm/sw2.4/1.txt"]}
+{"type":"changeset","seq":58,"hash":"nk41k3fzt5whidtoj5b63zob73nkfgjufyiuq8y1bqb5ntdzqajy","author":"sw3-4","time":1792176282593,"message":"sw3.4 7","files":["/swarm/sw3.4/7.txt"]}
+{"type":"changeset","seq":59,"hash":"uxpt1mw1us9x1j8u8x4kzfuawhqpfpdmce81h7hzfdndpapxnaby","author":"sw0-4","time":1792176284463,"message":"sw0.4 4","files":["/swarm/sw0.4/4.txt"]}
+{"type":"changeset","seq":60,"hash":"3zzowxoiinhwyr7dua53w5qut7djczy8izbyoqjmcsz5fk18de8o","author":"sw1-3","time":1792176289318,"message":"sw1.3 4","files":["/swarm/sw1.3/4.txt"]}
+{"type":"changeset","seq":61,"hash":"hd4157wwsoraar8inecgcgh7uiskxn9rey7qsaqemkz3ca8oi53o","author":"sw2-0","time":1792176290759,"message":"sw2.0 3","files":["/swarm/sw2.0/3.txt"]}
+{"type":"changeset","seq":62,"hash":"841ut6db3qsmeiyroatiz834myj5hdsmejidthwt88owmk6pd31o","author":"sw0-2","time":1792176292442,"message":"sw0.2 4","files":["/swarm/sw0.2/4.txt"]}
+{"type":"changeset","seq":63,"hash":"yejej18cmbefofp85ggti1ksagui1hthdd8aqz9wornohphf7jpy","author":"sw2-2","time":1792176294743,"message":"sw2.2 4","files":["/swarm/sw2.2/4.txt"]}
+{"type":"changeset","seq":64,"hash":"ja1ds3fn9s7irjyh4tjugsudcuhgd43zh89kfkpiuyerdis3omry","author":"sw3-3","time":1792176295263,"message":"sw3.3 4","files":["/swarm/sw3.3/4.txt"]}
+{"type":"changeset","seq":65,"hash":"s8au5x31ricyubh8urddmdze3n1m1o9rrxzfzmp94hnjb7crdxiy","author":"sw1-4","time":1792176297711,"message":"sw1.4 3","files":["/swarm/sw1.4/3.txt"]}
+{"type":"changeset","seq":66,"hash":"b3unzh64w68y9483hhwuzexsspodt87nw385s9qpyx7zct5t7a7y","author":"sw0-1","time":1792176298616,"message":"sw0.1 3","files":["/swarm/sw0.1/3.txt"]}
+{"type":"changeset","seq":67,"hash":"5mggi8s3nwx4qt8839ea4xks4n7pkyguw41x3kcd5bp4io7sc58y","author":"sw0-0","time":1792176300237,"message":"sw0.0 3","files":["/swarm/sw0.0/3.txt"]}
+{"type":"changeset","seq":68,"hash":"6k679q5zmkq6ykgwqo7sa3oq8nxjhufp6gchz3kajsmjo8hg9iko","author":"sw3-2","time":1792176300627,"message":"sw3.2 3","files":["/swarm/sw3.2/3.txt"]}
+{"type":"changeset","seq":69,"hash":"j3i7pm64p7angdr41911cdhu83udnek67nrfp5jue6xjuh9uo9ko","author":"sw1-2","time":1792176303012,"message":"sw1.2 6","files":["/swarm/sw1.2/6.txt"]}
+{"type":"changeset","seq":70,"hash":"zriq158x1to3y6jyk1zmex4jzzcgtz813gwxzzrajfmaejp4rady","author":"sw2-4","time":1792176310382,"message":"sw2.4 2","files":["/swarm/sw2.4/2.txt"]}
+{"type":"changeset","seq":71,"hash":"tuq6fccu3e461riiz1be8b7qwjpt7tpdh316uxx5hn7hu71rnwdo","author":"sw2-1","time":1792176312207,"message":"sw2.1 4","files":["/swarm/sw2.1/4.txt"]}
+{"type":"changeset","seq":72,"hash":"1z463g4jizfu133h6iageyye7nphgmbpotwe6xuqyf74b8oor3jy","author":"sw2-3","time":1792176318929,"message":"sw2.3 6","files":["/swarm/sw2.3/6.txt"]}
+{"type":"changeset","seq":73,"hash":"tgnswoije897zq3pnx1bq73eyedzj8yaen4qpesztm8udxpwng9y","author":"sw3-1","time":1792176320401,"message":"sw3.1 4","files":["/swarm/sw3.1/4.txt"]}
+{"type":"changeset","seq":74,"hash":"xhdnqh7q67by4zs15u6g8skbqf5d9nhm1np44t456aqt88rpkbao","author":"sw0-4","time":1792176321340,"message":"sw0.4 5","files":["/swarm/sw0.4/5.txt"]}
+{"type":"changeset","seq":75,"hash":"9brim7uz7dgru3cbysnmfgw81ykhnyjp89rcm3hpbdwca3mt1hhy","author":"sw0-3","time":1792176323280,"message":"sw0.3 2","files":["/swarm/sw0.3/2.txt"]}
+{"type":"changeset","seq":76,"hash":"1hmuc4wibwx88o7d1aowx96etoxjsg1ocfayey3h7me555dbzcxo","author":"sw3-4","time":1792176324725,"message":"sw3.4 8","files":["/swarm/sw3.4/8.txt"]}
+{"type":"reorg","seq":72,"was":{"author":"sw2-3","message":"sw2.3 6"},"now":{"author":"sw3-0","message":"sw3.0 1"}}
+{"type":"reorg","seq":73,"was":{"author":"sw3-1","message":"sw3.1 4"},"now":{"author":"sw2-3","message":"sw2.3 6"}}
+{"type":"reorg","seq":74,"was":{"author":"sw0-4","message":"sw0.4 5"},"now":{"author":"sw0-4","message":"sw0.4 5"}}
+{"type":"reorg","seq":75,"was":{"author":"sw0-3","message":"sw0.3 2"},"now":{"author":"sw0-3","message":"sw0.3 2"}}
+{"type":"reorg","seq":76,"was":{"author":"sw3-4","message":"sw3.4 8"},"now":{"author":"sw3-4","message":"sw3.4 8"}}
+{"type":"changeset","seq":72,"hash":"szwdzj6rkt9homs5d695sxab6xnf7d7k7664w7i58gqxib9fpcno","author":"sw3-0","time":1792176318517,"message":"sw3.0 1","files":["/swarm/sw3.0/1.txt"]}
+{"type":"changeset","seq":73,"hash":"ytq44z1ssiq3o3e88h85y1g74w56zht8unn9k5x677sfe7od3emy","author":"sw2-3","time":1792176318929,"message":"sw2.3 6","files":["/swarm/sw2.3/6.txt"]}
+{"type":"changeset","seq":74,"hash":"jn6f3819qaxk46tnssyczibeo4w8tq74mwcj6rikm4oc549iyxdy","author":"sw0-4","time":1792176321340,"message":"sw0.4 5","files":["/swarm/sw0.4/5.txt"]}
+{"type":"changeset","seq":75,"hash":"oi85patg7g8hzd1kiq1w6cqm4xbnjtdus8dbw8uomi43z4pcqfgo","author":"sw0-3","time":1792176323280,"message":"sw0.3 2","files":["/swarm/sw0.3/2.txt"]}
+{"type":"changeset","seq":76,"hash":"hqrz8kg6aiih8ohqkzgnybcwckma8dez5fh4ip5y4k61jo6tk45o","author":"sw3-4","time":1792176324725,"message":"sw3.4 8","files":["/swarm/sw3.4/8.txt"]}
+{"type":"settled","seq":72,"text":"@ settled through #72"}
+{"type":"settled","seq":76,"text":"@ settled through #76"}
+{"type":"changeset","seq":77,"hash":"fi5ws1z4fzgo695qridsugob1yomodzhmyppkx4fibdoqmdfw3my","author":"sw1-4","time":1792176329434,"message":"sw1.4 4","files":["/swarm/sw1.4/4.txt"]}
+{"type":"settled","seq":77,"text":"@ settled through #77"}
+{"type":"hub","state":"settling","settled":77}
+{"type":"changeset","seq":78,"hash":"3z56p1edbwf9ep4kgdqfx9ie3a1oungqe9r897tfhpwwxw57itxo","author":"sw2-4","time":1792176333910,"message":"sw2.4 3","files":["/swarm/sw2.4/3.txt"]}
+{"type":"settled","seq":78,"text":"@ settled through #78"}
+{"type":"changeset","seq":79,"hash":"au8zfkbqb4r6xrghoe5ffpz6nh6i1shtqytdmwap4itq5jbdtido","author":"sw2-0","time":1792176338237,"message":"sw2.0 4","files":["/swarm/sw2.0/4.txt"]}
+{"type":"settled","seq":79,"text":"@ settled through #79"}
+{"type":"changeset","seq":80,"hash":"mcc1yb4wpok7f1xir3eprchbbot9hfgocfi6kphoac7ucn6tri3o","author":"sw3-2","time":1792176338844,"message":"sw3.2 4","files":["/swarm/sw3.2/4.txt"]}
+{"type":"settled","seq":80,"text":"@ settled through #80"}
+{"type":"changeset","seq":81,"hash":"msoiix5q69zmcxop5fz8rdish9zr78u7wxs74sipwz5ebr3adxhy","author":"sw0-0","time":1792176339956,"message":"sw0.0 4","files":["/swarm/sw0.0/4.txt"]}
+{"type":"changeset","seq":82,"hash":"p5sipzro3qtpk4ons8sjcgck3qsph6kfiidy51z54bjqypwfxtdo","author":"sw1-2","time":1792176340083,"message":"sw1.2 7","files":["/swarm/sw1.2/7.txt"]}
+{"type":"settled","seq":82,"text":"@ settled through #82"}
+{"type":"changeset","seq":83,"hash":"qdrd6awizukxykfundiz3ui8ejgmtq1j638xnk4nh14j3jtwgkry","author":"sw3-4","time":1792176341108,"message":"sw3.4 9","files":["/swarm/sw3.4/9.txt"]}
+{"type":"settled","seq":83,"text":"@ settled through #83"}
+{"type":"changeset","seq":84,"hash":"1aejibgsjiysu1xs4az9d5zjewbxsg6dg58ddsb8iy4oz3t97r8o","author":"sw2-3","time":1792176342798,"message":"sw2.3 7","files":["/swarm/sw2.3/7.txt"]}
+{"type":"settled","seq":84,"text":"@ settled through #84"}
+{"type":"changeset","seq":85,"hash":"x19s6rh9bejpxkj9hhjfubetwn6xnz49uj7snd1fhci1y74jkkhy","author":"sw0-4","time":1792176346530,"message":"sw0.4 6","files":["/swarm/sw0.4/6.txt"]}
+{"type":"settled","seq":85,"text":"@ settled through #85"}
+{"type":"changeset","seq":86,"hash":"epofnuudh53xuk1usjunw68g3dtyd59ry9hjnpwf94385w3iikjo","author":"sw0-2","time":1792176346858,"message":"sw0.2 5","files":["/swarm/sw0.2/5.txt"]}
+{"type":"changeset","seq":87,"hash":"igwtof8jcaksba1jewab8geir5qty7639p14wuicsjgmbcob6ono","author":"sw2-1","time":1792176346865,"message":"sw2.1 5","files":["/swarm/sw2.1/5.txt"]}
+{"type":"settled","seq":87,"text":"@ settled through #87"}
+{"type":"changeset","seq":88,"hash":"pw1u9s3f1ct417j9zfaofhgr3qstyofktisiexsfx8wxz6fse61o","author":"sw2-4","time":1792176348616,"message":"sw2.4 4","files":["/swarm/sw2.4/4.txt"]}
+{"type":"settled","seq":88,"text":"@ settled through #88"}
+{"type":"changeset","seq":89,"hash":"h4ixedmzcg3nkffpatjcg7qk74sbyyawfgrdy16nxmbet5qqe73o","author":"sw1-0","time":1792176356592,"message":"sw1.0 5","files":["/swarm/sw1.0/5.txt"]}
+{"type":"settled","seq":89,"text":"@ settled through #89"}

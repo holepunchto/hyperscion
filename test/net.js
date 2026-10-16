@@ -264,6 +264,85 @@ test('a mirror holds the whole oplog of a writer that landed offline', async (t)
   await held.close()
 })
 
+// q2s-hs-1: in an outage the swarm's content couldn't be fetched, a feed's mirror spent 10 s
+// on each such changeset with one worker left, newest first, and a teammate's land starved
+// behind them. Unreachable changesets must not hold up a fresh land.
+test('a mirror holds a fresh land within seconds while older changesets are unreachable', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+  const mk = async (key) => {
+    const store = new Corestore(await tmp(t))
+    const repo = new Repo(store, { key })
+    await repo.ready()
+    t.teardown(
+      async () => {
+        await repo.close()
+        await store.close()
+      },
+      { order: 1 }
+    )
+    return { store, repo }
+  }
+  const link = (x, y) => {
+    const s1 = x.store.replicate(true)
+    const s2 = y.store.replicate(false)
+    s1.pipe(s2).pipe(s1)
+    return () => {
+      s1.destroy()
+      s2.destroy()
+    }
+  }
+  const a = await mk(null)
+  const b = await mk(a.repo.key)
+  const ws = []
+  for (let i = 0; i < 6; i++) ws.push(await mk(a.repo.key))
+  const unlinks = [link(a, b), ...ws.map((w) => link(a, w))]
+  await a.repo.addWriter(b.repo.writerKey)
+  for (const w of ws) await a.repo.addWriter(w.repo.writerKey)
+  const pump = async () => {
+    for (let i = 0; i < 30; i++) {
+      for (const r of [a, b, ...ws]) await r.repo.update()
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+  }
+  await pump()
+  t.ok(ws.every((w) => w.repo.writable) && b.repo.writable, 'writers admitted')
+
+  // six writers land and leave: a has their changesets but nobody holds their content
+  for (const [i, w] of ws.entries()) {
+    const wws = await w.repo.workspace('w')
+    await wws.commit([put(`/gone/${i}.txt`, 'x'.repeat(5000) + i)])
+    t.is((await wws.land()).outcome.status, 'accepted')
+    await pump()
+  }
+  for (const unlink of unlinks) unlink()
+
+  // the mirror comes up and learns about them from a (no content to be had)
+  a.net = new Network(a.repo, { bootstrap })
+  await a.net.ready()
+  t.teardown(() => a.net.close(), { order: 0 })
+  const c = await peer(t, a.repo.key, bootstrap, { mirror: true, role: 'holder' })
+  await c.net.waitForPeers()
+  await c.net.settle()
+  const held = new Map()
+  c.net.on('mirrored', (cs) => held.set(cs.seq, Date.now()))
+
+  // b lands while the mirror is busy failing on the six
+  b.net = new Network(b.repo, { bootstrap })
+  await b.net.ready()
+  t.teardown(() => b.net.close(), { order: 0 })
+  await b.net.waitForPeers()
+  const bws = await b.repo.workspace('w')
+  await bws.commit([put('/fresh.txt', 'fresh\n')])
+  const res = await bws.land()
+  t.is(res.outcome.status, 'accepted')
+  const landedAt = Date.now()
+  await waitFor(() => held.has(res.outcome.seq), 30_000).catch(() => {})
+  const ms = held.has(res.outcome.seq) ? held.get(res.outcome.seq) - landedAt : null
+  t.comment(`mirror held the fresh land after ${ms} ms`)
+  t.ok(ms !== null && ms < 6000, `held within seconds (${ms} ms)`)
+})
+
 test('after prefetch, everything in the sparse set works offline', async (t) => {
   const Worktree = require('../lib/worktree')
   const testnet = await createTestnet(3, t.teardown)
