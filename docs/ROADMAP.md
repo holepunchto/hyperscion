@@ -296,8 +296,9 @@ Data: `docs/experiments/quick/q2-hs-3`.
 - **Clean (q2s-hs-3):** no alerts, the change request on its first attempt during the outage,
   every state readable from the hub, acceptance 100% at minute 2.6, ratings 4/4/4 with all
   three choosing hs. The known outage and busy-main issues are fixed, so a full q2 is due.
-  Papercuts left: `land --wait-final` with nothing to land doesn't wait; a renumbered
-  provisional land shows as a `reorg` feed line that reads like an undo; a way to hide
+  Papercuts fixed after it: `land --wait-final` with nothing to land now waits for your
+  last land; a land that only moved number shows as `#39 … is now #41 (renumbered when
+peers met; nothing lost)` (JSON `renumbered`), not as a reorg. Left: a way to hide
   `/swarm/` from incoming lists and the feed.
 - **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
   `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").

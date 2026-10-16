@@ -109,6 +109,55 @@ test('watcher reports a reorg when a changeset it showed is replaced', async (t)
   const r = reorgs.c1[0] || reorgs.c2[0]
   t.is(r.seq, 1)
   t.not(r.before.message, r.after && r.after.message, 'reports what was replaced')
+  // same file: the replaced land was rejected, so it is nowhere on main (a real undo)
+  t.is(await c1.changesetAt(r.before.writer, r.before.node), null, 'the replaced land is gone')
+  await l1()
+  await l2()
+})
+
+// q2s-hs-3: concurrent lands on different files both survive; the one that lost the order is
+// renumbered, which the feed showed as a reorg that read like an undo
+test('a reorged land that only moved is found under its new number', async (t) => {
+  const [a, b, c1, c2] = await repos(t, 4)
+  const ab = link(a, b)
+  await a.addWriter(b.writerKey, { indexer: true })
+  await until(() => b.writable, a, b)
+  await ab()
+
+  const l1 = link(a, c1)
+  const l2 = link(b, c2)
+  const reorgs = []
+  const w1 = new Watcher(c1)
+  const w2 = new Watcher(c2)
+  w1.on('reorg', (r) => reorgs.push(r))
+  w2.on('reorg', (r) => reorgs.push(r))
+  await w1.start()
+  await w2.start()
+  t.teardown(() => Promise.all([w1.close(), w2.close()]))
+
+  const wa = await a.workspace('wa')
+  const wb = await b.workspace('wb')
+  await wa.commit([put('/a.txt', 'from a')])
+  await wb.commit([put('/b.txt', 'from b')])
+  await wa.land({ message: 'a' })
+  await wb.land({ message: 'b' })
+  await until(async () => (await c1.meta()).seq === 1 && (await c2.meta()).seq === 1, c1, c2)
+
+  link(a, b)
+  link(c1, c2)
+  await until(
+    async () => (await c1.meta()).seq === 2 && (await c2.meta()).seq === 2 && reorgs.length >= 1,
+    a,
+    b,
+    c1,
+    c2
+  )
+  const r = reorgs[0]
+  t.is(r.seq, 1)
+  const moved = await c1.changesetAt(r.before.writer, r.before.node)
+  t.ok(moved, 'the land that lost the order is still on main')
+  t.is(moved && moved.seq, 2, 'now as #2')
+  t.is(moved && moved.message, r.before.message)
   await l1()
   await l2()
 })

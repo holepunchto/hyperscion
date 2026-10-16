@@ -108,3 +108,18 @@ test('read-only commands work while a land holds the worktree', async (t) => {
   const after = await tm.as('a1', ['status'])
   t.absent(/is using this worktree/.test(after.stderr), 'no banner once the land is done')
 })
+
+// q2s-hs-3: an agent waiting for its land to go final after an outage ran
+// `land --wait-final` with nothing new; it printed "nothing to land" and didn't wait
+test('land --wait-final with nothing to land waits for the last land', async (t) => {
+  const tm = await team(t, { files: { 'src/a.js': 'a\n' } })
+  await tm.as('a1', ['sync'])
+  tm.write('a1', 'src/b.js', 'b\n')
+  const landed = await tm.as('a1', ['land', '-m', 'b', '--no-wait'])
+  const seq = landed.stdout.match(/landed #(\d+)/)[1]
+  const res = await tm.as('a1', ['land', '--wait-final', '--timeout', '30'])
+  t.is(res.code, 0, res.stderr)
+  t.ok(/nothing to land/.test(res.stdout))
+  t.ok(new RegExp(`waiting for your last land #${seq} to be final`).test(res.stdout), res.stdout)
+  t.ok(new RegExp(`#${seq} final`).test(res.stdout), res.stdout)
+})
