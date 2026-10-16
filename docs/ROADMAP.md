@@ -303,6 +303,22 @@ peers met; nothing lost)` (JSON `renumbered`), not as a reorg. Left: a way to hi
 - **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
   `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").
 
+**Check passed (q2-hs-6, the full q2 after the fixes above).** With 20 scripted writers
+landing alongside, a hub outage and a change request, the three agents did as well as q1's
+did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
+
+- **No alerts:** no push timeouts, no unfetchable content, no stale-copy refusals or stalls.
+- **The change request** landed on its first attempt during the outage and was done 1.1
+  minutes later.
+- **Outcome:** acceptance 100% at minute 4.2 (q1-hs about 4, q2-hs-2 12.8), main 100% green.
+- **Lands:** p50 3.0 s, p90 8.2 s (243 s in q2-hs-2); 3.75 calls per accepted land.
+- **Agents:** ratings 4/4/4, all three would choose hs; 2 minutes lost.
+- **Left for later:**
+  - `hs status` suggests an owner-only fix (`add-writer --indexer`) to every agent during an
+    outage;
+  - a way to hide `/swarm/` from incoming lists and the feed;
+  - duplicate implementations of the change request (3): M8.
+
 ### M8: the coordination layer
 
 - **Work-in-progress intents vs. the Keet MCP** (DESIGN.md §14). Decide once Keet is

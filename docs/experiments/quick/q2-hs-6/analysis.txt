@@ -1,0 +1,76 @@
+# hs usage: 45 calls since 2026-10-16T20:14:01.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 14 | 7 | 0 | 4 | 5 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.5m |
+| a2 | 14 | 7 | 0 | 3 | 4 | 4 (3) | 0 | 1 | 0 | 0 | 0 | 0 | 2.5m |
+| a3 | 17 | 7 | 0 | 4 | 3 | 6 (6) | 0 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+
+totals: lands 13 (accepted 12), auto-rebased 0, real conflicts 1, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 7190/14174, land 3031/5679, watch 37819/256962, status 5730/5730
+a2: sync 3088/22388, land 2287/5676, status 1571/4288, watch 34325/262767
+a3: sync 7662/21409, log 7809/7809, land 6323/17946, watch 19187/306810, status 1766/1766
+
+## command mix
+a1: sync=4 land=3 watch=5 status=2
+a2: sync=3 land=4 status=3 watch=4
+a3: sync=4 log=2 land=6 watch=3 status=2
+
+## land timeline
+  1.2m a3 landed #42                                              pricing: formula pinned in CONTRACTS.md + unit tests
+  1.5m a1 landed #53                                              model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops, ro
+  2.1m a3 landed #82                                              cli+report+integration test (integration skips until scheduler.plan la
+  2.1m a2 !! not landed: real conflicts in /CONTRACTS.md (#53 a1) scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  2.5m a2 landed #91                                              scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  2.9m a1 landed #107                                             model: invalid-day fixture + test (DayError lists each problem)
+  3.0m a3 landed #109                                             report: trips sorted by drone, show return time + km; integration now 
+  3.2m a3 landed #120                                             integration: CLI on a1's invalid-day fixture exits 1 with DayError on 
+  3.5m a1 landed #127                                             geo: arrivalFlightMinutes for CR-1 (cumulative flight minutes per stop
+  3.5m a2 landed #129                                             scheduler CR-1: stops[].flightMinutes (+km) for per-minute pricing; CO
+  4.1m a3 landed #163                                             CR-1: price per flight minute (2.00 + 0.25/min + 0.40/kg, express x1.5
+  4.7m a2 landed #192                                             notes: a2 done
+  4.6m a3 landed #201                                             pricing: use scheduler stops[].flightMinutes when present (CR-1 single
+
+## metrics (also in metrics.json)
+calls: 45
+minutes: 5.4
+lands: 13
+accepted: 12
+calls_per_accepted_land: 3.75
+auto_rebased: 0
+real_conflicts: 1
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 5
+land_ended_settled: 0
+land_ended_provisional: 7
+land_ms_p50: 3031
+land_ms_p90: 8163
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 1
+wait_min_total: 2.7
+vcs_min_total: 2.9
+vcs_share_pct: 21.3
+watch_calls: 12
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 2
+confusing_messages_total: 3
+review_usefulness_mean: null

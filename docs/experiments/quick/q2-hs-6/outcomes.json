@@ -1,0 +1,146 @@
+{
+  "outcomes": {
+    "main_states": 13,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 2.6,
+    "acceptance_80_at_min": 2.6,
+    "acceptance_100_at_min": 4.2,
+    "final_state_min": 4.9,
+    "duplicate_implementations": 3,
+    "duplicate_implementations_max": 3,
+    "change_request_at_min": 3.1,
+    "change_request_done_after_min": 1.1
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.6,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#42",
+      "minute": 1.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#53",
+      "minute": 1.5,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#82",
+      "minute": 2.2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#91",
+      "minute": 2.6,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#107",
+      "minute": 3,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#109",
+      "minute": 3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#114",
+      "minute": 3.1,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#120",
+      "minute": 3.3,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#127",
+      "minute": 3.5,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 1
+    },
+    {
+      "id": "#129",
+      "minute": 3.5,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 2
+    },
+    {
+      "id": "#163",
+      "minute": 4.2,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 3
+    },
+    {
+      "id": "#192",
+      "minute": 4.7,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 3
+    },
+    {
+      "id": "#201",
+      "minute": 4.9,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 3
+    }
+  ]
+}
