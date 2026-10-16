@@ -1,0 +1,70 @@
+# hs usage: 36 calls since 2026-10-16T19:41:28.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 14 | 8 | 0 | 3 | 3 | 3 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+| a2 | 14 | 8 | 0 | 4 | 4 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 0.9m |
+| a3 | 8 | 4 | 0 | 2 | 3 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.0m |
+
+totals: lands 7 (accepted 6), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 2916/16292, land 5400/11635, status 1785/12776, watch 1106/139065, log 5109/5109
+a2: sync 2430/9079, land 9752/9752, watch 9888/155025, status 26858/26858, log 132/132, cat 84/84
+a3: sync 9701/9701, land 6505/6505, watch 23784/156324, status 3324/3324
+
+## command mix
+a1: sync=3 land=3 status=4 watch=3 log=1
+a2: sync=4 land=2 watch=4 status=2 log=1 cat=1
+a3: sync=2 land=2 watch=3 status=1
+
+## land timeline
+  0.9m a2 landed #38                                              scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  1.0m a3 landed #39                                              a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  1.2m a1 landed #49                                              a1: model.js (loadDay/DayError) + geo.js (distanceKm, travelMinutes, o
+  1.9m a1 landed #62                                              a1: CR-1 helper geo.flightMinutesTo (cumulative flight minutes per sto
+  1.8m a2 landed #65                                              scheduler CR-1: trip.flightMinutes per stop (flight only) for per-minu
+  2.0m a1 nothing to land                                         
+  2.5m a3 landed #81                                              a3: CR-1 per flight-minute pricing (pricing computes flight minutes fr
+
+## metrics (also in metrics.json)
+calls: 36
+minutes: 2.9
+lands: 7
+accepted: 6
+calls_per_accepted_land: 6
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 6
+land_ms_p50: 6505
+land_ms_p90: 11635
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.6
+vcs_min_total: 2.5
+vcs_share_pct: 31.9
+watch_calls: 10
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 1
+confusing_messages_total: 3
+review_usefulness_mean: null

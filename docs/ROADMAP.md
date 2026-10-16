@@ -293,6 +293,12 @@ Data: `docs/experiments/quick/q2-hs-3`.
   0 minutes lost. Found on the way: the hub's view-core pass (one core at a time, 10 s
   waits) hadn't reached a departed teammate's view core when the run stopped, so main past
   that land was unreadable from the hub. Now parallel, with 3 s bounds.
+- **Clean (q2s-hs-3):** no alerts, the change request on its first attempt during the outage,
+  every state readable from the hub, acceptance 100% at minute 2.6, ratings 4/4/4 with all
+  three choosing hs. The known outage and busy-main issues are fixed, so a full q2 is due.
+  Papercuts left: `land --wait-final` with nothing to land doesn't wait; a renumbered
+  provisional land shows as a `reorg` feed line that reads like an undo; a way to hide
+  `/swarm/` from incoming lists and the feed.
 - **Turnaround:** scripted replay (~70 s), short LLM scenario `q2s` (~6 minutes), and
   `alerts.js` to cut a run short (`scripts/experiment/README.md`, "Fast loop").
 
