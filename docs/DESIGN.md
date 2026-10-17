@@ -153,9 +153,12 @@ There is no finality signal in autobee today. In hyperscion:
 - `hs status` re-reads the last land's outcome from `hs-ops`.
 - Before a land, the workspace records its pre-land root, fork and base. If `sync` finds the
   land flipped, it moves the fork point back and rebases normally, so commits made after the
-  land survive. Known limitation: changes by other writers that were in main when we
-  auto-synced, and that also flipped later, would be replayed as ours. Tested: the losing writer's change
-  is restored, 3-way merged and re-landed.
+  land survive. Since q0bs (docs/FINALITY.md) the fork point is the one from before the first
+  of our still-unsettled lands, so every undone land comes back, not only the last; and the
+  rebase replays only the paths those lands changed plus commits since the last sync, so
+  teammates' changes synced in after the land are not replayed as ours. Tested: the losing
+  writer's change is restored, 3-way merged and re-landed (test/reland.js,
+  test/site-finality.js).
 
 Since milestone 4 a land moves from provisional to settled once every indexer has acknowledged
 it, and to final once review has also accepted it (§11).

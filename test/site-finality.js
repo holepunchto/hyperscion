@@ -93,6 +93,7 @@ test("site split: restoring my land doesn't replay a teammate's land as mine", a
   const feeds = ['a1', 'a2'].map((a) => tm.bgAs(a, ['watch', '--json']))
   await sleep(3000)
   tm.write('a2', 'notes.txt', 'a2 notes\n')
+  tm.write('a2', 'a.txt', 'a\na2 line\n')
   await tm.as('a2', ['land', '-m', 'a2 notes'])
   tm.write('a1', 'code.txt', 'a1 code\n')
   await tm.as('a1', ['land', '-m', 'a1 code'])
@@ -101,6 +102,7 @@ test("site split: restoring my land doesn't replay a teammate's land as mine", a
     return tm.read('a2', 'code.txt') !== null
   }, 30_000)
   tm.write('a3', 'code.txt', 'a3 code\n')
+  tm.write('a3', 'a.txt', 'a3 line\na\n')
   t.ok(/final/.test((await tm.as('a3', ['land', '-m', 'a3 code'])).stdout))
   for (const f of feeds) await f.stop()
   tm.heal(['a1', 'a2'])
@@ -118,11 +120,11 @@ test("site split: restoring my land doesn't replay a teammate's land as mine", a
     /code\.txt/.test(synced.stdout + synced.stderr),
     "code.txt isn't a2's change: " + synced.stdout
   )
-  await waitFor(async () => {
-    await tm.as('a3', ['sync'])
-    return tm.read('a3', 'notes.txt') !== null
-  }, 30_000).catch(() => {})
-  t.is(tm.read('a3', 'notes.txt'), 'a2 notes\n', "a2's own land is back on main")
+  t.is(tm.read('a2', 'notes.txt'), 'a2 notes\n', "a2's own land is back in its files")
+  t.ok(
+    /a2 line/.test(tm.read('a2', 'a.txt') || ''),
+    "a2's edit to a.txt too, merged or in conflict"
+  )
   t.is(tm.read('a3', 'code.txt'), 'a3 code\n', 'and a3 keeps its code')
 })
 
