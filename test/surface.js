@@ -22,9 +22,10 @@ test('surface: full, minimal and plain', async (t) => {
     t.ok(full.includes(c), 'full has ' + c)
   }
   t.ok(minimal.includes('claim') && minimal.includes('claims'), 'minimal keeps claims')
-  for (const c of ['item', 'propose', 'review', 'inbox', 'suggest', 'proposals']) {
+  for (const c of ['item', 'propose', 'inbox', 'suggest', 'proposals']) {
     t.absent(minimal.includes(c), 'minimal drops ' + c)
   }
+  t.ok(minimal.includes('review'), 'minimal keeps review (of a teammate land)')
   for (const c of ['claim', 'claims', 'item']) t.absent(plain.includes(c), 'plain drops ' + c)
   for (const c of ['land', 'sync', 'status', 'watch', 'log', 'show', 'cat']) {
     t.ok(plain.includes(c), 'every arm keeps ' + c)

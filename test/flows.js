@@ -111,6 +111,11 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     const m = split.stdout.match(/proposed (P\d+) for \/CONTRACTS\.md, asked ann/)
     t.ok(m, split.stdout)
     pid = m && m[1]
+    // a teammate reviews the land itself: a review record, no NOTES.md land (q0b-min-2)
+    const seq = split.stdout.match(/landed #(\d+)/)[1]
+    await tm.as(others[0], ['sync'])
+    const reviewed = await tm.as(others[0], ['review', '#' + seq, 'approve', '-m', 'looks right'])
+    t.is(reviewed.code, 0, reviewed.stdout + reviewed.stderr)
   })
 
   // F4: the person approves from the inbox; the author lands the approved proposal
