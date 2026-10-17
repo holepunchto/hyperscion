@@ -1,0 +1,76 @@
+# hs usage: 43 calls since 2026-10-17T19:06:53.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 18 | 9 | 0 | 2 | 5 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.6m |
+| a2 | 14 | 8 | 0 | 2 | 4 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.9m |
+| a3 | 11 | 5 | 0 | 2 | 3 | 0 (0) | 0 | 0 | 0 | 0 | 0 | 0 | - |
+
+totals: lands 2 (accepted 2), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 747/747, claims 730/730, claim 2374/2374, watch 10889/269359, land 566/566, status 116/116, review 542/542, wait-final 200639/200639, log 101/101
+a2: sync 747/747, claims 741/741, claim 2319/2319, watch 83984/269530, land 1261/1261, status 117/117, wait-final 300586/300586, doctor 451/451, log 81/81
+a3: sync 568/568, claims 793/793, claim 2296/2296, watch 260093/300953, status 86/86, log 93/93, review 543/543
+
+## command mix
+a1: sync=2 claims=1 claim=2 watch=5 land=1 status=2 review=1 wait-final=2 log=2
+a2: sync=2 claims=1 claim=1 watch=4 land=1 status=2 wait-final=1 doctor=1 log=1
+a3: sync=2 claims=1 claim=2 watch=3 status=1 log=1 review=1
+
+## land timeline
+  0.6m a1 landed #3                                               notes: a1 defers CR-1 to a2, will review
+  0.9m a2 landed #4                                               CR-1: pricing per flight minute (2 + 0.25/min + 0.40/kg, express x1.5,
+
+## metrics (also in metrics.json)
+calls: 43
+minutes: 7.9
+lands: 2
+accepted: 2
+calls_per_accepted_land: 21.5
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 0
+land_ended_settled: 0
+land_ended_provisional: 2
+land_ms_p50: 1261
+land_ms_p90: 1261
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 4.5
+vcs_min_total: 11.7
+vcs_share_pct: 62.8
+watch_calls: 12
+proposals: 0
+reviews_given: 2
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 7
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 10
+coordination_share: 0.3
+wait_scenario_s: 0
+wait_teammate_s: 271
+wait_settle_s: 682
+first_land_min: 0.7
+round_trips_per_land: 4.5
+round_trips_per_land_p90: 5
+coordination_lands: 1
+calls_per_code_land: 43
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.33
+minutes_lost_to_hs_total: 11
+confusing_messages_total: 2
+review_usefulness_mean: null
+to_five: ["a1 (4): hs wait-final / hs status should show hub reachability and last-ack time (e.g. 'hub unreachable since 13:07:34 from you and 2 peers') so a partition vs slow hub is distinguishable and the wait is informed","a2 (4): hs wait-final streams status lines while waiting (e.g. 'hub unreachable since 13:07:34; approved by a1; 2 peers hold #4') and returns as soon as the hub acks, so a partition wait is visible rather than a silent 5-minute block","a3 (4): hs watch --item C63ed05 --sync: wait for the land that closes (--done) a claimed item, then sync it in and print 'review it: hs review #N approve'"]

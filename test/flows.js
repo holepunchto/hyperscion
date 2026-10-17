@@ -240,6 +240,9 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
       fs.appendFileSync(path.join(tm.agents[a], 'NOTES.md'), `- [${a}] taking CR-2\n`)
       await tm.as(a, ['land', '-m', `${a} takes CR-2`, '--offline'])
     }
+    // a wait says the hub is out of reach instead of blocking in silence (q0bs)
+    const waited = await tm.as(x, ['wait-final', '--timeout', '1'])
+    t.ok(/hub is not reachable from here/.test(waited.stdout), waited.stdout + waited.stderr)
     await tm.startHub()
     // the land that lost the order is undone: push says so instead of timing out (q0bp)
     for (const a of [x, y]) {
@@ -280,6 +283,42 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     const landed = await tm.as(x, ['land', '-m', 'log plans', '--done'])
     t.ok(new RegExp(`linked to ${id3}`).test(landed.stdout), landed.stdout + landed.stderr)
     t.ok(new RegExp(`completes ${id3}`).test(landed.stdout), landed.stdout)
+  })
+
+  // F11: a site split. x and y meet each other but not the hub or z; a claim on either side
+  // is heard there, so each side has a lead until the sites meet. On heal the earlier claim
+  // leads everywhere and the later side is told to stand down (q0bs)
+  await flow('F11 site split: two leads, then one', async () => {
+    const [x, y, z] = ['a1', 'a2', 'a3']
+    const made = await ownerHs(['item', 'new', 'CR-4: cache flight minutes'])
+    const id4 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    for (const a of [x, y, z]) await tm.as(a, ['sync'])
+    await tm.split([x, y])
+    const feeds = [x, y].map((a) => tm.bgAs(a, ['watch', '--json']))
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    const bx = await tm.as(x, ['claim', id4])
+    t.is(bx.code, 0, 'heard on site B: ' + bx.stdout + bx.stderr)
+    t.absent(/nobody heard/.test(bx.stderr), 'a peer on its side heard it')
+    const by = await tm.as(y, ['claim', id4, '--if-free'])
+    t.is(by.code, 2, 'site B agrees x leads: ' + by.stdout + by.stderr)
+    const az = await tm.as(z, ['claim', id4])
+    t.ok(/you lead/.test(az.stdout), 'site A has its own lead: ' + az.stdout + az.stderr)
+    tm.write(z, 'src/cache.js', '// z cache\n')
+    await tm.as(z, ['land', '-m', 'z cache'])
+    for (const f of feeds) await f.stop()
+    tm.heal([x, y])
+    let zs = null
+    await waitFor(async () => {
+      await tm.as(x, ['sync'])
+      zs = await tm.as(z, ['sync'])
+      return new RegExp(`${id4}.*${x} leads`).test(zs.stdout)
+    }, 60_000).catch(() => {})
+    t.ok(new RegExp(`${x} leads; you claimed it too, later`).test(zs.stdout), zs.stdout)
+    const again = await tm.as(z, ['claim', id4])
+    t.is(again.code, 2, 'z knows it lost: ' + again.stdout + again.stderr)
+    const xs = await tm.as(x, ['claims'])
+    t.ok(/lead a1/.test(xs.stdout), 'x leads on its side too: ' + xs.stdout)
+    await tm.as(x, ['claim', id4, '--done'])
   })
 
   fs.writeFileSync(path.join(tm.dir, 'flows.json'), JSON.stringify(results, null, 2) + '\n')

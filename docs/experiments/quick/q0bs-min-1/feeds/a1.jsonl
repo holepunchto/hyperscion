@@ -1,0 +1,16 @@
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" claimed by a2; they lead"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" claimed by a3; a2 leads"}
+{"type":"claim","n":7,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"release","n":8,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" released by a1; a2 leads it"}
+{"type":"changeset","seq":3,"hash":"dctmu4xb7pbh77bcbi586guidto4b51gfohjdj8aw3fd4igynrty","author":"a1","time":1792264051041,"message":"notes: a1 defers CR-1 to a2, will review","files":["/NOTES.md"]}
+{"type":"offline","at":"2026-10-17T19:07:34.123Z"}
+{"type":"online","at":"2026-10-17T19:07:43.902Z"}
+{"type":"done","n":9,"proposal":null,"seq":4,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" done by a2 in #4"}
+{"type":"changeset","seq":4,"hash":"wy4r5jbek57mqeork4nuqgdhoziqkgmiczf19bdnkmoiydut5nky","author":"a2","time":1792264066213,"message":"CR-1: pricing per flight minute (2 + 0.25/min + 0.40/kg, express x1.5, half-up cents); unit tests; CONTRACTS updated","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"hub","state":"stalled","settled":2,"head":4,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"review","n":10,"proposal":null,"seq":4,"actor":"a1","verdict":"approved","comment":"matches CR-1: per-leg flight minutes cumulative, half-up cents, express x1.5; npm test passes","reviewers":[],"item":null,"text":"@ #4 approved by a1 :: matches CR-1: per-leg flight minutes cumulative, half-up cents, express x1.5; npm test passes"}
+{"type":"done","n":11,"proposal":null,"seq":4,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C63ed05","text":"@ C63ed05 \"Change request CR-1 (from pm)\" done by a2 in #4"}
+{"type":"review","n":12,"proposal":null,"seq":4,"actor":"a1","verdict":"approved","comment":"matches CR-1: per-leg flight minutes cumulative, half-up cents, express x1.5; npm test passes","reviewers":[],"item":null,"text":"@ #4 approved by a1 :: matches CR-1: per-leg flight minutes cumulative, half-up cents, express x1.5; npm test passes"}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"review","n":14,"proposal":null,"seq":4,"actor":"a3","verdict":"approved","comment":"checked against CR-1: cumulative flight minutes via travelMinutes, half-up cents, express x1.5; npm test passes on #4","reviewers":[],"item":null,"text":"@ #4 approved by a3 :: checked against CR-1: cumulative flight minutes via travelMinutes, half-up cents, express x1.5; npm test passes on #4"}

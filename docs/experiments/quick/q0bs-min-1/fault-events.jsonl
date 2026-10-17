@@ -1,0 +1,5 @@
+{"t":"2026-10-17T19:06:53.401Z","do":"schedule","scenario":"q0bs","arm":"hs-min","scale":1,"events":3}
+{"t":"2026-10-17T19:07:14.995Z","at":0.3,"do":"change-request","files":"change-request","minute":0.37,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"C63ed05"}
+{"t":"2026-10-17T19:07:23.246Z","at":0.5,"do":"partition","agents":["a1","a2"],"minute":0.5,"site":"b","moved":{"a1":{"feed":216583},"a2":{"feed":216634}}}
+{"t":"2026-10-17T19:11:53.288Z","at":5,"do":"heal","agents":["a1","a2"],"minute":5,"site":"a","moved":{"a1":{"feed":225368},"a2":{"feed":225393}}}
+{"t":"2026-10-17T19:17:12.079Z","do":"stop","stopped":["hub","testnet"]}

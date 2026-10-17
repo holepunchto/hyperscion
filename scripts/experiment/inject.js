@@ -65,6 +65,45 @@ function stopFeed(agent) {
   return stopPid(readPid(path.join(root, '.hs', 'watch.pid')))
 }
 
+// start an agent's feed again (after a partition or heal changed which DHT its wrapper uses),
+// appending where the playbook has agents keep it
+function startFeed(agent) {
+  const cwd = path.join(dir, 'agents', agent)
+  const out = fs.openSync(path.join(cwd, '.hs', 'feed.jsonl'), 'a')
+  const child = spawn(path.join(dir, 'bin', 'hs-' + agent), ['watch', '--json'], {
+    cwd,
+    detached: true,
+    stdio: ['ignore', out, out]
+  })
+  child.unref()
+  return child.pid
+}
+
+// move agents to a site's DHT (bootstrap) or back to the main one (null); a running feed is
+// restarted so it meets only the peers on its new side
+async function moveSite(agents, bootstrap) {
+  const moved = {}
+  for (const agent of agents) {
+    const file = path.join(faults, agent + '.site')
+    if (bootstrap) fs.writeFileSync(file, bootstrap)
+    else fs.rmSync(file, { force: true })
+    moved[agent] = (await stopFeed(agent)) ? { feed: startFeed(agent) } : { feed: null }
+  }
+  return moved
+}
+
+// one agent syncs from site B for a moment, so B's feeds get what it has, then comes back
+async function visitSiteB(agent, cwd) {
+  const file = path.join(faults, agent + '.site')
+  fs.writeFileSync(file, run.siteB)
+  try {
+    const res = await tool(agent, ['sync'], cwd)
+    return res.out.trim().split('\n').slice(-2)
+  } finally {
+    fs.rmSync(file, { force: true })
+  }
+}
+
 // async: a blocking spawn would hold up the schedule (an origin-up due while pm retries)
 function tool(agent, args, cwd) {
   const bin = path.join(dir, 'bin', (hs ? 'hs-' : 'git-') + agent)
@@ -89,6 +128,18 @@ const actions = {
   async offline({ agent }) {
     fs.writeFileSync(path.join(faults, agent + '.offline'), '')
     return { feedStopped: hs ? await stopFeed(agent) : false }
+  },
+
+  // a site split (scenario.sites): these agents meet each other but not the hub or the rest
+  async partition({ agents }) {
+    if (!hs) return {}
+    if (!run.siteB) return { failed: 'no site-B testnet (scenario.sites)' }
+    return { site: 'b', moved: await moveSite(agents, run.siteB) }
+  },
+
+  async heal({ agents }) {
+    if (!hs) return {}
+    return { site: 'a', moved: await moveSite(agents, null) }
   },
 
   online({ agent }) {
@@ -134,7 +185,7 @@ const actions = {
     return { feedStopped, note: `stop the ${agent} agent now and start its replacement` }
   },
 
-  async 'change-request'({ files }) {
+  async 'change-request'({ files, bothSites }) {
     const src = path.join(SC, files)
     const cwd = path.join(dir, 'agents', 'pm')
     const line = fs.readFileSync(path.join(src, 'NOTES.line'), 'utf8')
@@ -173,7 +224,10 @@ const actions = {
         res = await tool('pm', ['land', '-m', message], cwd)
         if (/landed #\d+/.test(res.out)) {
           if (!before) item = await crItem(cwd)
-          return { attempt, out: res.out.split('\n').slice(-4), ...(item ? { item } : {}) }
+          // q0bs: announced on both sides of a site split (the pm's laptop visits site B), so
+          // each side can claim it without hearing the other
+          const siteB = bothSites && run.siteB ? await visitSiteB('pm', cwd) : undefined
+          return { attempt, out: res.out.split('\n').slice(-4), ...(item ? { item } : {}), siteB }
         }
         // a sync during an outage can leave NOTES.md behind main: drop the edit, resync, redo
         if (/stale copy/.test(res.out)) await tool('pm', ['restore', 'NOTES.md'], cwd)
@@ -223,7 +277,10 @@ async function stop() {
   if (await stopPid(readPid(path.join(dir, 'approver.pid')))) stopped.push('approver')
   if (hs && (await stopPid(readPid(path.join(dir, 'hub-seed.pid'))))) stopped.push('hub')
   // quick runs: the local testnet goes last (feeds and the hub were using it)
-  const stopTestnet = () => stopPid(readPid(path.join(dir, 'testnet.pid')))
+  const stopTestnet = async () => {
+    await stopPid(readPid(path.join(dir, 'testnet-b.pid')))
+    return stopPid(readPid(path.join(dir, 'testnet.pid')))
+  }
   for (const a of fs.existsSync(path.join(dir, 'agents'))
     ? fs.readdirSync(path.join(dir, 'agents'))
     : []) {
@@ -234,7 +291,7 @@ async function stop() {
   }
   if (await stopTestnet()) stopped.push('testnet')
   for (const f of fs.readdirSync(faults)) {
-    if (/\.(offline|dead)$/.test(f)) fs.rmSync(path.join(faults, f))
+    if (/\.(offline|dead|site)$/.test(f)) fs.rmSync(path.join(faults, f))
   }
   log({ do: 'stop', stopped })
 }

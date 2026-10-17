@@ -52,6 +52,22 @@ if [ "$ARM" != git ] && [ "$LOCAL_DHT" = true ]; then
   export HS_BOOTSTRAP=$(head -1 "$DIR/testnet.out")
 fi
 
+# a scenario with `sites` partitions the team: a second testnet is the other site's DHT, and
+# inject.js's partition/heal point agents at it and back (the hub stays on the first)
+SITES=$(node -p "!!require('$SC/scenario.json').sites")
+SITE_B=
+if [ "$ARM" != git ] && [ "$SITES" = true ]; then
+  "$BARE" "$ROOT/scripts/testnet.js" > "$DIR/testnet-b.out" 2>&1 &
+  echo $! > "$DIR/testnet-b.pid"
+  tries=0
+  until [ -s "$DIR/testnet-b.out" ]; do
+    tries=$((tries + 1))
+    [ $tries -gt 50 ] && { echo "site-b testnet did not start"; exit 1; }
+    sleep 0.2
+  done
+  SITE_B=$(head -1 "$DIR/testnet-b.out")
+fi
+
 if [ "$ARM" = git ]; then
   "$ROOT/scripts/git-team.sh" "$DIR" "$N" --skeleton "$DIR/skeleton" --extra "$EXTRA"
 else
@@ -68,7 +84,7 @@ if [ "$ARM" != git ]; then
   done
 fi
 
-printf '{ "arm": "%s", "scenario": "%s", "bootstrap": "%s" }\n' "$ARM" "$SCENARIO" "${HS_BOOTSTRAP:-}" > "$DIR/run.json"
+printf '{ "arm": "%s", "scenario": "%s", "bootstrap": "%s", "siteB": "%s" }\n' "$ARM" "$SCENARIO" "${HS_BOOTSTRAP:-}" "$SITE_B" > "$DIR/run.json"
 # the playbook is copied in: next to docs/AGENTS-git.md, Claude Code also loads
 # docs/AGENTS.md (the hs playbook) as directory instructions, which leaks hs into the git arm
 case "$ARM" in

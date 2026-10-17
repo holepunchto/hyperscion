@@ -60,13 +60,30 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
       if (self.seed) await self.seed.stop()
       self.seed = null
     },
+    // per-agent DHT: agents moved to site B (a site split) meet only each other
+    sites: {},
+    siteB: null,
+    async split(names) {
+      if (!self.siteB) {
+        const b = await createTestnet(3, t.teardown)
+        self.siteB = b.bootstrap.map((x) => x.host + ':' + x.port).join(',')
+      }
+      for (const n of names) self.sites[n] = self.siteB
+    },
+    heal(names) {
+      for (const n of names) delete self.sites[n]
+    },
+    envOf(name) {
+      const site = self.sites[name] ? { HS_BOOTSTRAP: self.sites[name] } : {}
+      return { ...env, USER: name, HS_AGENT: name, ...site }
+    },
     // run hs as an agent in its worktree
     as(name, args) {
-      return hs(self.agents[name], args, name)
+      return run(self.agents[name], args, self.envOf(name))
     },
     // a background command (e.g. a feed) as an agent
     bgAs(name, args) {
-      const p = bg(self.agents[name], args, name)
+      const p = background(self.agents[name], args, self.envOf(name))
       t.teardown(() => p.stop(), { order: 0 })
       return p
     },

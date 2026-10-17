@@ -6,7 +6,9 @@
 #
 # --extra clones more writers by handle (a change-request "pm", a stand-in agent) next to a1..aN.
 # Fault injection (scripts/experiment/inject.js): while <dir>/faults/<handle>.offline exists,
-# that handle's wrapper points hs at a dead DHT; <dir>/faults/<handle>.dead makes it refuse to run.
+# that handle's wrapper points hs at a dead DHT; <dir>/faults/<handle>.site points it at another
+# site's DHT (a partition: it meets that site's peers only); <dir>/faults/<handle>.dead makes it
+# refuse to run.
 #
 # Creates:
 #   <dir>/owner            the repo creator's worktree (lands the skeleton, then idle)
@@ -52,6 +54,7 @@ export HS_DEBUG_MIRROR=$DIR/debug/mirror-$1.log HS_DEBUG_LAND=$DIR/debug/land-$1
 ${HS_BOOTSTRAP:+export HS_BOOTSTRAP=$HS_BOOTSTRAP}
 if [ -f $DIR/faults/$1.dead ]; then echo "hs: this machine is gone" >&2; exit 1; fi
 if [ -f $DIR/faults/$1.offline ]; then export HS_BOOTSTRAP=127.0.0.1:9; fi
+if [ -f $DIR/faults/$1.site ]; then export HS_BOOTSTRAP=\$(cat $DIR/faults/$1.site); fi
 exec $BARE $ROOT/bin.mjs "\$@"
 EOF
   chmod +x "$DIR/bin/hs-$1"
