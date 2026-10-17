@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 14,
   "schema": [
     {
       "name": "head",
@@ -130,6 +130,12 @@
           "array": true,
           "type": "fixed32",
           "version": 11
+        },
+        {
+          "name": "under",
+          "array": true,
+          "type": "fixed32",
+          "version": 14
         }
       ]
     },
@@ -154,6 +160,11 @@
           "name": "handle",
           "type": "string",
           "version": 7
+        },
+        {
+          "name": "human",
+          "type": "bool",
+          "version": 13
         }
       ]
     },
@@ -574,6 +585,11 @@
           "name": "time",
           "type": "uint",
           "version": 7
+        },
+        {
+          "name": "item",
+          "type": "fixed32",
+          "version": 13
         }
       ]
     },
@@ -598,6 +614,11 @@
           "name": "removed",
           "type": "bool",
           "version": 9
+        },
+        {
+          "name": "human",
+          "type": "bool",
+          "version": 13
         }
       ]
     },
@@ -990,6 +1011,27 @@
           "name": "lead",
           "type": "fixed32",
           "version": 12
+        },
+        {
+          "name": "needs",
+          "type": "uint",
+          "version": 13
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "fixed32",
+          "version": 13
+        },
+        {
+          "name": "hash",
+          "type": "fixed32",
+          "version": 13
+        },
+        {
+          "name": "approvals",
+          "type": "uint",
+          "version": 13
         }
       ]
     }

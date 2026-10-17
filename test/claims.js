@@ -6,6 +6,7 @@ const Corestore = require('corestore')
 const tmp = require('test-tmp')
 const Repo = require('../lib/repo')
 const claims = require('../lib/claims')
+const rules = require('../lib/rules')
 
 const put = (path, s) => ({ path, content: b4a.from(s) })
 
@@ -102,6 +103,151 @@ test('parts: the last part landing says so; the parent is closed by its lead', a
   const byA = await a.itemOp({ item: parent, action: claims.DONE, time, at: Date.now() })
   t.is(byA.outcome.status, 'accepted')
   t.ok((await a.item(parent)).done > 0, 'closed by its lead')
+})
+
+// phase 2 (docs/CLAIMS.md): humans approve the plan, not each diff. An item a human approved
+// lets its author or claimant land into the paths /.hsreview protects, but only the paths the
+// item recorded, only as approved (its hash), and only once someone human exists to approve.
+test('approve the plan: an approved item covers protected paths; approvals bind to it', async (t) => {
+  const [a, b] = await pair(t)
+  const now = Date.now()
+  const ws = await a.workspace('w')
+  const land = async (files, items) => {
+    await ws.commit(files.map((f) => put(f, f + ' ' + Math.random())))
+    return (await ws.land({ items })).outcome
+  }
+  // the policy: billing needs a human, and so do contract items
+  t.is((await land(['/.hsreview'], [])).status, 'accepted', 'policy (no rules yet)')
+  await ws.commit([
+    put(
+      '/.hsreview',
+      '/src/billing/* approvals=1 reviewers=@humans\nitem kind=contract approvals=1 reviewers=@humans\n'
+    )
+  ])
+  t.is((await ws.land()).outcome.status, 'accepted', 'policy in force')
+
+  const newItem = async (title, paths, time) => {
+    const item = claims.itemId({ writer: a.writerKey, time, title })
+    const res = await a.itemOp({
+      item,
+      action: claims.NEW,
+      time,
+      at: time,
+      title,
+      kind: 'contract',
+      paths
+    })
+    return { item, status: res.outcome.status, reason: res.outcome.reason }
+  }
+  const early = await newItem('price per minute', ['/src/billing'], now)
+  t.is(early.status, 'invalid', 'no human to approve it yet: ' + early.reason)
+
+  // only the owner (the bootstrap writer, a) can say someone is human
+  t.is((await b.addWriter(a.writerKey, { human: true })).outcome.status, 'invalid', 'not the owner')
+  t.is((await a.addWriter(b.writerKey, { human: true })).outcome.status, 'accepted')
+  await sync(a, b)
+
+  const plan = await newItem('price per minute', ['/src/billing'], now + 1)
+  t.is(plan.status, 'accepted')
+  const it = await a.item(plan.item)
+  t.is(it.needs, 1)
+  t.ok(it.reviewers.length === 1 && b4a.equals(it.reviewers[0], b.writerKey), 'pinned: @humans = b')
+
+  t.is((await land(['/src/billing/x.js'], [plan.item])).status, 'needs-review', 'not approved yet')
+
+  await sync(a, b)
+  const stale = await b.review({ item: plan.item, verdict: 1, hash: b4a.alloc(32), time: now })
+  t.is(stale.outcome.status, 'stale-review', 'an approval binds to the item as it is')
+  const ok = await b.review({ item: plan.item, verdict: 1, hash: it.hash, time: now })
+  t.is(ok.outcome.status, 'accepted')
+  await sync(a, b)
+  t.is((await a.item(plan.item)).approvals, 1)
+
+  // another approved item that doesn't cover billing doesn't help
+  const other = await newItem('rename helpers', ['/src/geo.js'], now + 2)
+  await sync(a, b)
+  await b.review({ item: other.item, verdict: 1, hash: (await b.item(other.item)).hash, time: now })
+  await sync(a, b)
+  t.is(
+    (await land(['/src/billing/y.js'], [other.item])).status,
+    'needs-review',
+    'paths not covered'
+  )
+
+  // the approved plan covers lands under it, and the one that completes it
+  await ws.commit([put('/src/billing/w.js', 'step 1')])
+  t.is((await ws.land({ under: [plan.item] })).outcome.status, 'accepted', 'a land under the plan')
+  t.is((await a.item(plan.item)).done, 0, 'still open')
+  t.is(
+    (await land(['/src/billing/x.js'], [plan.item])).status,
+    'accepted',
+    'approved plan covers the land'
+  )
+
+  // without the item, the rule still applies
+  t.is((await land(['/src/billing/z.js'], [])).status, 'needs-review', 'still protected otherwise')
+
+  // claiming an approved item doesn't let you ride it: only its author or the lead it names
+  const plan2 = await newItem('more billing', ['/src/billing'], now + 3)
+  await sync(a, b)
+  await b.review({ item: plan2.item, verdict: 1, hash: (await b.item(plan2.item)).hash, time: now })
+  await b.itemOp({ item: plan2.item, action: claims.CLAIM, time: now + 4, at: now + 4 })
+  await sync(a, b)
+  const wb = await b.workspace('wb')
+  await wb.sync()
+  await wb.commit([put('/src/billing/b.js', 'b')])
+  t.is(
+    (await wb.land({ under: [plan2.item] })).outcome.status,
+    'needs-review',
+    "a claimant can't ride it"
+  )
+
+  // the lead it names can (the approver saw that name: it is in the item's hash)
+  const time5 = now + 5
+  const led = claims.itemId({ writer: a.writerKey, time: time5, title: 'billing by b' })
+  await a.itemOp({
+    item: led,
+    action: claims.NEW,
+    time: time5,
+    at: time5,
+    title: 'billing by b',
+    kind: 'contract',
+    paths: ['/src/billing'],
+    lead: b.writerKey
+  })
+  await sync(a, b)
+  await b.review({ item: led, verdict: 1, hash: (await b.item(led)).hash, time: now })
+  await sync(a, b)
+  await wb.sync()
+  await wb.commit([put('/src/billing/c.js', 'c')])
+  t.is((await wb.land({ under: [led] })).outcome.status, 'accepted', 'the named lead can')
+
+  // an approval that arrives before its item (signals first) counts once the item does
+  const time6 = now + 6
+  const late = claims.itemId({ writer: a.writerKey, time: time6, title: 'late item' })
+  const lateHash = rules.itemHash({
+    id: late,
+    title: 'late item',
+    kind: 'contract',
+    paths: ['/src/billing']
+  })
+  t.is(
+    (await b.review({ item: late, verdict: 1, hash: lateHash, time: now })).outcome.status,
+    'accepted',
+    'kept before the item exists'
+  )
+  await sync(a, b)
+  await a.itemOp({
+    item: late,
+    action: claims.NEW,
+    time: time6,
+    at: time6,
+    title: 'late item',
+    kind: 'contract',
+    paths: ['/src/billing']
+  })
+  await sync(a, b)
+  t.is((await a.item(late)).approvals, 1, 'the early approval counts')
 })
 
 test('board: the lead is the earliest claim; renewals never move it; stale claims lose it', (t) => {
