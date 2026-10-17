@@ -200,5 +200,25 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   const fallback = await tm.as('a1', ['propose', '-m', 'api v2, in case'])
   t.ok(/proposed P\d+.*asked ann/.test(fallback.stdout), fallback.stdout + fallback.stderr)
   const landed = await tm.as('a1', ['land', '-m', 'api v2', '--item', id])
-  t.ok(/landed #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
+  // the item carried it, and the fallback proposal is done with it
+  t.ok(/landed P\d+ as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
+  const fallbackId = fallback.stdout.match(/proposed (P\d+)/)[1]
+  const props = await tm.as('a1', ['proposals'])
+  t.absent(new RegExp(`${fallbackId} (open|approved)`).test(props.stdout), props.stdout)
+
+  // --split (TO-FIVE #14): a land that is only partly protected lands the rest now
+  tm.write('a1', 'src/api/v3.js', '// v3\n')
+  tm.write('a1', 'src/b.js', 'b\n')
+  const mixed = await tm.as('a1', ['land', '-m', 'v3 and b'])
+  t.ok(/hs land --split/.test(mixed.stdout + mixed.stderr), mixed.stdout + mixed.stderr)
+  const split = await tm.as('a1', ['land', '-m', 'v3 and b', '--split'])
+  t.ok(/setting aside \/src\/api\/v3\.js/.test(split.stdout), split.stdout + split.stderr)
+  t.ok(/landed #\d+/.test(split.stdout), split.stdout + split.stderr)
+  t.ok(/proposed P\d+ .*for \/src\/api\/v3\.js, asked ann/.test(split.stdout), split.stdout)
+  t.is(tm.read('a1', 'src/api/v3.js'), '// v3\n', 'the protected file is back in the worktree')
+  const pid = split.stdout.match(/proposed (P\d+)/)[1]
+  const ok = await tm.as('ann', ['review', pid, 'approve'])
+  t.is(ok.code, 0, ok.stdout + ok.stderr)
+  const last = await tm.as('a1', ['land'])
+  t.ok(new RegExp(`landed ${pid} as #\\d+`).test(last.stdout), last.stdout + last.stderr)
 })
