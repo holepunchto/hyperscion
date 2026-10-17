@@ -1,3 +1,4 @@
 NOTES.md merge=union
+TASKS.md merge=union
 # the scripted swarm writes here: no check reads it, and it stays out of feeds
 /swarm/ -check quiet
