@@ -46,7 +46,8 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
 
   const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
   t.is(init.code, 0, 'init')
-  t.ok(/~1$/m.test(init.stdout.match(/^repo (\S+)/m)[1]), 'the invite carries the light bootstrap')
+  // a heavy throwaway genesis hands over to the hub (docs/FINALITY.md): no light-bootstrap ~1
+  t.absent(/~1$/m.test(init.stdout.match(/^repo (\S+)/m)[1]), 'the invite is a heavy repo')
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
 
   const seed = background(hub, ['seed', '--admit', admit], { ...env, USER: 'hub' })

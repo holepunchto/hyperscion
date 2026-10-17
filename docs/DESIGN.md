@@ -661,7 +661,11 @@ from the writer's current view of main.
 - `hs seed` (the hub) acks automatically, debounced 250 ms after main's view updates, whenever
   main's head is past its recorded seen. Agents never need to ack.
 
-**Why indexer acks are enough.** Autobee linearizes by indexer weight: once an indexer's node
+**Why indexer acks are enough, when the indexer is heavier.** This holds only if the
+indexer's autobee weight exceeds the writers'. From milestone 7 until the fix in
+docs/FINALITY.md, `init --hub` hubs had weight 1 like every agent, and a site split reordered
+a final land. The settlers are now the indexers of weight 2, or every writer when there are
+none (`lib/settle.js`). Autobee linearizes by indexer weight: once an indexer's node
 causally follows a changeset, a concurrent node from a non-indexer that the indexer hadn't seen
 sorts after the indexer's causal past, so it can't land in front of that changeset. "Every
 writer has seen it" would be stricter and would stall whenever any agent goes offline.
@@ -815,6 +819,9 @@ Short lists are unchanged. Probe: `test/incoming.js`.
   - When the hub was the bootstrap writer, a removed hub that came back got its land sorted
     ahead of an already-settled land, which took its number (#1 → #2). That was seen before
     the guards existed.
+  - **Superseded by docs/FINALITY.md:** `init --hub` now hands over from a throwaway heavy
+    genesis, so the hub has weight 2. The next bullet describes repos made between milestone
+    7 and that fix, which now settle on every writer.
   - **New repos are light.** autobee's `bootstrapWeight: 1` makes the repo's creator a plain
     writer, carried in the invite (`<key>~1`) and in the config, since every peer must order
     the same way. `hs init --hub <dir>` creates the hub as a separate writer and the repo's

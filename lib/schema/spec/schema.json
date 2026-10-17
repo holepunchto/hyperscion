@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "schema": [
     {
       "name": "head",
@@ -177,6 +177,11 @@
           "name": "human",
           "type": "bool",
           "version": 13
+        },
+        {
+          "name": "owner",
+          "type": "bool",
+          "version": 17
         }
       ]
     },
@@ -643,6 +648,16 @@
           "name": "human",
           "type": "bool",
           "version": 13
+        },
+        {
+          "name": "weight",
+          "type": "uint",
+          "version": 17
+        },
+        {
+          "name": "owner",
+          "type": "bool",
+          "version": 17
         }
       ]
     },

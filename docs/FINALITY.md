@@ -1,7 +1,8 @@
 # Finality under a site split: "final" isn't final in `init --hub` repos
 
 Found 2026-10-17 by the q0bs runs (a two-site split, docs/experiments/quick/RUNLOG.md).
-**Status: open, decision needed.**
+**Status: fixed (B + D, below).** The user didn't choose between the options: the standing
+instruction was to keep working, and both changes are commits that can be reverted.
 
 ## What happens
 
@@ -54,7 +55,7 @@ That assumption no longer holds:
 | C   | Heavy owner stays, hub weight 2, owner not a settler                                                                                           | no: an owner land made while the owner can't reach the hub reorders acked lands | rejected                                                                                                                                                                                                                                                                                  |
 | D   | **Honest fallback:** when no indexer outweighs the other writers in autobee's system records, settle on every writer's acks                    | yes (it's the gate's control rule)                                              | `final` waits for every agent, so one offline agent stalls it (the q2h stall complaints). The only correct rule for existing light repos, since nothing in them can ever reach weight 2                                                                                                   |
 
-**Recommendation: B for new repos, D for existing ones.**
+**Done: B for new repos, D for existing ones.**
 
 - **Make the settlement rule match autobee's ordering:** the settlers are the indexers that
   outweigh every other writer in autobee's system records, or every writer when none does.
@@ -69,3 +70,25 @@ That assumption no longer holds:
 - `HS_KNOWN_FAILURES=1 brittle-bare test/site-finality.js` passes (seq and hash unchanged);
 - q0bs is rerun before the board arm (q0bs-plain-1), which would otherwise measure this bug
   instead of coordination.
+
+## What was done
+
+- **`hs init --hub` (B):**
+  - a throwaway genesis writer of weight 2 creates the repo;
+  - it grants the hub weight 2 as indexer and names the owner (a plain writer, `owner` in its
+    record, who may mark people human);
+  - it removes itself, and its key is deleted;
+  - the invite carries weight 2 (no `~1`).
+    `lib/apply.js` lets a heavy bootstrap remove itself, but only itself and only while an
+    indexer of weight 2 remains.
+- **Settlement (D):**
+  - writer records carry autobee's weight as granted (2 for an indexer granted by a weight-2
+    writer, otherwise capped at the granter's), derived for older records;
+  - the settlers are the indexers of weight 2, or every writer when there are none
+    (`lib/settle.js`, shared by apply and `Repo`);
+  - old light repos therefore settle on every writer, and `doctor` says so.
+- **Gates:**
+  - `test/settle-property.js` runs the `genesis`, `handover` and `hub` topologies by default;
+  - the seed 1–8 × 40-round sweeps of `handover` and `hub` have 0 violations (`hub` reordered
+    settled changesets on 3 of 8 seeds before);
+  - `test/site-finality.js` passes (seq and hash unchanged) and is a regular test now.
