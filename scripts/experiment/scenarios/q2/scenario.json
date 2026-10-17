@@ -29,7 +29,8 @@
   ],
   "duplication": {
     "label": "CR-1 flight-minute computations",
-    "all": ["flight.?min", "speedKmh"]
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
   },
   "skipAuthors": "^sw\\d",
   "swarm": {

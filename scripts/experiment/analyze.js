@@ -29,7 +29,7 @@ function normalize(r) {
   return { ...r, argv }
 }
 
-const OBSERVE = new Set(['log', 'show', 'cat', 'ls', 'diff', 'status', 'info', 'watch', 'doctor'])
+const { OBSERVE, coordinationMetrics } = require('./metrics')
 const has = (r, re) => r.out.some((l) => re.test(l))
 const pct = (xs, p) => {
   if (!xs.length) return 0
@@ -257,9 +257,19 @@ const metrics = {
   help_calls: total('helps'),
   unknown_flag_or_command: total('unknownFlags'),
   old_habits: total('oldHabits'),
+  // coordination cost (scripts/experiment/metrics.js): calls beyond change control, waits by
+  // what they waited for, time to first land, round trips per land
+  ...(isGit ? {} : coordinationMetrics(runs, started)),
   ...reports
 }
-fs.writeFileSync(path.join(dir, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
+// merge over what's there: outcomes.js adds its keys to the same file, and re-scoring an
+// archived run (whose team is gone) must not drop them
+const metricsFile = path.join(dir, 'metrics.json')
+let kept = {}
+try {
+  kept = JSON.parse(fs.readFileSync(metricsFile, 'utf8'))
+} catch {}
+fs.writeFileSync(metricsFile, JSON.stringify({ ...kept, ...metrics }, null, 2) + '\n')
 recordToFive(dir, path.join(dir, 'reports'))
 console.log('\n## metrics (also in metrics.json)')
 for (const [k, v] of Object.entries(metrics)) console.log(`${k}: ${JSON.stringify(v)}`)

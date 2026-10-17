@@ -63,5 +63,13 @@
   "duplicate_implementations": 2,
   "duplicate_implementations_max": 2,
   "change_request_at_min": 1.6,
-  "change_request_done_after_min": 2
+  "change_request_done_after_min": 2,
+  "coordination_calls": 16,
+  "coordination_share": 0.21,
+  "wait_scenario_s": 149,
+  "wait_teammate_s": 0,
+  "wait_settle_s": 0,
+  "first_land_min": 3.5,
+  "round_trips_per_land": 8.8,
+  "round_trips_per_land_p90": 13
 }

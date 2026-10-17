@@ -6,6 +6,7 @@
 const { spawnSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const { classifyImplementation } = require('./metrics')
 
 const dir = path.resolve(process.argv[2] || '')
 const acceptance = path.resolve(process.argv[3] || '')
@@ -93,9 +94,8 @@ for (const s of states().filter(
     a = JSON.parse(acc.out)
   } catch {}
   const perMinute = (a.failures || []).filter((f) => /per-minute/.test(f.name)).length === 0
-  const duplicates = scenario.duplication
-    ? countImplementations(to, scenario.duplication)
-    : undefined
+  const impl = scenario.duplication ? countImplementations(to, scenario.duplication) : null
+  const duplicates = impl ? impl.defines : undefined
   rows.push({
     id: s.id,
     minute: minute(s.t),
@@ -103,7 +103,7 @@ for (const s of states().filter(
     green: test.code === 0,
     acceptance: a.total ? Number((a.passed / a.total).toFixed(3)) : 0,
     ...(scenario.acceptance ? { perMinute: perMinute && a.total > 0 } : {}),
-    ...(duplicates !== undefined ? { duplicates } : {})
+    ...(duplicates !== undefined ? { duplicates, fallbacks: impl.fallbacks } : {})
   })
   fs.rmSync(to, { recursive: true, force: true })
   console.log(JSON.stringify(rows[rows.length - 1]))
@@ -149,6 +149,9 @@ const outcomes = {
 if (scenario.duplication) {
   outcomes.duplicate_implementations = last.duplicates ?? null
   outcomes.duplicate_implementations_max = Math.max(0, ...team.map((r) => r.duplicates || 0))
+  // copies of the computation inline next to a teammate's function (a defensive fallback):
+  // with `defines` in the scenario these no longer count as implementations
+  outcomes.fallback_computations = last.fallbacks ?? null
 }
 if (scenario.acceptance) {
   const cr = team.find((r) => r.author === 'pm')
@@ -171,7 +174,9 @@ console.log(JSON.stringify(outcomes, null, 2))
 
 // files under src/ matching every regex in `all` (e.g. mentions flight minutes AND derives them
 // from speed): each is one implementation of the feature
-function countImplementations(root, { all }) {
+// { defines, fallbacks }: files that implement the watched computation as their own, and
+// files that only repeat it inline (scripts/experiment/metrics.js classifyImplementation)
+function countImplementations(root, duplication) {
   const res = []
   const walk = (dir) => {
     if (!fs.existsSync(dir)) return
@@ -182,9 +187,11 @@ function countImplementations(root, { all }) {
     }
   }
   walk(path.join(root, 'src'))
-  const patterns = all.map((r) => new RegExp(r, 'i'))
-  return res.filter((f) => {
-    const text = fs.readFileSync(f, 'utf8')
-    return patterns.every((re) => re.test(text))
-  }).length
+  const out = { defines: 0, fallbacks: 0 }
+  for (const f of res) {
+    const kind = classifyImplementation(fs.readFileSync(f, 'utf8'), duplication)
+    if (kind === 'define') out.defines++
+    else if (kind === 'fallback') out.fallbacks++
+  }
+  return out
 }
