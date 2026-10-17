@@ -2,6 +2,7 @@
 // the same instant and agree who leads; the board, land notes, completing an item with
 // `land --item`, the 3-claim limit and releasing.
 const test = require('brittle')
+const fs = require('bare-fs')
 const { team } = require('./helpers/team')
 
 test('claims: a race has one lead, the board shows it, a land completes the item', async (t) => {
@@ -108,4 +109,87 @@ test('claims: a race has one lead, the board shows it, a land completes the item
   const released = await tm.as('a1', ['claim', task1, '--release'])
   t.ok(/released/.test(released.stdout), released.stdout)
   t.ok(/open: nobody on it/.test((await tm.as('a2', ['claims'])).stdout), 'open again')
+})
+
+test('claims phase 2: a person approves a gated item from hs inbox, and its author lands it', async (t) => {
+  t.timeout(240_000)
+  const path = require('bare-path')
+  const tm = await team(t, { agents: ['a1', 'ann'], files: { 'src/a.js': 'a\n' } })
+  const owner = path.join(tm.dir, 'owner')
+  const annKey = (await tm.as('ann', ['info'])).stdout.match(/^writer\s+(\S+)/m)[1]
+
+  // only the team owner can say a writer is a person
+  const notOwner = await tm.as('a1', ['add-writer', annKey, '--as', 'ann', '--human', '--offline'])
+  t.ok(/only the team owner/.test(notOwner.stdout + notOwner.stderr), notOwner.stdout)
+  const marked = await tm.hs(owner, ['add-writer', annKey, '--as', 'ann', '--human'], 'owner')
+  t.ok(/add-writer: accepted/.test(marked.stdout), marked.stdout + marked.stderr)
+
+  await tm.hs(owner, ['sync'], 'owner')
+  fs.writeFileSync(
+    path.join(owner, '.hsreview'),
+    '/src/api/* approvals=1 reviewers=@humans\nitem kind=contract approvals=1 reviewers=@humans\n'
+  )
+  const policy = await tm.hs(owner, ['land', '-m', 'policy'], 'owner')
+  t.ok(/landed #\d+/.test(policy.stdout), policy.stdout + policy.stderr)
+
+  await tm.as('a1', ['sync'])
+  const made = await tm.as('a1', [
+    'item',
+    'new',
+    'rename the api',
+    '--kind',
+    'contract',
+    '--paths',
+    'src/api'
+  ])
+  t.is(made.code, 0, made.stderr)
+  const id = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+  const board = await tm.as('a1', ['claims'])
+  t.ok(/needs 1 approval \(0\/1, from ann\)/.test(board.stdout), board.stdout)
+
+  // an idea with no rule for it is just an item to claim
+  const idea = await tm.as('a1', ['suggest', 'cache the distance matrix'])
+  t.ok(/idea C[0-9a-f]{6} "cache the distance matrix"/.test(idea.stdout), idea.stdout)
+  t.ok(/claim it to build it/.test(idea.stdout), idea.stdout)
+
+  // the person's inbox lists it; a1's doesn't (its own item)
+  const mine = await tm.as('a1', ['inbox'])
+  t.ok(/nothing waiting on you/.test(mine.stdout), mine.stdout)
+  const inbox = await tm.as('ann', ['inbox'])
+  t.ok(
+    new RegExp(`${id} \\[contract\\] "rename the api" by a1, .*needs 1 approval`).test(
+      inbox.stdout
+    ),
+    inbox.stdout
+  )
+  const json = await tm.as('ann', ['inbox', '--json', '--offline'])
+  t.is(JSON.parse(json.stdout.trim().split('\n')[0]).item, id, json.stdout)
+
+  // a1's own approval doesn't count
+  const self = await tm.as('a1', ['review', id, 'approve'])
+  t.ok(/your own item/.test(self.stderr), self.stderr)
+  t.ok(/needs 1 approval \(0\/1/.test(self.stdout), self.stdout)
+
+  const approved = await tm.as('ann', ['inbox', '--approve-all'])
+  t.ok(
+    new RegExp(`${id} "rename the api": approved by you; approved \\(1/1\\)`).test(approved.stdout),
+    approved.stdout + approved.stderr
+  )
+  const after = await tm.as('ann', ['inbox'])
+  t.ok(/nothing waiting on you/.test(after.stdout), after.stdout)
+
+  // without the item, the protected path is refused; --under lands a piece and keeps it open
+  tm.write('a1', 'src/api/v1.js', '// v1\n')
+  const refused = await tm.as('a1', ['land', '-m', 'api v1'])
+  t.ok(/need.* approval/.test(refused.stdout + refused.stderr), refused.stdout + refused.stderr)
+  const piece = await tm.as('a1', ['land', '-m', 'api v1', '--under', id])
+  t.ok(/landed #\d+/.test(piece.stdout), piece.stdout + piece.stderr)
+  const open = await tm.as('a1', ['claims'])
+  t.ok(new RegExp(`${id} "rename the api"`).test(open.stdout), open.stdout)
+  t.absent(/\[done/.test(open.stdout), 'still open after --under')
+
+  // the plan is approved: its author lands into the protected paths it names
+  tm.write('a1', 'src/api/v2.js', '// v2\n')
+  const landed = await tm.as('a1', ['land', '-m', 'api v2', '--item', id])
+  t.ok(/landed #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
 })

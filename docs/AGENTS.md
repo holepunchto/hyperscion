@@ -122,6 +122,11 @@ hs claim --new "cache the distance matrix"     # something that isn't an item ye
   have landed, the feed says so: close the parent with `hs claim C1a2b3c --done` once your
   own work on it is in.
 
+- **Some items need a person's approval** (`hs claims` shows `needs 1 approval (0/1, from
+ann)`). Start anyway: nothing waits except your land into the paths the rule protects.
+  Once the feed says `approved`, land with `--item` (or `--under` for a piece). An idea you
+  have along the way goes in `hs suggest "..."`, not in NOTES.md.
+
 ## Ship, Show or Ask
 
 Every change is one of three kinds. Pick deliberately; it's how teammates learn what you need

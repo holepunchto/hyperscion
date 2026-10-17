@@ -219,8 +219,8 @@ item kind=idea           approvals=1 reviewers=ryan
 signatures (DESIGN.md §10), so a quorum is still `apply` counting distinct writers, and
 `approve`, `changes` and `comment` all work on items as they do on proposals.
 
-- **A suggestion that needs approval:** it stays `suggested` and isn't claimable until
-  approved.
+- **A suggestion that needs approval:** it is claimable at once (as built: see below); only
+  lands into protected paths wait for the approval.
 - **A claim that needs approval:** the agent can start at once (never blocked), but its land
   into protected paths still waits, exactly as an unapproved proposal does today.
 
@@ -242,6 +242,37 @@ signatures (DESIGN.md §10), so a quorum is still `apply` counting distinct writ
 The weak spot is that humans don't sit in `hs watch`. For now `hs inbox` and `--for-me` are
 the surface, and a Keet bridge (posting approval requests to a team room and taking the answer
 back as a review op) is the natural next step.
+
+### What phase 2 built (steps 1-3)
+
+The sketch above, with these choices made while building it:
+
+- **Gated items are claimable at once.** Nothing waits on a person except a land into the
+  paths a rule protects. An agent can claim, build and test while the approval is on its way.
+- **The requirement is pinned when the item is created** (`needs`, `reviewers`). Creating an
+  item that nobody could approve is refused, with the fix (`hs add-writer <key> --human`).
+- **An approval pins the item's hash** (id, title, kind, paths and suggested lead), so a
+  person approves exactly what they saw. The author's own approval never counts.
+- **Who rides an approved plan:** the item's author or its named lead, and only for paths the
+  item names. A claimant can't ride someone else's approval.
+- **Approvals can arrive before their item** (signals travel first): they are kept and count
+  when the item arrives.
+- **A policy edit that raises `approvals` after an item was approved** makes it stop covering
+  lands. That is the safe direction, and a second approval restores it.
+- **The commands:**
+
+```sh
+hs add-writer <key> --as ann --human          # team owner only
+hs suggest "cache the distance matrix"        # an item of kind idea
+hs inbox [--json] [--approve-all]             # items you can approve, then proposals naming you
+hs review C1a2b3c approve|changes|comment     # an item review
+hs land --item C1a2b3c                        # closes it; protected paths ride its approval
+hs land --under C1a2b3c                       # a piece of it; the item stays open
+```
+
+- **The feed and `hs claims`:** `hs claims` prints `needs 1 approval (0/1, from ann)` on a
+  gated item. The feed has `item-request` (for its reviewers), `item-review` and
+  `item-approved` (for the item's author and lead).
 
 ## Commands (sketch)
 
