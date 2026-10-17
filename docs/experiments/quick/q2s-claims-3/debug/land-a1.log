@@ -1,0 +1,21 @@
+2026-10-17T00:49:15.970Z 667873 - +505ms checkout: written 0 missing 14
+2026-10-17T00:49:21.047Z 668035 fetch +2ms start
+2026-10-17T00:49:21.172Z 668035 fetch +127ms pull: peers 1 holder=true
+2026-10-17T00:49:21.491Z 668035 fetch +446ms pull: settled=true
+2026-10-17T00:49:21.492Z 668035 fetch +447ms pull: view gaps 0
+2026-10-17T00:49:21.497Z 668035 fetch +452ms prefetch: fetched 0 missing 0
+2026-10-17T00:49:21.949Z 668072 info +2ms start
+2026-10-17T00:49:54.579Z 668738 sync +4ms start
+2026-10-17T00:49:54.751Z 668738 sync +176ms pull: peers 6 holder=true
+2026-10-17T00:49:56.821Z 668738 sync +2246ms pull: settled=true
+2026-10-17T00:49:56.825Z 668738 sync +2250ms pull: view gaps 0
+2026-10-17T00:49:56.850Z 668738 sync +2275ms prefetch: fetched 4 missing 0
+2026-10-17T00:49:56.871Z 668738 sync +2296ms checkout: written 9 missing 0
+2026-10-17T00:49:57.479Z 668915 claims +4ms start
+2026-10-17T00:50:39.483Z 669265 land +4ms start
+2026-10-17T00:50:39.699Z 669265 land +220ms pull: peers 5 holder=true
+2026-10-17T00:50:44.597Z 669265 land +5118ms pull: settled=true
+2026-10-17T00:52:47.091Z 670729 status +4ms start
+2026-10-17T00:53:00.958Z 670960 cat +4ms start
+2026-10-17T00:53:01.664Z 671069 cat +4ms start
+2026-10-17T00:53:02.345Z 671105 cat +2ms start

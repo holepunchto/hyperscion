@@ -1,0 +1,7 @@
+00:50:07 a3 claim --new pricing, report, cli, integration test (a3) | you lead Cb78410 "pricing, report, cli, integration test (a3)"
+00:50:51 a3 land -m a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json], | merged teammates' changes into your edits: /CONTRACTS.md (#40 a2)
+00:51:32 a3 claim C023968 | you lead C023968 "Change request CR-1 (from pm)"
+00:51:41 a3 item part C023968 scheduler: expose per-stop flight minutes on trips (trip.fligh | item C91f2d6 "scheduler: expose per-stop flight minutes on trips (trip.flightMinutes[i], o
+00:51:49 a2 claim C023968 --with a3 | you share C023968 with a3 (co-lead): agree who does which piece
+00:52:17 a3 land -m a3: CR-1 pricing by flight minutes (CONTRACTS.md updated), report shows  | merged teammates' changes into your edits: /CONTRACTS.md (#82 a2)
+00:52:41 a3 claim C91f2d6 --done | C91f2d6 done
