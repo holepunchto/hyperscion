@@ -81,6 +81,11 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     const leads = res.filter((r) => /you lead/.test(r.stdout))
     t.is(leads.length, 1, res.map((r) => r.stdout).join('\n---\n'))
     lead = ['a1', 'a2', 'a3'][res.indexOf(leads[0])]
+    // a loser with --if-free takes its claim back at once
+    const loser = ['a1', 'a2', 'a3'].find((a) => a !== lead)
+    const back = await tm.as(loser, ['claim', id, '--if-free'])
+    t.is(back.code, 2, back.stdout)
+    t.ok(new RegExp(`withdrawn: ${lead} leads ${id}`).test(back.stdout), back.stdout)
   })
   const others = ['a1', 'a2', 'a3'].filter((a) => a !== lead)
 
@@ -244,12 +249,30 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
       [0, 2],
       'one leads (0), the other knows it lost (2)'
     )
+    // the lead closes it, so later flows start from a clean board
+    const winner = [x, y][verdicts.indexOf(leads[0])]
+    await tm.as(winner, ['claim', id2, '--done'])
     await tm.as(x, ['sync'])
     const board = tm.read(x, 'NOTES.md')
     t.ok(
       board.includes(`- [${x}] taking CR-2`) && board.includes(`- [${y}] taking CR-2`),
       'the board keeps both claims, with no rule for which holds'
     )
+  })
+
+  // F10: the lead's land closes the item it links itself to with --done
+  await flow('F10 land --done', async () => {
+    const [x] = others
+    await tm.as(x, ['sync'])
+    const made = await ownerHs(['item', 'new', 'CR-3: log every plan'])
+    const id3 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    await tm.as(x, ['sync'])
+    const claimed = await tm.as(x, ['claim', id3])
+    t.ok(/you lead/.test(claimed.stdout), claimed.stdout)
+    tm.write(x, 'src/log.js', '// log\n')
+    const landed = await tm.as(x, ['land', '-m', 'log plans', '--done'])
+    t.ok(new RegExp(`linked to ${id3}`).test(landed.stdout), landed.stdout + landed.stderr)
+    t.ok(new RegExp(`completes ${id3}`).test(landed.stdout), landed.stdout)
   })
 
   fs.writeFileSync(path.join(tm.dir, 'flows.json'), JSON.stringify(results, null, 2) + '\n')

@@ -105,10 +105,10 @@ hs claim --new "cache the distance matrix"     # something that isn't an item ye
 ```
 
 - **You lead** (the earliest claim, or the lead the item names): build it and land as usual. A
-  land links itself to the item you lead (`linked to C1a2b3c`). Close it when it's all in:
-  `hs claim C1a2b3c --done` (or land with `--item C1a2b3c`).
-- **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too.
-  Ask them for a piece in NOTES.md, or review their land when it comes:
+  land links itself to the item you lead (`linked to C1a2b3c`). Close it with the land that
+  finishes it: `hs land --done` (or `hs claim C1a2b3c --done`).
+- **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too
+  (`hs claim C1a2b3c --if-free` withdraws your claim at once). Ask them for a piece in NOTES.md, or review their land when it comes:
   `hs review #27 approve` (or `changes -m "..."`), no NOTES.md land needed.
 - **A claim never blocks anyone,** and works while the hub is down (claims travel between
   peers). Claims expire after 20 min without activity; `land` and `sync` keep yours alive.

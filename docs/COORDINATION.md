@@ -52,7 +52,8 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 - Done: the minimal surface keeps `hs review #n`, and the playbook points non-leads at it.
   q0b-min-3: reviews moved from NOTES.md lands into review records (coordination lands 3 to
   0; calls per code land 32 to 30).
-- Small asks left: a losing claim releasing itself, and `land --done` closing the item.
+- Done: `hs claim <item> --if-free` withdraws a losing claim at once; `hs land --done` closes
+  the item the land links itself to. Both in test/flows.js (F1, F10).
 - Not run: an hours-long, multi-site partitioned LLM run; the partition case is covered by
   the scripted flow F9 until then.
 - A longer partitioned run (hours, sites, a lost claim) before revisiting the board question.
