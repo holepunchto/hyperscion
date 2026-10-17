@@ -348,10 +348,11 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
   const l3 = await tm.as('a1', ['land'])
   t.absent(/landed P/.test(l3.stdout), l3.stdout)
   t.ok(/content changed since/.test(l3.stdout + l3.stderr), l3.stdout + l3.stderr)
-  // a wait for a file you already have returns at once (#21)
-  const here = await tm.as('a2', ['watch', '--path', 'src/x.js', '--count', '1', '--timeout', '30'])
-  t.is(here.code, 0, here.stdout + here.stderr)
-  t.ok(/already in your files: #\d+ a1 \/src\/x\.js/.test(here.stdout), here.stdout)
+  // a wait for a file you already have waits for a newer change, and its timeout names the
+  // one you have (#21; returning early on it misfired in q2-hs-7)
+  const here = await tm.as('a2', ['watch', '--path', 'src/x.js', '--count', '1', '--timeout', '4'])
+  t.is(here.code, 2, here.stdout + here.stderr)
+  t.ok(/already in your files: #\d+ a1 \/src\/x\.js/.test(here.stderr), here.stderr)
 
   // an open proposal doesn't hold back other files (#22)
   tm.write(
