@@ -1,0 +1,15 @@
+{"t":"2026-10-17T04:39:14.923Z","do":"start","as":"ann","delayS":10,"holdS":90,"holdMatching":"CR-1"}
+{"t":"2026-10-17T04:40:58.125Z","do":"seen","target":"C7fb918","kind":"item","title":"Change request CR-1 (from pm)","holdS":90}
+{"t":"2026-10-17T04:41:34.457Z","do":"seen","target":"P1","kind":"proposal","title":"model+geo: loadDay (depots array), distanceKm, travelMinutes, orderStops (NN), routeKm (protected part)","holdS":10}
+{"t":"2026-10-17T04:41:51.635Z","do":"approved","target":"P1","waitedS":17}
+{"t":"2026-10-17T04:41:58.759Z","do":"seen","target":"P2","kind":"proposal","title":"scheduler CR-1: trips carry flightMinutes per stop for pricing (protected part)","holdS":10}
+{"t":"2026-10-17T04:42:17.919Z","do":"seen","target":"P3","kind":"proposal","title":"CR-1: price per flight-minute (express x1.5), report shows flight minutes; CONTRACTS.md pricing proposed (protected part)","holdS":10}
+{"t":"2026-10-17T04:42:20.241Z","do":"approved","target":"P2","waitedS":21}
+{"t":"2026-10-17T04:42:36.430Z","do":"approved","target":"C7fb918","waitedS":98}
+{"t":"2026-10-17T04:42:38.539Z","do":"approved","target":"P3","waitedS":21}
+{"t":"2026-10-17T04:43:01.004Z","do":"revised","target":"P2"}
+{"t":"2026-10-17T04:43:01.005Z","do":"seen","target":"P2","kind":"proposal","title":"CONTRACTS: Trip.flightMinutes (CR-1), rebased on a1's #129","holdS":10}
+{"t":"2026-10-17T04:43:16.624Z","do":"approved","target":"P2","waitedS":16}
+{"t":"2026-10-17T04:43:38.199Z","do":"revised","target":"P2"}
+{"t":"2026-10-17T04:43:38.199Z","do":"seen","target":"P2","kind":"proposal","title":"CONTRACTS: Trip.flightMinutes (CR-1), rebased on a3's #157","holdS":10}
+{"t":"2026-10-17T04:43:53.905Z","do":"approved","target":"P2","waitedS":16}

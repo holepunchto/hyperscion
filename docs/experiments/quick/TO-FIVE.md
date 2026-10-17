@@ -31,8 +31,11 @@ existed).
 | 11 | **`watch --sync`:** sync when the wait returns | q2s-claims-2 a3 | 1 | Open | Yes, small |
 | 12 | **Never hang silently; local commands stay local.** `land`/`sync` say what they fetch and from whom, give up after ~20 s naming the missing piece; `status`/`log` never need the network | q2h-2 a2, a3 (rated 2) | 3 | Fixed `c87ba52`; confirmed in q2h-3 (no stalls, no gap errors, nobody asked for it) | Done | Yes: fetch view gaps online before reading main, bounded, and a clear error when nobody has them |
 | 13 | **Teammates' presence and work in progress on a path** (`a2 online, editing /src/scheduler.js, last seen 10 s ago`) in `watch --path` and `claims` | q2h-1 a3 | 1 | Open | Partly: liveness from claims' heartbeats and the signal channel exists; uncommitted edits would need a new signal |
-| 14 | **Split a land: unprotected files land, protected ones become a proposal** to the required reviewers in one step (`land --split-protected`), and a proposal that doesn't block code-only lands | q2h-3 a1, a2, a3 | 4 | Open, top ask: every agent split by hand in q2h-3 | Yes: `land` already knows which paths need review |
+| 14 | **Split a land: unprotected files land, protected ones become a proposal** to the required reviewers in one step | q2h-3 a1, a2, a3 | 4 | Fixed `c8cc9a0` (`land --split`); every agent used it in q2h-4 | Done; follow-ups #16-#18 |
 | 15 | **An "approved" line only when the current revision counts it** | q2h-2 a3 | 1 | Fixed: the history line no longer prints a count | Done |
+| 16 | **Split by default** when the only blocker is a protected path, and check the policy before running `--check` | q2h-4 a1 | 1 | Open | Yes, small: the policy check is local and cheap |
+| 17 | **An approval pins my hunks, not the whole file**: a clean merge of teammates' approved sections into the same protected file shouldn't reset it; otherwise re-propose and let `--wait-final` wait | q2h-4 a2 | 1 | Open | Yes, medium: approve the proposal's diff against its base, and accept a land whose diff from the merged base is the same |
+| 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Open, a bug: --split stood down whenever items were named | Yes, small |
 
 ## Runs
 
@@ -40,3 +43,4 @@ existed).
 - **q2h-1:** 4, 1, 4. a1 (4) asks #1 in its achievable form, a2 (1) asks #12 (the stall that lost it the run), a3 (4) asks #13.
 - **q2h-2:** 4, 2, 2. a1 (4) asks #14 and #12; a2 (2) and a3 (2) ask #12 (the overreaching gap check), a3 also #15.
 - **q2h-3:** 4, 3, 4. a1 (4) and a3 (4) ask #14 (split protected paths); a2 (3) asks #1 (its outage land vanished silently) and #14.
+- **q2h-4:** 4, 4, 4 (3/3 choose). Nobody asks #14 again; a1 asks #16, a2 #17, a3 #18. Every remaining ask is about the approval flow, none about stalls or the outage.

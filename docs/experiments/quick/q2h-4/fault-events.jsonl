@@ -1,0 +1,6 @@
+{"t":"2026-10-17T04:39:14.855Z","do":"schedule","scenario":"q2h","arm":"hs","scale":1,"events":3}
+{"t":"2026-10-17T04:39:14.861Z","do":"approver","pid":894393}
+{"t":"2026-10-17T04:40:15.209Z","at":1,"do":"origin-down","minute":1.02,"stopped":true}
+{"t":"2026-10-17T04:40:53.177Z","at":1.5,"do":"change-request","files":"change-request","minute":1.65,"attempt":1,"out":["landed #65","pushed: a holder has the changes","#65 provisional: the hub is not reachable, so it settles once the hub is back (on its own; `hs status` shows it)",""],"item":"C7fb918"}
+{"t":"2026-10-17T04:41:44.105Z","at":2.5,"do":"origin-up","minute":2.5,"pid":898035}
+{"t":"2026-10-17T04:45:00.696Z","do":"stop","stopped":["approver","hub","testnet"]}

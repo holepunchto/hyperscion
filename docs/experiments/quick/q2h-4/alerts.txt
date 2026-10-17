@@ -1,0 +1,26 @@
+ALERT m1.8 a1 land 11s exit 1: refused: needs approval
+ALERT m2.2 a2 land 11s exit 1: refused: needs approval
+ALERT m2.6 a3 land 2s exit 1: refused: needs approval
+ALERT m3.2 a2 land 9s exit 1: refused: needs approval
+ALERT m3.8 a2 land 12s exit 1: refused: needs approval
+ALERT m4.3 a2 land 9s exit 1: refused: needs approval
+EVENT m1.02 origin-down
+EVENT m1.65 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT m1.7 ann seen C7fb918
+EVENT m2.3 ann seen P1
+EVENT m2.6 ann approved P1 after 17s
+EVENT m2.7 ann seen P2
+EVENT m3.1 ann seen P3
+EVENT m3.1 ann approved P2 after 21s
+EVENT m3.4 ann approved C7fb918 after 98s
+EVENT m3.4 ann approved P3 after 21s
+EVENT m3.8 ann revised P2
+EVENT m3.8 ann seen P2
+EVENT m4.0 ann approved P2 after 16s
+EVENT m4.4 ann revised P2
+EVENT m4.4 ann seen P2
+EVENT m4.7 ann approved P2 after 16s
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md
