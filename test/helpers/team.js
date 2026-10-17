@@ -32,8 +32,10 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
     fs.writeFileSync(path.join(owner, p), content)
   }
 
-  const hs = (cwd, args, user = 'hub') => run(cwd, args, { ...env, USER: user })
-  const bg = (cwd, args, user = 'hub') => background(cwd, args, { ...env, USER: user })
+  // HS_AGENT names the caller in an HS_TRACE trace (as the experiment wrappers do)
+  const hs = (cwd, args, user = 'hub') => run(cwd, args, { ...env, USER: user, HS_AGENT: user })
+  const bg = (cwd, args, user = 'hub') =>
+    background(cwd, args, { ...env, USER: user, HS_AGENT: user })
 
   const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
   if (init.code !== 0) throw new Error('init: ' + init.stderr)
