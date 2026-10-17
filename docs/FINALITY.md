@@ -98,8 +98,8 @@ That assumption no longer holds:
 - **Repos created by the new `init --hub` need the new code.** Under the old apply rules, the
   genesis's self-removal is invalid, so the genesis stays a settler that never acks and
   nothing settles. Reverting the code doesn't revert those repos.
-- **Repos made between milestone 7 and this fix settle on every writer.** Running feeds ack
-  (a feed acks when its own writer is a settler), but the owner rarely runs one: `hs
+- **Repos made between milestone 7 and this fix settle on every writer.** A running feed's
+  `hs keepalive` acks for its writer when that writer is a settler, but the owner rarely runs one: `hs
 remove-writer <owner>` (a light owner is removable while the hub remains) takes it out, and
   `doctor` says so. A re-init is the full fix.
 - **A hub replacement needs a live hub to grant weight 2,** and the hub's store is locked

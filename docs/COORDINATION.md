@@ -59,9 +59,22 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 - Done: `hs claim <item> --if-free` withdraws a losing claim at once; `hs land --done` closes
   the item the land links itself to. Both in test/flows.js (F1, F10).
 - Multi-site: q0bs splits the team into two sites, each with peers (the hub on one side),
-  for 4.8 minutes. Claim leases last 20 minutes and renew while held, so the lead rule a
-  longer split exercises is the same one. Covered by test/flows.js F11 and LLM runs
-  q0bs-min-1/2.
+  for 4.8 minutes. Covered by test/flows.js F11 and LLM runs q0bs-min-1/2/3 and
+  q0bs-plain-1.
+  - What a split longer than the 20-minute lease adds (test/site-finality.js, lease
+    shortened to 20 s): a claimant whose feed runs must still lead when the sites meet, and a
+    quiet one's claim must lapse. It found three bugs in renewal, all fixed:
+    - a renewal that reached a peer before the claim did was dropped, and a snapshot stops
+      carrying the claim itself after its first lease, so any peer joining later saw a
+      renewed claim as lapsed (claims lapsed for newcomers 20 minutes after they were made,
+      split or not);
+    - the feed couldn't renew at all: it has its own observer key, so only `land` and `sync`
+      renewed, and 20 minutes of work without either lost the claim;
+    - renewals lived only in memory, so a restarted feed or a writer cut off from everyone
+      lost them.
+      Now the feed runs a short `hs keepalive` in the worktree (renews live claims, acks where
+      every writer settles), and each writer's latest renewal is kept on its machine
+      (`.hs/claims.json`).
   - In q0bs-min-2, each side had its own lead (a2 on B at 0.52, a3 on A at 0.54), and each
     built the change request. On heal the earlier claim led everywhere, which is the claims
     mechanism working as designed.

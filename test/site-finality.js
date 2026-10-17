@@ -125,3 +125,52 @@ test("site split: restoring my land doesn't replay a teammate's land as mine", a
   t.is(tm.read('a3', 'notes.txt'), 'a2 notes\n', "a2's own land is back on main")
   t.is(tm.read('a3', 'code.txt'), 'a3 code\n', 'and a3 keeps its code')
 })
+
+// A split longer than a claim's lease (what an hours-long split adds over a short one): a
+// claimant whose feed runs keeps its claim and still leads when the sites meet; one with no
+// feed and no land or sync lapses, and the other side's claim leads. HS_CLAIM_TTL_MS
+// shortens the 20-minute lease to 20 s.
+test('site split longer than the claim lease: a running feed keeps a claim live', async (t) => {
+  t.timeout(300_000)
+  const tm = await team(t, {
+    agents: ['a1', 'a2', 'a3'],
+    files: { 'a.txt': 'a\n' },
+    env: { HS_CLAIM_TTL_MS: '20000' }
+  })
+  const owner = require('bare-path').join(tm.dir, 'owner')
+  const made = []
+  for (const title of ['CR-kept: with a feed', 'CR-lapsed: without one']) {
+    const r = await tm.hs(owner, ['item', 'new', title], 'owner')
+    made.push(r.stdout.match(/item (C[0-9a-f]{6})/)[1])
+  }
+  const [kept, lapsed] = made
+  for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
+  await tm.split(['a1', 'a2'])
+  const feed = tm.bgAs('a1', ['watch', '--json'])
+  const quiet = tm.bgAs('a2', ['watch', '--json'])
+  const zfeed = tm.bgAs('a3', ['watch', '--json'])
+  await sleep(3000)
+  t.ok(/you lead/.test((await tm.as('a1', ['claim', kept])).stdout), 'a1 leads kept on site B')
+  t.ok(/you lead/.test((await tm.as('a2', ['claim', lapsed])).stdout), 'a2 leads lapsed on B')
+  await quiet.stop() // a2 goes quiet: no feed, no land, no sync
+  await sleep(2000)
+  for (const id of [kept, lapsed]) {
+    t.ok(/you lead/.test((await tm.as('a3', ['claim', id])).stdout), 'a3 leads on site A')
+  }
+  await sleep(30_000) // longer than the lease
+  // the sites meet: a1's feed restarts on the main network (a feed process would reconnect
+  // by itself; this one has to be restarted to change DHTs) and picks up its renewals from
+  // this machine; a3's feed never moved
+  await feed.stop()
+  tm.heal(['a1', 'a2'])
+  tm.bgAs('a1', ['watch', '--json'])
+  let board = ''
+  await waitFor(async () => {
+    board = (await tm.as('a3', ['claims'])).stdout
+    return /lead a1/.test(board)
+  }, 15_000).catch(() => {})
+  await zfeed.stop()
+  const block = (id) => board.slice(board.indexOf(id)).split('\n').slice(0, 3).join('\n')
+  t.ok(/lead a1/.test(block(kept)), 'kept: a1 still leads, renewed by its feed:\n' + board)
+  t.ok(/lead a3/.test(block(lapsed)), "lapsed: a2's claim lapsed, a3 leads:\n" + board)
+})
