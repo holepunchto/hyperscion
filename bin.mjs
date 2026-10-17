@@ -24,6 +24,9 @@ Bare.on('beforeExit', () => {
       'then retry. `hs doctor` checks connectivity.'
   )
   Bare.exitCode = 1
+  // the command never got to clean up: don't leave this worktree marked busy (q2h-1: a stale
+  // busy.json named a land long gone)
+  clearBusy()
   if (trace) trace.end(1, { stalled: true })
 })
 
@@ -76,4 +79,22 @@ function startTrace() {
       fs.appendFileSync(process.env.HS_TRACE, JSON.stringify(rec) + '\n')
     }
   }
+}
+
+// remove .hs/busy.json if it names this process (walks up from cwd like Context.load)
+function clearBusy() {
+  try {
+    let dir = process.cwd()
+    for (;;) {
+      const file = path.join(dir, '.hs', 'busy.json')
+      if (fs.existsSync(file)) {
+        const info = JSON.parse(fs.readFileSync(file, 'utf8'))
+        if (info && info.pid === process.pid) fs.rmSync(file, { force: true })
+        return
+      }
+      const up = path.dirname(dir)
+      if (up === dir) return
+      dir = up
+    }
+  } catch {}
 }

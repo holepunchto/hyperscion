@@ -99,6 +99,7 @@ function reports() {
 
 // q2h: the scripted approver's decisions
 function onApproval(e) {
+  if (!e.target) return
   console.log(
     `EVENT ${at(e.t)} ann ${e.do} ${e.target}${e.waitedS !== undefined ? ` after ${e.waitedS}s` : ''}${e.error ? ': ' + e.error : ''}`
   )
