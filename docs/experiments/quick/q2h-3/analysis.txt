@@ -1,0 +1,77 @@
+# hs usage: 66 calls since 2026-10-17T04:11:15.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 18 | 6 | 0 | 2 | 3 | 4 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 2.2m |
+| a2 | 29 | 16 | 0 | 3 | 3 | 5 (2) | 0 | 0 | 1 | 0 | 0 | 0 | 2.2m |
+| a3 | 19 | 8 | 0 | 2 | 3 | 4 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 3.2m |
+
+totals: lands 13 (accepted 5), auto-rebased 0, real conflicts 0, flip banners 1, stalls 0, unavailable 0, stale refusals 0, push timeouts 1, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 12537/12537, claims 23066/23066, land 11612/15801, propose 3489/3489, restore 5292/5292, status 7293/7293, diff 5422/5422, watch 12884/184418
+a2: sync 5018/11314, claims 23239/23239, land 8086/43100, propose 2475/4969, cat 5637/5637, diff 5203/5319, status 5510/5917, log 1388/3388, show 485/485, watch 18042/273780
+a3: sync 11813/11813, claims 15561/15561, land 6937/13620, cat 5413/5413, claim 10966/10966, status 2166/2791, restore 540/540, propose 3811/3811, watch 14608/237019
+
+## command mix
+a1: sync=2 claims=2 land=4 propose=2 restore=2 status=2 diff=1 watch=3
+a2: sync=3 claims=2 land=5 propose=3 cat=2 diff=3 status=4 log=3 show=1 watch=3
+a3: sync=2 claims=2 land=4 cat=2 claim=1 status=3 restore=1 propose=1 watch=3
+
+## land timeline
+  1.4m a1                                                         a1: model.loadDay + geo (distanceKm, travelMinutes, orderStops, routeK
+  1.5m a3                                                         a3: pricing (formula pinned in CONTRACTS.md), report, cli plan --json,
+  1.8m a1                                                         
+  1.6m a2                                                         scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  1.9m a2                                                         
+  2.2m a1 landed #57                                              a1: model.loadDay + geo (distanceKm, travelMinutes, orderStops, routeK
+  2.2m a2 landed #57                                              scheduler: greedy plan(day) -> {trips, unassigned} + tests (Plan shape
+  3.0m a3                                                         
+  3.0m a1                                                         a1: CONTRACTS model/geo pinned (P1, approved by ann)
+  3.2m a3 incoming from teammates (2), +42 under quiet paths:     a3: pricing per CR-1 (flight minutes along trip order), report with mi
+  4.0m a3 landed #117                                             a3: CONTRACTS pricing for CR-1 (P3, approved by ann)
+  4.1m a2                                                         scheduler: greedy plan(day) -> {trips, unassigned}, works on loadDay D
+  5.1m a2 landed #169                                             scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+
+## metrics (also in metrics.json)
+calls: 66
+minutes: 5.6
+lands: 13
+accepted: 5
+calls_per_accepted_land: 13.2
+auto_rebased: 0
+real_conflicts: 0
+flips: 1
+stalls: 0
+unavailable: 0
+push_timeouts: 1
+land_ended_final: 4
+land_ended_settled: 0
+land_ended_provisional: 2
+land_ms_p50: 5925
+land_ms_p90: 11612
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 4
+wait_min_total: 0.8
+vcs_min_total: 6
+vcs_share_pct: 48.4
+watch_calls: 9
+proposals: 6
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 4
+exit_errors: 0
+exit_warnings: 1
+help_calls: 6
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,3,4]
+would_choose_hs: "2/3"
+output_clarity_mean: 3.67
+land_state_trust_mean: 4.33
+minutes_lost_to_hs_total: 4
+confusing_messages_total: 3
+review_usefulness_mean: null
+to_five: ["a1 (4): hs land --split-protected: land the unprotected paths now and automatically open a proposal (reviewers taken from /.hsreview) for the protected ones, landing it when approved","a2 (3): When a provisional land is dropped or never reaches a holder, hs status / next command / feed should print '!! your land #57 was lost (never reached a holder): run hs land' and auto-retry it on the next online command; and hs land --paths to land files independently of a pending proposal.","a3 (4): When a land touches /.hsreview paths without approval, land the rest and auto-create the proposal for the protected paths (e.g. hs land --split-protected: 'landed #87 (5 files); proposed P3 for /CONTRACTS.md, asked ann')."]

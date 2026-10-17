@@ -1,0 +1,22 @@
+ALERT m1.4 a1 land 16s exit 1: refused: needs approval
+ALERT m1.5 a3 land 14s exit 1: refused: needs approval
+ALERT m1.6 a2 land 10s exit 1: refused: needs approval
+ALERT m2.2 a2 land 43s exit 2 landed #57: push timed out, slow
+ALERT m4.1 a2 land 8s exit 1: refused: needs approval
+EVENT m1.01 origin-down
+EVENT m1.66 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT m1.7 ann seen Cc6cda3
+EVENT m2.6 ann seen P1
+EVENT m2.9 ann approved P1 after 16s
+EVENT m3.2 ann seen P2
+EVENT m3.2 ann approved Cc6cda3 after 91s
+EVENT m3.5 ann approved P2 after 18s
+EVENT m3.6 ann seen P3
+EVENT m3.9 ann approved P3 after 17s
+EVENT m4.7 ann revised P2
+EVENT m4.7 ann seen P2
+EVENT m4.9 ann approved P2 after 17s
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md
