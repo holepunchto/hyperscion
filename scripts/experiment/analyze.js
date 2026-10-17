@@ -260,6 +260,7 @@ const metrics = {
   ...reports
 }
 fs.writeFileSync(path.join(dir, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n')
+recordToFive(dir, path.join(dir, 'reports'))
 console.log('\n## metrics (also in metrics.json)')
 for (const [k, v] of Object.entries(metrics)) console.log(`${k}: ${JSON.stringify(v)}`)
 
@@ -289,6 +290,37 @@ function readReports(rdir) {
     land_state_trust_mean: mean('knew_when_my_land_was_safe'),
     minutes_lost_to_hs_total: nums('minutes_lost_to_hs').reduce((a, b) => a + b, 0),
     confusing_messages_total: nums('confusing_messages').reduce((a, b) => a + b, 0),
-    review_usefulness_mean: mean('review_usefulness')
+    review_usefulness_mean: mean('review_usefulness'),
+    to_five: cards
+      .filter((c) => c.to_five)
+      .map((c) => `${c.agent} (${c.usefulness_vs_git}): ${c.to_five}`)
+  }
+}
+
+// every run's "what would make it a 5" answers, kept across runs in one log, so the ledger in
+// docs/experiments/quick/TO-FIVE.md can say when each ask was last stated
+function recordToFive(teamdir, rdir) {
+  if (!fs.existsSync(rdir)) return
+  const log = path.join(__dirname, '..', '..', 'docs', 'experiments', 'quick', 'to-five.jsonl')
+  const run = path.basename(teamdir)
+  const have = fs.existsSync(log) ? fs.readFileSync(log, 'utf8') : ''
+  for (const f of fs.readdirSync(rdir).filter((f) => f.endsWith('.md'))) {
+    const blocks = [
+      ...fs.readFileSync(path.join(rdir, f), 'utf8').matchAll(/```json\s*([\s\S]*?)```/g)
+    ]
+    let card
+    try {
+      card = JSON.parse(blocks[blocks.length - 1][1])
+    } catch {
+      continue
+    }
+    if (!card.to_five || have.includes(`"run":"${run}","agent":"${card.agent}"`)) continue
+    const rec = {
+      run,
+      agent: card.agent,
+      usefulness: card.usefulness_vs_git,
+      to_five: card.to_five
+    }
+    fs.appendFileSync(log, JSON.stringify(rec) + '\n')
   }
 }
