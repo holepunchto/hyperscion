@@ -1,0 +1,184 @@
+2026-10-17T12:38:11.626Z 942148 - +568ms checkout: written 0 missing 14
+2026-10-17T12:38:20.860Z 942492 fetch +5ms start
+2026-10-17T12:38:21.028Z 942492 fetch +172ms pull: peers 1 holder=true
+2026-10-17T12:38:21.373Z 942492 fetch +517ms pull: settled=true
+2026-10-17T12:38:21.374Z 942492 fetch +518ms pull: view gaps 0
+2026-10-17T12:38:21.381Z 942492 fetch +525ms prefetch: fetched 0 missing 0
+2026-10-17T12:38:21.845Z 942561 info +3ms start
+2026-10-17T12:38:22.397Z 942607 info +3ms start
+2026-10-17T12:38:24.781Z 942899 inbox +3ms start
+2026-10-17T12:38:24.914Z 942899 inbox +135ms pull: peers 12 holder=true
+2026-10-17T12:38:25.951Z 942899 inbox +1172ms pull: settled=true
+2026-10-17T12:38:25.952Z 942899 inbox +1173ms pull: view gaps 0
+2026-10-17T12:38:26.636Z 942935 proposals +6ms start
+2026-10-17T12:38:32.371Z 942983 inbox +3ms start
+2026-10-17T12:38:32.552Z 942983 inbox +184ms pull: peers 12 holder=true
+2026-10-17T12:38:33.706Z 942983 inbox +1337ms pull: settled=true
+2026-10-17T12:38:33.707Z 942983 inbox +1338ms pull: view gaps 0
+2026-10-17T12:38:34.324Z 943019 proposals +5ms start
+2026-10-17T12:38:40.020Z 943107 inbox +4ms start
+2026-10-17T12:38:40.233Z 943107 inbox +216ms pull: peers 12 holder=true
+2026-10-17T12:38:40.664Z 943107 inbox +647ms pull: settled=true
+2026-10-17T12:38:40.664Z 943107 inbox +647ms pull: view gaps 0
+2026-10-17T12:38:41.330Z 943143 proposals +5ms start
+2026-10-17T12:38:46.932Z 943405 inbox +3ms start
+2026-10-17T12:38:47.084Z 943405 inbox +155ms pull: peers 12 holder=true
+2026-10-17T12:38:47.684Z 943405 inbox +755ms pull: settled=true
+2026-10-17T12:38:47.686Z 943405 inbox +757ms pull: view gaps 0
+2026-10-17T12:38:48.373Z 943485 proposals +4ms start
+2026-10-17T12:38:54.158Z 943521 inbox +4ms start
+2026-10-17T12:38:54.401Z 943521 inbox +246ms pull: peers 11 holder=true
+2026-10-17T12:38:55.123Z 943521 inbox +968ms pull: settled=true
+2026-10-17T12:38:55.124Z 943521 inbox +969ms pull: view gaps 0
+2026-10-17T12:38:55.639Z 943559 proposals +3ms start
+2026-10-17T12:39:01.379Z 943596 inbox +4ms start
+2026-10-17T12:39:01.725Z 943596 inbox +350ms pull: peers 24 holder=true
+2026-10-17T12:39:02.337Z 943596 inbox +962ms pull: settled=true
+2026-10-17T12:39:02.338Z 943596 inbox +963ms pull: view gaps 0
+2026-10-17T12:39:02.844Z 943632 proposals +3ms start
+2026-10-17T12:39:08.555Z 943791 inbox +4ms start
+2026-10-17T12:39:08.873Z 943791 inbox +321ms pull: peers 24 holder=true
+2026-10-17T12:39:09.929Z 943791 inbox +1377ms pull: settled=true
+2026-10-17T12:39:09.932Z 943791 inbox +1380ms pull: view gaps 0
+2026-10-17T12:39:10.441Z 943842 proposals +3ms start
+2026-10-17T12:39:16.027Z 943878 inbox +3ms start
+2026-10-17T12:39:16.360Z 943878 inbox +336ms pull: peers 24 holder=true
+2026-10-17T12:39:16.837Z 943878 inbox +813ms pull: settled=true
+2026-10-17T12:39:16.838Z 943878 inbox +814ms pull: view gaps 0
+2026-10-17T12:39:17.421Z 943915 proposals +4ms start
+2026-10-17T12:39:23.030Z 943953 inbox +3ms start
+2026-10-17T12:39:23.265Z 943953 inbox +237ms pull: peers 23 holder=true
+2026-10-17T12:39:24.384Z 943953 inbox +1356ms pull: settled=true
+2026-10-17T12:39:24.386Z 943953 inbox +1358ms pull: view gaps 0
+2026-10-17T12:39:24.904Z 943989 proposals +3ms start
+2026-10-17T12:39:30.682Z 944042 inbox +5ms start
+2026-10-17T12:39:30.978Z 944042 inbox +300ms pull: peers 23 holder=false
+2026-10-17T12:39:31.607Z 944042 inbox +929ms pull: settled=true
+2026-10-17T12:39:31.608Z 944042 inbox +930ms pull: view gaps 0
+2026-10-17T12:39:32.299Z 944120 proposals +5ms start
+2026-10-17T12:39:38.045Z 944171 inbox +3ms start
+2026-10-17T12:39:38.290Z 944171 inbox +248ms pull: peers 23 holder=false
+2026-10-17T12:39:38.934Z 944171 inbox +891ms pull: settled=true
+2026-10-17T12:39:38.935Z 944171 inbox +892ms pull: view gaps 0
+2026-10-17T12:39:39.595Z 944288 proposals +4ms start
+2026-10-17T12:39:45.367Z 944423 inbox +5ms start
+2026-10-17T12:39:45.703Z 944423 inbox +340ms pull: peers 23 holder=false
+2026-10-17T12:39:46.840Z 944423 inbox +1477ms pull: settled=true
+2026-10-17T12:39:46.841Z 944423 inbox +1478ms pull: view gaps 0
+2026-10-17T12:39:47.328Z 944573 proposals +3ms start
+2026-10-17T12:39:53.129Z 944713 inbox +5ms start
+2026-10-17T12:39:53.433Z 944713 inbox +308ms pull: peers 21 holder=false
+2026-10-17T12:39:54.017Z 944713 inbox +892ms pull: settled=true
+2026-10-17T12:39:54.019Z 944713 inbox +894ms pull: view gaps 0
+2026-10-17T12:39:54.558Z 944828 proposals +3ms start
+2026-10-17T12:40:00.340Z 944951 inbox +5ms start
+2026-10-17T12:40:00.648Z 944951 inbox +313ms pull: peers 22 holder=false
+2026-10-17T12:40:01.231Z 944951 inbox +896ms pull: settled=true
+2026-10-17T12:40:01.233Z 944951 inbox +898ms pull: view gaps 0
+2026-10-17T12:40:01.926Z 945091 proposals +5ms start
+2026-10-17T12:40:07.737Z 945376 inbox +4ms start
+2026-10-17T12:40:08.067Z 945376 inbox +334ms pull: peers 22 holder=false
+2026-10-17T12:40:08.567Z 945376 inbox +834ms pull: settled=true
+2026-10-17T12:40:08.570Z 945376 inbox +837ms pull: view gaps 0
+2026-10-17T12:40:09.120Z 945433 proposals +3ms start
+2026-10-17T12:40:14.841Z 945535 inbox +5ms start
+2026-10-17T12:40:15.151Z 945535 inbox +314ms pull: peers 23 holder=false
+2026-10-17T12:40:15.656Z 945535 inbox +819ms pull: settled=true
+2026-10-17T12:40:15.657Z 945535 inbox +820ms pull: view gaps 0
+2026-10-17T12:40:16.273Z 945608 proposals +4ms start
+2026-10-17T12:40:22.004Z 945759 inbox +4ms start
+2026-10-17T12:40:22.333Z 945759 inbox +334ms pull: peers 23 holder=false
+2026-10-17T12:40:22.906Z 945759 inbox +906ms pull: settled=true
+2026-10-17T12:40:22.907Z 945759 inbox +908ms pull: view gaps 0
+2026-10-17T12:40:23.424Z 945839 proposals +3ms start
+2026-10-17T12:40:29.079Z 945881 inbox +4ms start
+2026-10-17T12:40:29.373Z 945881 inbox +298ms pull: peers 21 holder=false
+2026-10-17T12:40:29.831Z 945881 inbox +756ms pull: settled=true
+2026-10-17T12:40:29.833Z 945881 inbox +758ms pull: view gaps 0
+2026-10-17T12:40:30.428Z 945981 proposals +5ms start
+2026-10-17T12:40:36.104Z 946293 inbox +5ms start
+2026-10-17T12:40:36.402Z 946293 inbox +302ms pull: peers 23 holder=false
+2026-10-17T12:40:36.887Z 946293 inbox +788ms pull: settled=true
+2026-10-17T12:40:36.889Z 946293 inbox +789ms pull: view gaps 0
+2026-10-17T12:40:37.537Z 946340 proposals +4ms start
+2026-10-17T12:40:43.322Z 946397 inbox +5ms start
+2026-10-17T12:40:43.663Z 946397 inbox +345ms pull: peers 23 holder=false
+2026-10-17T12:40:44.144Z 946397 inbox +826ms pull: settled=true
+2026-10-17T12:40:44.147Z 946397 inbox +829ms pull: view gaps 0
+2026-10-17T12:40:44.664Z 946493 proposals +3ms start
+2026-10-17T12:40:50.284Z 946708 inbox +3ms start
+2026-10-17T12:40:50.558Z 946708 inbox +276ms pull: peers 22 holder=false
+2026-10-17T12:40:51.006Z 946708 inbox +725ms pull: settled=true
+2026-10-17T12:40:51.010Z 946708 inbox +728ms pull: view gaps 0
+2026-10-17T12:40:51.593Z 946744 proposals +4ms start
+2026-10-17T12:40:57.357Z 946911 inbox +4ms start
+2026-10-17T12:40:57.622Z 946911 inbox +268ms pull: peers 24 holder=true
+2026-10-17T12:40:58.571Z 946911 inbox +1217ms pull: settled=true
+2026-10-17T12:40:58.572Z 946911 inbox +1218ms pull: view gaps 0
+2026-10-17T12:40:59.098Z 947161 proposals +3ms start
+2026-10-17T12:41:04.868Z 947336 inbox +5ms start
+2026-10-17T12:41:05.244Z 947336 inbox +380ms pull: peers 23 holder=true
+2026-10-17T12:41:06.107Z 947336 inbox +1243ms pull: settled=true
+2026-10-17T12:41:06.108Z 947336 inbox +1245ms pull: view gaps 0
+2026-10-17T12:41:06.688Z 947412 proposals +4ms start
+2026-10-17T12:41:07.220Z 947459 review +3ms start
+2026-10-17T12:41:07.436Z 947459 review +219ms pull: peers 22 holder=true
+2026-10-17T12:41:07.904Z 947459 review +687ms pull: settled=true
+2026-10-17T12:41:07.905Z 947459 review +688ms pull: view gaps 0
+2026-10-17T12:41:13.736Z 947645 inbox +5ms start
+2026-10-17T12:41:14.123Z 947645 inbox +391ms pull: peers 24 holder=true
+2026-10-17T12:41:14.850Z 947645 inbox +1118ms pull: settled=true
+2026-10-17T12:41:14.851Z 947645 inbox +1119ms pull: view gaps 0
+2026-10-17T12:41:15.537Z 947783 proposals +4ms start
+2026-10-17T12:41:21.319Z 947856 inbox +4ms start
+2026-10-17T12:41:21.702Z 947856 inbox +386ms pull: peers 23 holder=true
+2026-10-17T12:41:22.725Z 947856 inbox +1409ms pull: settled=true
+2026-10-17T12:41:22.727Z 947856 inbox +1411ms pull: view gaps 0
+2026-10-17T12:41:23.440Z 947892 proposals +5ms start
+2026-10-17T12:41:24.061Z 947935 review +3ms start
+2026-10-17T12:41:24.333Z 947935 review +275ms pull: peers 23 holder=true
+2026-10-17T12:41:24.845Z 947935 review +787ms pull: settled=true
+2026-10-17T12:41:24.846Z 947935 review +788ms pull: view gaps 0
+2026-10-17T12:41:30.641Z 948136 inbox +4ms start
+2026-10-17T12:41:31.006Z 948136 inbox +369ms pull: peers 23 holder=true
+2026-10-17T12:41:32.053Z 948136 inbox +1416ms pull: settled=true
+2026-10-17T12:41:32.054Z 948136 inbox +1417ms pull: view gaps 0
+2026-10-17T12:41:32.737Z 948172 proposals +5ms start
+2026-10-17T12:41:38.599Z 948250 inbox +4ms start
+2026-10-17T12:41:38.959Z 948250 inbox +364ms pull: peers 22 holder=true
+2026-10-17T12:41:39.525Z 948250 inbox +930ms pull: settled=true
+2026-10-17T12:41:39.527Z 948250 inbox +932ms pull: view gaps 0
+2026-10-17T12:41:40.050Z 948388 proposals +3ms start
+2026-10-17T12:41:40.827Z 948449 review +4ms start
+2026-10-17T12:41:41.197Z 948449 review +374ms pull: peers 22 holder=true
+2026-10-17T12:41:41.912Z 948449 review +1089ms pull: settled=true
+2026-10-17T12:41:41.913Z 948449 review +1090ms pull: view gaps 0
+2026-10-17T12:41:47.731Z 948577 inbox +5ms start
+2026-10-17T12:41:48.080Z 948577 inbox +353ms pull: peers 22 holder=true
+2026-10-17T12:41:48.602Z 948577 inbox +875ms pull: settled=true
+2026-10-17T12:41:48.602Z 948577 inbox +875ms pull: view gaps 0
+2026-10-17T12:41:49.082Z 948646 proposals +3ms start
+2026-10-17T12:41:54.846Z 948730 inbox +5ms start
+2026-10-17T12:41:55.214Z 948730 inbox +373ms pull: peers 22 holder=true
+2026-10-17T12:41:55.937Z 948730 inbox +1096ms pull: settled=true
+2026-10-17T12:41:55.938Z 948730 inbox +1097ms pull: view gaps 0
+2026-10-17T12:41:56.446Z 948861 proposals +3ms start
+2026-10-17T12:42:02.211Z 948916 inbox +4ms start
+2026-10-17T12:42:02.555Z 948916 inbox +348ms pull: peers 21 holder=true
+2026-10-17T12:42:03.216Z 948916 inbox +1009ms pull: settled=true
+2026-10-17T12:42:03.219Z 948916 inbox +1012ms pull: view gaps 0
+2026-10-17T12:42:03.802Z 948952 proposals +5ms start
+2026-10-17T12:42:09.579Z 949005 inbox +4ms start
+2026-10-17T12:42:09.919Z 949005 inbox +344ms pull: peers 21 holder=true
+2026-10-17T12:42:10.715Z 949005 inbox +1140ms pull: settled=true
+2026-10-17T12:42:10.716Z 949005 inbox +1141ms pull: view gaps 0
+2026-10-17T12:42:11.382Z 949041 proposals +5ms start
+2026-10-17T12:42:17.132Z 949092 inbox +3ms start
+2026-10-17T12:42:17.395Z 949092 inbox +266ms pull: peers 21 holder=true
+2026-10-17T12:42:18.300Z 949092 inbox +1171ms pull: settled=true
+2026-10-17T12:42:18.301Z 949092 inbox +1172ms pull: view gaps 0
+2026-10-17T12:42:18.943Z 949129 proposals +5ms start
+2026-10-17T12:42:24.730Z 949166 inbox +4ms start
+2026-10-17T12:42:25.072Z 949166 inbox +346ms pull: peers 21 holder=true
+2026-10-17T12:42:25.739Z 949166 inbox +1013ms pull: settled=true
+2026-10-17T12:42:25.741Z 949166 inbox +1015ms pull: view gaps 0

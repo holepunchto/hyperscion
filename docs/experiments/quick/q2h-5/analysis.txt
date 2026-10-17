@@ -1,0 +1,71 @@
+# hs usage: 44 calls since 2026-10-17T12:38:24.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 13 | 7 | 0 | 3 | 3 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a2 | 16 | 8 | 0 | 2 | 5 | 3 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 15 | 6 | 0 | 2 | 4 | 3 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+
+totals: lands 7 (accepted 5), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 7193/18686, claims 5915/5915, land 7060/7060, watch 8524/147738, status 7136/7227
+a2: sync 18750/18750, claims 5908/6090, land 9975/11512, watch 1387/184270, status 4585/11080
+a3: sync 19428/19428, claims 3424/6019, land 8291/9815, watch 13300/190296, claim 7409/7409, status 3111/3111
+
+## command mix
+a1: sync=3 claims=2 land=1 watch=3 status=4
+a2: sync=2 claims=3 land=3 watch=5 status=3
+a3: sync=2 claims=3 land=3 watch=4 claim=1 status=2
+
+## land timeline
+  1.3m a1 landed #50                                              model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops, ro
+  1.3m a3 incoming from teammates (1), +28 under quiet paths:     a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  1.4m a2 incoming from teammates (2), +29 under quiet paths:     scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  2.2m a2 landed #72                                              scheduler (CR-1): trips[].flightMinutes per stop for per-flight-minute
+  2.6m a3 incoming from teammates (1), +23 under quiet paths:     a3: CR-1 per-flight-minute pricing, report shows flight minutes, integ
+  2.9m a2 incoming from teammates (1), +31 under quiet paths:     
+  3.2m a3 incoming from teammates (1), +26 under quiet paths:     
+
+## metrics (also in metrics.json)
+calls: 44
+minutes: 3.5
+lands: 7
+accepted: 5
+calls_per_accepted_land: 8.8
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 3
+land_ended_settled: 0
+land_ended_provisional: 4
+land_ms_p50: 9712
+land_ms_p90: 11512
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.5
+vcs_min_total: 3.8
+vcs_share_pct: 44.2
+watch_calls: 12
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.67
+minutes_lost_to_hs_total: 1
+confusing_messages_total: 1
+review_usefulness_mean: null
+to_five: ["a1 (4): `hs wait-final [#n]` (default: my last land): block until it is final, printing hub stall/recovery, exit 0 when final, 2 on timeout, so you don't have to re-run land or poll status","a2 (4): hs watch --path <file> --count 1 --sync: once the wait ends, sync it into the worktree and print the changeset message, so waiting for a teammate and getting their work in is one command","a3 (4): hs land, when it merges teammates' changes into an approved /.hsreview file, should print 'approval kept: merged lines from #105 (approved P? / author-bound)' or 're-review needed', so I know the contract ann approved is the one on main."]

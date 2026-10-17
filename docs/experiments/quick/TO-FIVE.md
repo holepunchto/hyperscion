@@ -28,7 +28,7 @@ existed).
 | 8 | **`status` never stalls** | q2s-claims-1 a2 | 1 | Reopened by q2h-1 and folded into #12 | See #12 |
 | 9 | **Section-aware merge for CONTRACTS.md** | q2-hs-6 a2 | 1 | Open | Maybe: a markdown-sections merge driver; medium |
 | 10 | **How long the hub has been gone, on the provisional line** | q2-hs-6 a2 | 1 | Open | Yes, small |
-| 11 | **`watch --sync`:** sync when the wait returns | q2s-claims-2 a3 | 1 | Open | Yes, small |
+| 11 | **`watch --sync`:** sync when the wait returns | q2h-5 a2 | 2 | Open | Yes, small |
 | 12 | **Never hang silently; local commands stay local.** `land`/`sync` say what they fetch and from whom, give up after ~20 s naming the missing piece; `status`/`log` never need the network | q2h-2 a2, a3 (rated 2) | 3 | Fixed `c87ba52`; confirmed in q2h-3 (no stalls, no gap errors, nobody asked for it) | Done | Yes: fetch view gaps online before reading main, bounded, and a clear error when nobody has them |
 | 13 | **Teammates' presence and work in progress on a path** (`a2 online, editing /src/scheduler.js, last seen 10 s ago`) in `watch --path` and `claims` | q2h-1 a3 | 1 | Open | Partly: liveness from claims' heartbeats and the signal channel exists; uncommitted edits would need a new signal |
 | 14 | **Split a land: unprotected files land, protected ones become a proposal** to the required reviewers in one step | q2h-3 a1, a2, a3 | 4 | Fixed `c8cc9a0` (`land --split`); every agent used it in q2h-4 | Done; follow-ups #16-#18 |
@@ -36,6 +36,8 @@ existed).
 | 16 | **Split by default** when the only blocker is a protected path, and check the policy before running `--check` | q2h-4 a1 | 1 | Fixed `08c009e`: split is the default, decided after the pull and before `--check` | Yes, small: the policy check is local and cheap |
 | 17 | **An approval pins my hunks, not the whole file**: a clean merge of teammates' approved sections into the same protected file shouldn't reset it; otherwise re-propose and let `--wait-final` wait | q2h-4 a2 | 1 | Fixed (schema v15): protected files travel inline; approvals bind to the added and removed lines | Yes, medium: approve the proposal's diff against its base, and accept a land whose diff from the merged base is the same |
 | 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Fixed `08c009e`: covered paths land under the item, the rest is split off, the item stays open | Yes, small |
+| 19 | **Block until my last land is final** (`hs wait-final`), with the hub's stall and recovery shown | q2h-5 a1 | 1 | Open: exists as `hs land --wait-final` with nothing new to land, but nobody finds it | Yes, small: a `wait-final` alias and a mention on the provisional line |
+| 20 | **Say why an approval still counts after a merge** (`approval kept: merged lines from #105`) | q2h-5 a3 | 1 | Open; the playbook line that contradicted it is fixed | Yes, small: land knows when the line check carried it |
 
 ## Runs
 
@@ -44,3 +46,4 @@ existed).
 - **q2h-2:** 4, 2, 2. a1 (4) asks #14 and #12; a2 (2) and a3 (2) ask #12 (the overreaching gap check), a3 also #15.
 - **q2h-3:** 4, 3, 4. a1 (4) and a3 (4) ask #14 (split protected paths); a2 (3) asks #1 (its outage land vanished silently) and #14.
 - **q2h-4:** 4, 4, 4 (3/3 choose). Nobody asks #14 again; a1 asks #16, a2 #17, a3 #18. Every remaining ask is about the approval flow, none about stalls or the outage.
+- **q2h-5:** 4, 4, 4 (3/3 choose), zero alerts, 1 min lost. a1 asks #19, a2 #11, a3 #20: all small, none about the approval flow working, the outage or stalls.

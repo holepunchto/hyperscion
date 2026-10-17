@@ -162,8 +162,9 @@ from them.
 - Approvals only count from people other than the author.
 - An approval is pinned to the content it saw. Running `hs propose` again after changes makes
   a new revision, and approvals start over. Teammates' changes merged into the proposal's
-  files on the way to landing (by `sync` or `land --check`) keep the approval. Paths
-  protected by `/.hsreview` are the exception: there, any difference needs review again.
+  files on the way to landing (by `sync` or `land --check`) keep the approval. In files
+  `/.hsreview` protects, the approval is of the lines you add and remove: teammates' sections
+  merging in around them keep it, and any other line of yours needs review again.
 - `hs proposals` lists open proposals. Once a proposal is approved, its author lands it with
   `hs land`.
 

@@ -1,0 +1,7 @@
+{"t":"2026-10-17T12:38:24.327Z","do":"start","as":"ann","delayS":10,"holdS":90,"holdMatching":"CR-1"}
+{"t":"2026-10-17T12:40:08.641Z","do":"seen","target":"C4f4ec0","kind":"item","title":"Change request CR-1 (from pm)","holdS":90}
+{"t":"2026-10-17T12:40:51.728Z","do":"seen","target":"P1","kind":"proposal","title":"scheduler (CR-1): trips[].flightMinutes per stop for per-flight-minute pricing; contract line proposed (protected part)","holdS":10}
+{"t":"2026-10-17T12:41:06.791Z","do":"seen","target":"P2","kind":"proposal","title":"a3: CR-1 per-flight-minute pricing, report shows flight minutes, integration test checks CR-1 price; CONTRACTS.md pricing section for ann (protected part)","holdS":10}
+{"t":"2026-10-17T12:41:08.038Z","do":"approved","target":"P1","waitedS":16}
+{"t":"2026-10-17T12:41:25.002Z","do":"approved","target":"P2","waitedS":18}
+{"t":"2026-10-17T12:41:42.064Z","do":"approved","target":"C4f4ec0","waitedS":93}
