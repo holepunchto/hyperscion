@@ -1,0 +1,104 @@
+{"type":"settled","seq":11,"text":"@ settled through #11"}
+{"type":"settled","seq":12,"text":"@ settled through #12"}
+{"type":"settled","seq":13,"text":"@ settled through #13"}
+{"type":"settled","seq":14,"text":"@ settled through #14"}
+{"type":"settled","seq":15,"text":"@ settled through #15"}
+{"type":"settled","seq":16,"text":"@ settled through #16"}
+{"type":"settled","seq":17,"text":"@ settled through #17"}
+{"type":"settled","seq":18,"text":"@ settled through #18"}
+{"type":"settled","seq":19,"text":"@ settled through #19"}
+{"type":"item","n":19,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ item C77cbc0 \"pricing formula + report + cli plan --json + integration test\" by a3: `hs claim C77cbc0`"}
+{"type":"claim","n":20,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ C77cbc0 \"pricing formula + report + cli plan --json + integration test\" claimed by a3"}
+{"type":"settled","seq":20,"text":"@ settled through #20"}
+{"type":"settled","seq":22,"text":"@ settled through #22"}
+{"type":"settled","seq":23,"text":"@ settled through #23"}
+{"type":"settled","seq":24,"text":"@ settled through #24"}
+{"type":"settled","seq":25,"text":"@ settled through #25"}
+{"type":"settled","seq":26,"text":"@ settled through #26"}
+{"type":"settled","seq":28,"text":"@ settled through #28"}
+{"type":"settled","seq":29,"text":"@ settled through #29"}
+{"type":"settled","seq":30,"text":"@ settled through #30"}
+{"type":"settled","seq":31,"text":"@ settled through #31"}
+{"type":"settled","seq":32,"text":"@ settled through #32"}
+{"type":"settled","seq":33,"text":"@ settled through #33"}
+{"type":"settled","seq":34,"text":"@ settled through #34"}
+{"type":"settled","seq":35,"text":"@ settled through #35"}
+{"type":"settled","seq":37,"text":"@ settled through #37"}
+{"type":"settled","seq":38,"text":"@ settled through #38"}
+{"type":"settled","seq":39,"text":"@ settled through #39"}
+{"type":"settled","seq":40,"text":"@ settled through #40"}
+{"type":"settled","seq":41,"text":"@ settled through #41"}
+{"type":"settled","seq":42,"text":"@ settled through #42"}
+{"type":"settled","seq":43,"text":"@ settled through #43"}
+{"type":"settled","seq":44,"text":"@ settled through #44"}
+{"type":"settled","seq":45,"text":"@ settled through #45"}
+{"type":"settled","seq":46,"text":"@ settled through #46"}
+{"type":"settled","seq":47,"text":"@ settled through #47"}
+{"type":"settled","seq":48,"text":"@ settled through #48"}
+{"type":"settled","seq":50,"text":"@ settled through #50"}
+{"type":"settled","seq":52,"text":"@ settled through #52"}
+{"type":"settled","seq":53,"text":"@ settled through #53"}
+{"type":"settled","seq":54,"text":"@ settled through #54"}
+{"type":"settled","seq":55,"text":"@ settled through #55"}
+{"type":"changeset","seq":57,"hash":"5r74yfxfgtypdxjs9igk511yxbsunjqmrwp586edd7ofcohryhjy","author":"a2","time":1792248107508,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express) + Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"settled","seq":56,"text":"@ settled through #56"}
+{"type":"settled","seq":57,"text":"@ settled through #57"}
+{"type":"settled","seq":59,"text":"@ settled through #59"}
+{"type":"settled","seq":60,"text":"@ settled through #60"}
+{"type":"settled","seq":61,"text":"@ settled through #61"}
+{"type":"done","n":57,"proposal":null,"seq":62,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ C77cbc0 \"pricing formula + report + cli plan --json + integration test\" done by a3 in #62"}
+{"type":"changeset","seq":62,"hash":"5hs9997juk6dp6zso8mttzjgxqxznxc8kqdisji5fkn79i6bscso","author":"a3","time":1792248116256,"message":"pricing: formula pinned in CONTRACTS.md, price(plan, day) + unit tests","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":62,"text":"@ settled through #62"}
+{"type":"settled","seq":64,"text":"@ settled through #64"}
+{"type":"settled","seq":65,"text":"@ settled through #65"}
+{"type":"settled","seq":67,"text":"@ settled through #67"}
+{"type":"settled","seq":68,"text":"@ settled through #68"}
+{"type":"settled","seq":70,"text":"@ settled through #70"}
+{"type":"settled","seq":72,"text":"@ settled through #72"}
+{"type":"settled","seq":73,"text":"@ settled through #73"}
+{"type":"changeset","seq":74,"hash":"skfzb8ar4hcn1k7nrbhpterb7x7duo3pfswmcy8qaw7bn7qiajpo","author":"a1","time":1792248130954,"message":"model+geo: loadDay, distanceKm, travelMinutes, orderStops, tripKm; contracts pinned","files":["/CONTRACTS.md","/NOTES.md","/src/geo.js","/src/model.js","/test/geo.test.js","/test/model.test.js"]}
+{"type":"offline","at":"2026-10-17T14:42:24.181Z"}
+{"type":"hub","state":"stalled","settled":73,"head":85,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"online","at":"2026-10-17T14:42:33.792Z"}
+{"type":"changeset","seq":90,"hash":"3zdiymfgmqtn97b7tddfk4asemqehpc73wcd3uer5si3u6nwjz3o","author":"a3","time":1792248155084,"message":"cli + report + integration test: plan <day> [--json] = Plan + prices + total","files":["/CONTRACTS.md","/NOTES.md","/src/cli.js","/src/report.js","/test/integration.test.js"]}
+{"type":"changeset","seq":100,"hash":"4gu1j67xfaibiermt7yj97zb3pgi3cqpzd59pd3oupaggm378poo","author":"a2","time":1792248168883,"message":"scheduler: use a1's loadDay/distanceKm/travelMinutes, drop shim","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js"]}
+{"type":"renumbered","seq":105,"now":106,"author":"sw2-0","message":"sw2.0 7"}
+{"type":"changeset","seq":110,"hash":"ruqp7shqhc73zm3tikny1opxykyyn9bc91hftkiwxmr65mw93qmy","author":"a3","time":1792248186635,"message":"integration: edge fixture fixtures/edge1.json (too heavy, out of range, window past day end)","files":["/fixtures/edge1.json","/test/integration.test.js"]}
+{"type":"changeset","seq":115,"hash":"9w1rsjhpmuzifxyigwzagq7wa4x77jogbt37hdhqc4rm8wk4q9iy","author":"pm","time":1792248194043,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"item","n":66,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ item C6b043a \"Change request CR-1 (from pm)\" by pm: `hs claim C6b043a`"}
+{"type":"claim","n":67,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ C6b043a \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"changeset","seq":138,"hash":"z51a7t1mxz8prehct1k86cn16uumdmwao4o5aqdd5ya5bmnwpxto","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"renumbered","seq":138,"now":139,"author":"a1","message":"notes: a1 on CR-1 (geo helpers available, not duplicating)"}
+{"type":"changeset","seq":139,"hash":"f8c8148ki7d9csko98b17erq9iz8kjyscyomhmcamu1ff7ffkoao","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"renumbered","seq":139,"now":140,"author":"a1","message":"notes: a1 on CR-1 (geo helpers available, not duplicating)"}
+{"type":"changeset","seq":140,"hash":"uujp9oue4ink47pkks6k7ici43wpkxab7zdihwujh6uo5frzzyey","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"settled","seq":74,"text":"@ settled through #74"}
+{"type":"settled","seq":152,"text":"@ settled through #152"}
+{"type":"hub","state":"settling","settled":152}
+{"type":"settled","seq":153,"text":"@ settled through #153"}
+{"type":"settled","seq":154,"text":"@ settled through #154"}
+{"type":"settled","seq":155,"text":"@ settled through #155"}
+{"type":"settled","seq":156,"text":"@ settled through #156"}
+{"type":"settled","seq":157,"text":"@ settled through #157"}
+{"type":"settled","seq":158,"text":"@ settled through #158"}
+{"type":"settled","seq":159,"text":"@ settled through #159"}
+{"type":"settled","seq":160,"text":"@ settled through #160"}
+{"type":"settled","seq":161,"text":"@ settled through #161"}
+{"type":"settled","seq":162,"text":"@ settled through #162"}
+{"type":"settled","seq":163,"text":"@ settled through #163"}
+{"type":"settled","seq":164,"text":"@ settled through #164"}
+{"type":"settled","seq":165,"text":"@ settled through #165"}
+{"type":"settled","seq":166,"text":"@ settled through #166"}
+{"type":"settled","seq":168,"text":"@ settled through #168"}
+{"type":"settled","seq":169,"text":"@ settled through #169"}
+{"type":"settled","seq":170,"text":"@ settled through #170"}
+{"type":"done","n":87,"proposal":null,"seq":171,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ C6b043a \"Change request CR-1 (from pm)\" done by a3 in #171"}
+{"type":"changeset","seq":171,"hash":"fmy3ujnkgw79a7oscxfwjs4fhb5qdoo1n7u6xzgy31nuusn887xo","author":"a3","time":1792248280504,"message":"CR-1: pricing per flight minute (2.00 + 0.25/min + 0.40/kg, express x1.5); report shows flight minutes; --json adds flightMinutes; contract + tests","files":["/CONTRACTS.md","/NOTES.md","/src/cli.js","/src/pricing.js","/src/report.js","/test/integration.test.js","/test/pricing.test.js"]}
+{"type":"settled","seq":171,"text":"@ settled through #171"}
+{"type":"settled","seq":172,"text":"@ settled through #172"}
+{"type":"settled","seq":173,"text":"@ settled through #173"}
+{"type":"settled","seq":174,"text":"@ settled through #174"}
+{"type":"settled","seq":175,"text":"@ settled through #175"}
+{"type":"settled","seq":176,"text":"@ settled through #176"}
+{"type":"settled","seq":177,"text":"@ settled through #177"}
+{"type":"settled","seq":178,"text":"@ settled through #178"}

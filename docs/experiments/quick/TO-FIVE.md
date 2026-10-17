@@ -26,7 +26,7 @@ existed).
 | 6 | **Link a land to the open part it implements** (touches its paths, or quotes its id) | q2s-claims-3 a3 | 1 | Open | Yes: `land` suggests `--item`/`--under` when the changes fall in an open item's paths |
 | 7 | **One step to create and claim a part, or take my part** | q2s-claims-2 a3 | 2 | Open | Yes, small (`item part --claim`) |
 | 8 | **`status` never stalls** | q2s-claims-1 a2 | 1 | Reopened by q2h-1 and folded into #12 | See #12 |
-| 9 | **Section-aware merge for CONTRACTS.md** | q2-hs-6 a2 | 1 | Open | Maybe: a markdown-sections merge driver; medium |
+| 9 | **Section-aware merge for CONTRACTS.md** | q2-hs-7 a1 | 2 | Open | Maybe: a markdown-sections merge driver; medium |
 | 10 | **How long the hub has been gone, on the provisional line** | q2-hs-6 a2 | 1 | Open | Yes, small |
 | 11 | **`watch --sync`:** sync when the wait returns | q2h-5 a2 | 2 | Fixed: `watch --path --count 1 --sync` | Yes, small |
 | 12 | **Never hang silently; local commands stay local.** `land`/`sync` say what they fetch and from whom, give up after ~20 s naming the missing piece; `status`/`log` never need the network | q2h-2 a2, a3 (rated 2) | 3 | Fixed `c87ba52`; confirmed in q2h-3 (no stalls, no gap errors, nobody asked for it) | Done | Yes: fetch view gaps online before reading main, bounded, and a clear error when nobody has them |
@@ -38,11 +38,12 @@ existed).
 | 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Fixed `08c009e`: covered paths land under the item, the rest is split off, the item stays open | Yes, small |
 | 19 | **Block until my last land is final** (`hs wait-final`), with the hub's stall and recovery shown | q2h-5 a1 | 1 | Fixed: `hs wait-final [#n]`; the provisional line points to it | Yes, small: a `wait-final` alias and a mention on the provisional line |
 | 20 | **Say why an approval still counts after a merge** (`approval kept: merged lines from #105`) | q2h-5 a3 | 1 | Fixed: land says "approval of P kept for <file>: your lines are the ones approved; teammates' changes merged in (#n)" | Yes, small: land knows when the line check carried it |
-| 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Fixed: a one-change wait from your base returns "already in your files" (--new waits for a newer change) | Yes, small |
+| 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Reopened by q2-hs-7: the check counted my own lands and old changesets (returned at once), and `--new` skipped lands between my sync and the wait; a2 lost ~5 min | Yes: count only changesets after my synced base that are not mine; "already here" only for a teammate change I synced
 | 22 | **An open proposal covers only the protected paths**: other files always land, and the proposal is updated to just the protected ones | q2h-6 a2 | 1 | Fixed: a proposal made for protected files stays out of lands that touch none; extra files land and the protected ones stay with it | Yes, small: attach the proposal only when the land carries protected changes; split otherwise |
 | 23 | **Say when a change request gives me no part** (`CR-1: no part for a1`), so an agent with none knows it is done | q2h-7 a1 | 1 | Open | Yes, small: the CR item can name its parts' owners |
 | 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Fixed: a split past an approved proposal lands the approved revision first, then proposes only the new lines; a re-proposal of an approved one warns | Yes, small-medium: split the protected change against the approved text |
 | 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Fixed: a failed --check leads with the lines that say what failed, drops stack frames, and names the teammates' changesets it read | Yes, small |
+| 26 | **Warn before `land --item` closes a whole multi-part item** after one piece (suggest `--under`) | q2-hs-7 a3 | 1 | Open | Yes, small: the item has open parts or a title wider than the land |
 
 ## Runs
 
@@ -54,3 +55,4 @@ existed).
 - **q2h-5:** 4, 4, 4 (3/3 choose), zero alerts, 1 min lost. a1 asks #19, a2 #11, a3 #20: all small, none about the approval flow working, the outage or stalls.
 - **q2h-6:** 4, 4, 4 (3/3 choose). a3 asks #1 again (seventh time), a2 #22, a1 #21. q2h-5's asks (#11, #19, #20) were all fixed, and three new ones appeared: the 4 has held for three runs while the asks keep shrinking.
 - **q2h-7:** 4, 4, 4 (3/3 choose), zero alerts. a1 #23, a2 #24, a3 #25: all small and new. Four runs at 4,4,4 (q2h-4..7) with every earlier ask fixed: the asks keep coming, smaller each time, and the rating doesn't move. Read as the agents' ceiling for this task, not a product gap.
+- **q2-hs-7 (full q2):** 4, 4, 4 (3/3 choose). a1 #9, a2 #21 (reopened: my fix regressed the wait), a3 #26.

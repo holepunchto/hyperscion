@@ -1,0 +1,304 @@
+{"type":"settled","seq":11,"text":"@ settled through #11"}
+{"type":"settled","seq":12,"text":"@ settled through #12"}
+{"type":"settled","seq":13,"text":"@ settled through #13"}
+{"type":"settled","seq":14,"text":"@ settled through #14"}
+{"type":"settled","seq":15,"text":"@ settled through #15"}
+{"type":"settled","seq":16,"text":"@ settled through #16"}
+{"type":"settled","seq":17,"text":"@ settled through #17"}
+{"type":"settled","seq":18,"text":"@ settled through #18"}
+{"type":"settled","seq":19,"text":"@ settled through #19"}
+{"type":"item","n":19,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ item C77cbc0 \"pricing formula + report + cli plan --json + integration test\" by a3: `hs claim C77cbc0`"}
+{"type":"claim","n":20,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ C77cbc0 \"pricing formula + report + cli plan --json + integration test\" claimed by a3"}
+{"type":"settled","seq":20,"text":"@ settled through #20"}
+{"type":"settled","seq":22,"text":"@ settled through #22"}
+{"type":"settled","seq":23,"text":"@ settled through #23"}
+{"type":"settled","seq":24,"text":"@ settled through #24"}
+{"type":"settled","seq":25,"text":"@ settled through #25"}
+{"type":"settled","seq":26,"text":"@ settled through #26"}
+{"type":"settled","seq":28,"text":"@ settled through #28"}
+{"type":"settled","seq":29,"text":"@ settled through #29"}
+{"type":"settled","seq":30,"text":"@ settled through #30"}
+{"type":"settled","seq":31,"text":"@ settled through #31"}
+{"type":"settled","seq":32,"text":"@ settled through #32"}
+{"type":"settled","seq":33,"text":"@ settled through #33"}
+{"type":"settled","seq":34,"text":"@ settled through #34"}
+{"type":"settled","seq":35,"text":"@ settled through #35"}
+{"type":"settled","seq":37,"text":"@ settled through #37"}
+{"type":"settled","seq":38,"text":"@ settled through #38"}
+{"type":"settled","seq":39,"text":"@ settled through #39"}
+{"type":"settled","seq":40,"text":"@ settled through #40"}
+{"type":"settled","seq":41,"text":"@ settled through #41"}
+{"type":"settled","seq":42,"text":"@ settled through #42"}
+{"type":"settled","seq":43,"text":"@ settled through #43"}
+{"type":"settled","seq":44,"text":"@ settled through #44"}
+{"type":"settled","seq":45,"text":"@ settled through #45"}
+{"type":"settled","seq":46,"text":"@ settled through #46"}
+{"type":"settled","seq":47,"text":"@ settled through #47"}
+{"type":"settled","seq":48,"text":"@ settled through #48"}
+{"type":"settled","seq":50,"text":"@ settled through #50"}
+{"type":"settled","seq":52,"text":"@ settled through #52"}
+{"type":"settled","seq":53,"text":"@ settled through #53"}
+{"type":"settled","seq":54,"text":"@ settled through #54"}
+{"type":"settled","seq":55,"text":"@ settled through #55"}
+{"type":"changeset","seq":57,"hash":"5r74yfxfgtypdxjs9igk511yxbsunjqmrwp586edd7ofcohryhjy","author":"a2","time":1792248107508,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express) + Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"settled","seq":56,"text":"@ settled through #56"}
+{"type":"settled","seq":57,"text":"@ settled through #57"}
+{"type":"settled","seq":59,"text":"@ settled through #59"}
+{"type":"settled","seq":60,"text":"@ settled through #60"}
+{"type":"settled","seq":61,"text":"@ settled through #61"}
+{"type":"done","n":57,"proposal":null,"seq":62,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C77cbc0","text":"@ C77cbc0 \"pricing formula + report + cli plan --json + integration test\" done by a3 in #62"}
+{"type":"changeset","seq":62,"hash":"5hs9997juk6dp6zso8mttzjgxqxznxc8kqdisji5fkn79i6bscso","author":"a3","time":1792248116256,"message":"pricing: formula pinned in CONTRACTS.md, price(plan, day) + unit tests","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":62,"text":"@ settled through #62"}
+{"type":"settled","seq":64,"text":"@ settled through #64"}
+{"type":"settled","seq":65,"text":"@ settled through #65"}
+{"type":"settled","seq":67,"text":"@ settled through #67"}
+{"type":"settled","seq":68,"text":"@ settled through #68"}
+{"type":"settled","seq":70,"text":"@ settled through #70"}
+{"type":"settled","seq":72,"text":"@ settled through #72"}
+{"type":"settled","seq":73,"text":"@ settled through #73"}
+{"type":"changeset","seq":74,"hash":"skfzb8ar4hcn1k7nrbhpterb7x7duo3pfswmcy8qaw7bn7qiajpo","author":"a1","time":1792248130954,"message":"model+geo: loadDay, distanceKm, travelMinutes, orderStops, tripKm; contracts pinned","files":["/CONTRACTS.md","/NOTES.md","/src/geo.js","/src/model.js","/test/geo.test.js","/test/model.test.js"]}
+{"type":"offline","at":"2026-10-17T14:42:24.181Z"}
+{"type":"online","at":"2026-10-17T14:42:33.908Z"}
+{"type":"changeset","seq":90,"hash":"3zdiymfgmqtn97b7tddfk4asemqehpc73wcd3uer5si3u6nwjz3o","author":"a3","time":1792248155084,"message":"cli + report + integration test: plan <day> [--json] = Plan + prices + total","files":["/CONTRACTS.md","/NOTES.md","/src/cli.js","/src/report.js","/test/integration.test.js"]}
+{"type":"hub","state":"stalled","settled":73,"head":90,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":100,"hash":"4gu1j67xfaibiermt7yj97zb3pgi3cqpzd59pd3oupaggm378poo","author":"a2","time":1792248168883,"message":"scheduler: use a1's loadDay/distanceKm/travelMinutes, drop shim","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js"]}
+{"type":"renumbered","seq":105,"now":106,"author":"sw2-0","message":"sw2.0 7"}
+{"type":"changeset","seq":110,"hash":"ruqp7shqhc73zm3tikny1opxykyyn9bc91hftkiwxmr65mw93qmy","author":"a3","time":1792248186635,"message":"integration: edge fixture fixtures/edge1.json (too heavy, out of range, window past day end)","files":["/fixtures/edge1.json","/test/integration.test.js"]}
+{"type":"changeset","seq":115,"hash":"9w1rsjhpmuzifxyigwzagq7wa4x77jogbt37hdhqc4rm8wk4q9iy","author":"pm","time":1792248194043,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"item","n":66,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ item C6b043a \"Change request CR-1 (from pm)\" by pm: `hs claim C6b043a`"}
+{"type":"claim","n":67,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ C6b043a \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"changeset","seq":138,"hash":"z51a7t1mxz8prehct1k86cn16uumdmwao4o5aqdd5ya5bmnwpxto","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"renumbered","seq":138,"now":139,"author":"a1","message":"notes: a1 on CR-1 (geo helpers available, not duplicating)"}
+{"type":"changeset","seq":139,"hash":"f8c8148ki7d9csko98b17erq9iz8kjyscyomhmcamu1ff7ffkoao","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"renumbered","seq":139,"now":140,"author":"a1","message":"notes: a1 on CR-1 (geo helpers available, not duplicating)"}
+{"type":"changeset","seq":140,"hash":"uujp9oue4ink47pkks6k7ici43wpkxab7zdihwujh6uo5frzzyey","author":"a1","time":1792248233649,"message":"notes: a1 on CR-1 (geo helpers available, not duplicating)","files":["/NOTES.md"]}
+{"type":"settled","seq":74,"text":"@ settled through #74"}
+{"type":"settled","seq":152,"text":"@ settled through #152"}
+{"type":"hub","state":"settling","settled":152}
+{"type":"settled","seq":153,"text":"@ settled through #153"}
+{"type":"settled","seq":154,"text":"@ settled through #154"}
+{"type":"settled","seq":155,"text":"@ settled through #155"}
+{"type":"settled","seq":156,"text":"@ settled through #156"}
+{"type":"settled","seq":157,"text":"@ settled through #157"}
+{"type":"settled","seq":158,"text":"@ settled through #158"}
+{"type":"settled","seq":159,"text":"@ settled through #159"}
+{"type":"settled","seq":160,"text":"@ settled through #160"}
+{"type":"settled","seq":161,"text":"@ settled through #161"}
+{"type":"settled","seq":162,"text":"@ settled through #162"}
+{"type":"settled","seq":163,"text":"@ settled through #163"}
+{"type":"settled","seq":164,"text":"@ settled through #164"}
+{"type":"settled","seq":165,"text":"@ settled through #165"}
+{"type":"settled","seq":166,"text":"@ settled through #166"}
+{"type":"settled","seq":168,"text":"@ settled through #168"}
+{"type":"settled","seq":169,"text":"@ settled through #169"}
+{"type":"settled","seq":170,"text":"@ settled through #170"}
+{"type":"done","n":87,"proposal":null,"seq":171,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C6b043a","text":"@ C6b043a \"Change request CR-1 (from pm)\" done by a3 in #171"}
+{"type":"changeset","seq":171,"hash":"fmy3ujnkgw79a7oscxfwjs4fhb5qdoo1n7u6xzgy31nuusn887xo","author":"a3","time":1792248280504,"message":"CR-1: pricing per flight minute (2.00 + 0.25/min + 0.40/kg, express x1.5); report shows flight minutes; --json adds flightMinutes; contract + tests","files":["/CONTRACTS.md","/NOTES.md","/src/cli.js","/src/pricing.js","/src/report.js","/test/integration.test.js","/test/pricing.test.js"]}
+{"type":"settled","seq":171,"text":"@ settled through #171"}
+{"type":"settled","seq":172,"text":"@ settled through #172"}
+{"type":"settled","seq":173,"text":"@ settled through #173"}
+{"type":"settled","seq":174,"text":"@ settled through #174"}
+{"type":"settled","seq":175,"text":"@ settled through #175"}
+{"type":"settled","seq":176,"text":"@ settled through #176"}
+{"type":"settled","seq":177,"text":"@ settled through #177"}
+{"type":"settled","seq":178,"text":"@ settled through #178"}
+{"type":"settled","seq":179,"text":"@ settled through #179"}
+{"type":"settled","seq":180,"text":"@ settled through #180"}
+{"type":"settled","seq":181,"text":"@ settled through #181"}
+{"type":"settled","seq":182,"text":"@ settled through #182"}
+{"type":"settled","seq":183,"text":"@ settled through #183"}
+{"type":"settled","seq":184,"text":"@ settled through #184"}
+{"type":"settled","seq":185,"text":"@ settled through #185"}
+{"type":"settled","seq":186,"text":"@ settled through #186"}
+{"type":"settled","seq":187,"text":"@ settled through #187"}
+{"type":"settled","seq":188,"text":"@ settled through #188"}
+{"type":"renumbered","seq":189,"now":190,"author":"sw2-2","message":"sw2.2 9"}
+{"type":"settled","seq":190,"text":"@ settled through #190"}
+{"type":"settled","seq":192,"text":"@ settled through #192"}
+{"type":"settled","seq":194,"text":"@ settled through #194"}
+{"type":"settled","seq":195,"text":"@ settled through #195"}
+{"type":"settled","seq":196,"text":"@ settled through #196"}
+{"type":"settled","seq":197,"text":"@ settled through #197"}
+{"type":"settled","seq":198,"text":"@ settled through #198"}
+{"type":"settled","seq":199,"text":"@ settled through #199"}
+{"type":"settled","seq":200,"text":"@ settled through #200"}
+{"type":"settled","seq":201,"text":"@ settled through #201"}
+{"type":"renumbered","seq":202,"now":203,"author":"sw3-1","message":"sw3.1 10"}
+{"type":"settled","seq":203,"text":"@ settled through #203"}
+{"type":"settled","seq":204,"text":"@ settled through #204"}
+{"type":"settled","seq":205,"text":"@ settled through #205"}
+{"type":"renumbered","seq":206,"now":207,"author":"sw1-4","message":"sw1.4 12"}
+{"type":"settled","seq":207,"text":"@ settled through #207"}
+{"type":"settled","seq":208,"text":"@ settled through #208"}
+{"type":"settled","seq":209,"text":"@ settled through #209"}
+{"type":"settled","seq":210,"text":"@ settled through #210"}
+{"type":"settled","seq":211,"text":"@ settled through #211"}
+{"type":"settled","seq":212,"text":"@ settled through #212"}
+{"type":"settled","seq":213,"text":"@ settled through #213"}
+{"type":"settled","seq":214,"text":"@ settled through #214"}
+{"type":"settled","seq":215,"text":"@ settled through #215"}
+{"type":"settled","seq":216,"text":"@ settled through #216"}
+{"type":"settled","seq":217,"text":"@ settled through #217"}
+{"type":"settled","seq":218,"text":"@ settled through #218"}
+{"type":"settled","seq":219,"text":"@ settled through #219"}
+{"type":"settled","seq":220,"text":"@ settled through #220"}
+{"type":"settled","seq":221,"text":"@ settled through #221"}
+{"type":"settled","seq":223,"text":"@ settled through #223"}
+{"type":"settled","seq":224,"text":"@ settled through #224"}
+{"type":"settled","seq":225,"text":"@ settled through #225"}
+{"type":"settled","seq":226,"text":"@ settled through #226"}
+{"type":"settled","seq":227,"text":"@ settled through #227"}
+{"type":"settled","seq":228,"text":"@ settled through #228"}
+{"type":"settled","seq":230,"text":"@ settled through #230"}
+{"type":"settled","seq":231,"text":"@ settled through #231"}
+{"type":"settled","seq":232,"text":"@ settled through #232"}
+{"type":"settled","seq":233,"text":"@ settled through #233"}
+{"type":"settled","seq":234,"text":"@ settled through #234"}
+{"type":"settled","seq":235,"text":"@ settled through #235"}
+{"type":"settled","seq":236,"text":"@ settled through #236"}
+{"type":"renumbered","seq":236,"now":237,"author":"sw3-1","message":"sw3.1 11"}
+{"type":"settled","seq":238,"text":"@ settled through #238"}
+{"type":"settled","seq":239,"text":"@ settled through #239"}
+{"type":"settled","seq":240,"text":"@ settled through #240"}
+{"type":"settled","seq":241,"text":"@ settled through #241"}
+{"type":"settled","seq":242,"text":"@ settled through #242"}
+{"type":"settled","seq":243,"text":"@ settled through #243"}
+{"type":"settled","seq":244,"text":"@ settled through #244"}
+{"type":"settled","seq":245,"text":"@ settled through #245"}
+{"type":"settled","seq":246,"text":"@ settled through #246"}
+{"type":"settled","seq":247,"text":"@ settled through #247"}
+{"type":"settled","seq":248,"text":"@ settled through #248"}
+{"type":"settled","seq":249,"text":"@ settled through #249"}
+{"type":"settled","seq":250,"text":"@ settled through #250"}
+{"type":"settled","seq":251,"text":"@ settled through #251"}
+{"type":"settled","seq":252,"text":"@ settled through #252"}
+{"type":"settled","seq":253,"text":"@ settled through #253"}
+{"type":"settled","seq":254,"text":"@ settled through #254"}
+{"type":"settled","seq":255,"text":"@ settled through #255"}
+{"type":"settled","seq":256,"text":"@ settled through #256"}
+{"type":"settled","seq":257,"text":"@ settled through #257"}
+{"type":"settled","seq":258,"text":"@ settled through #258"}
+{"type":"settled","seq":260,"text":"@ settled through #260"}
+{"type":"settled","seq":262,"text":"@ settled through #262"}
+{"type":"settled","seq":263,"text":"@ settled through #263"}
+{"type":"settled","seq":264,"text":"@ settled through #264"}
+{"type":"settled","seq":265,"text":"@ settled through #265"}
+{"type":"settled","seq":266,"text":"@ settled through #266"}
+{"type":"settled","seq":267,"text":"@ settled through #267"}
+{"type":"settled","seq":268,"text":"@ settled through #268"}
+{"type":"settled","seq":269,"text":"@ settled through #269"}
+{"type":"settled","seq":270,"text":"@ settled through #270"}
+{"type":"settled","seq":271,"text":"@ settled through #271"}
+{"type":"settled","seq":272,"text":"@ settled through #272"}
+{"type":"settled","seq":273,"text":"@ settled through #273"}
+{"type":"settled","seq":275,"text":"@ settled through #275"}
+{"type":"settled","seq":276,"text":"@ settled through #276"}
+{"type":"settled","seq":277,"text":"@ settled through #277"}
+{"type":"settled","seq":278,"text":"@ settled through #278"}
+{"type":"settled","seq":279,"text":"@ settled through #279"}
+{"type":"settled","seq":280,"text":"@ settled through #280"}
+{"type":"settled","seq":281,"text":"@ settled through #281"}
+{"type":"settled","seq":282,"text":"@ settled through #282"}
+{"type":"settled","seq":283,"text":"@ settled through #283"}
+{"type":"settled","seq":284,"text":"@ settled through #284"}
+{"type":"settled","seq":285,"text":"@ settled through #285"}
+{"type":"settled","seq":287,"text":"@ settled through #287"}
+{"type":"settled","seq":288,"text":"@ settled through #288"}
+{"type":"settled","seq":289,"text":"@ settled through #289"}
+{"type":"settled","seq":290,"text":"@ settled through #290"}
+{"type":"settled","seq":291,"text":"@ settled through #291"}
+{"type":"settled","seq":292,"text":"@ settled through #292"}
+{"type":"settled","seq":293,"text":"@ settled through #293"}
+{"type":"settled","seq":294,"text":"@ settled through #294"}
+{"type":"settled","seq":295,"text":"@ settled through #295"}
+{"type":"settled","seq":296,"text":"@ settled through #296"}
+{"type":"settled","seq":297,"text":"@ settled through #297"}
+{"type":"settled","seq":298,"text":"@ settled through #298"}
+{"type":"settled","seq":299,"text":"@ settled through #299"}
+{"type":"settled","seq":300,"text":"@ settled through #300"}
+{"type":"settled","seq":301,"text":"@ settled through #301"}
+{"type":"settled","seq":302,"text":"@ settled through #302"}
+{"type":"settled","seq":303,"text":"@ settled through #303"}
+{"type":"settled","seq":305,"text":"@ settled through #305"}
+{"type":"settled","seq":306,"text":"@ settled through #306"}
+{"type":"settled","seq":307,"text":"@ settled through #307"}
+{"type":"settled","seq":308,"text":"@ settled through #308"}
+{"type":"settled","seq":309,"text":"@ settled through #309"}
+{"type":"settled","seq":310,"text":"@ settled through #310"}
+{"type":"settled","seq":311,"text":"@ settled through #311"}
+{"type":"settled","seq":312,"text":"@ settled through #312"}
+{"type":"settled","seq":313,"text":"@ settled through #313"}
+{"type":"settled","seq":314,"text":"@ settled through #314"}
+{"type":"settled","seq":315,"text":"@ settled through #315"}
+{"type":"settled","seq":316,"text":"@ settled through #316"}
+{"type":"settled","seq":317,"text":"@ settled through #317"}
+{"type":"settled","seq":318,"text":"@ settled through #318"}
+{"type":"settled","seq":319,"text":"@ settled through #319"}
+{"type":"settled","seq":320,"text":"@ settled through #320"}
+{"type":"settled","seq":321,"text":"@ settled through #321"}
+{"type":"settled","seq":322,"text":"@ settled through #322"}
+{"type":"settled","seq":323,"text":"@ settled through #323"}
+{"type":"settled","seq":324,"text":"@ settled through #324"}
+{"type":"settled","seq":325,"text":"@ settled through #325"}
+{"type":"settled","seq":326,"text":"@ settled through #326"}
+{"type":"settled","seq":327,"text":"@ settled through #327"}
+{"type":"settled","seq":328,"text":"@ settled through #328"}
+{"type":"settled","seq":329,"text":"@ settled through #329"}
+{"type":"settled","seq":330,"text":"@ settled through #330"}
+{"type":"settled","seq":331,"text":"@ settled through #331"}
+{"type":"renumbered","seq":332,"now":333,"author":"sw3-2","message":"sw3.2 10"}
+{"type":"settled","seq":333,"text":"@ settled through #333"}
+{"type":"settled","seq":334,"text":"@ settled through #334"}
+{"type":"settled","seq":335,"text":"@ settled through #335"}
+{"type":"settled","seq":337,"text":"@ settled through #337"}
+{"type":"settled","seq":338,"text":"@ settled through #338"}
+{"type":"settled","seq":339,"text":"@ settled through #339"}
+{"type":"settled","seq":340,"text":"@ settled through #340"}
+{"type":"settled","seq":341,"text":"@ settled through #341"}
+{"type":"settled","seq":342,"text":"@ settled through #342"}
+{"type":"settled","seq":343,"text":"@ settled through #343"}
+{"type":"settled","seq":344,"text":"@ settled through #344"}
+{"type":"settled","seq":345,"text":"@ settled through #345"}
+{"type":"settled","seq":346,"text":"@ settled through #346"}
+{"type":"settled","seq":347,"text":"@ settled through #347"}
+{"type":"settled","seq":348,"text":"@ settled through #348"}
+{"type":"settled","seq":349,"text":"@ settled through #349"}
+{"type":"settled","seq":350,"text":"@ settled through #350"}
+{"type":"settled","seq":351,"text":"@ settled through #351"}
+{"type":"settled","seq":352,"text":"@ settled through #352"}
+{"type":"settled","seq":353,"text":"@ settled through #353"}
+{"type":"settled","seq":354,"text":"@ settled through #354"}
+{"type":"settled","seq":355,"text":"@ settled through #355"}
+{"type":"settled","seq":356,"text":"@ settled through #356"}
+{"type":"settled","seq":357,"text":"@ settled through #357"}
+{"type":"settled","seq":358,"text":"@ settled through #358"}
+{"type":"settled","seq":359,"text":"@ settled through #359"}
+{"type":"renumbered","seq":360,"now":361,"author":"sw0-2","message":"sw0.2 28"}
+{"type":"settled","seq":361,"text":"@ settled through #361"}
+{"type":"settled","seq":362,"text":"@ settled through #362"}
+{"type":"renumbered","seq":363,"now":364,"author":"sw2-3","message":"sw2.3 15"}
+{"type":"settled","seq":365,"text":"@ settled through #365"}
+{"type":"settled","seq":366,"text":"@ settled through #366"}
+{"type":"settled","seq":367,"text":"@ settled through #367"}
+{"type":"settled","seq":368,"text":"@ settled through #368"}
+{"type":"settled","seq":369,"text":"@ settled through #369"}
+{"type":"settled","seq":370,"text":"@ settled through #370"}
+{"type":"settled","seq":371,"text":"@ settled through #371"}
+{"type":"settled","seq":372,"text":"@ settled through #372"}
+{"type":"settled","seq":373,"text":"@ settled through #373"}
+{"type":"settled","seq":374,"text":"@ settled through #374"}
+{"type":"changeset","seq":375,"hash":"3ewedgackkbxhycipft5by64ynhrctyz6o573kycabyy5a79an6o","author":"a2","time":1792248570071,"message":"scheduler (CR-1): stops[].flightMinutes (air minutes depot->stop, no service/wait) + contract + test","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"settled","seq":375,"text":"@ settled through #375"}
+{"type":"settled","seq":376,"text":"@ settled through #376"}
+{"type":"settled","seq":377,"text":"@ settled through #377"}
+{"type":"settled","seq":378,"text":"@ settled through #378"}
+{"type":"settled","seq":379,"text":"@ settled through #379"}
+{"type":"settled","seq":380,"text":"@ settled through #380"}
+{"type":"settled","seq":381,"text":"@ settled through #381"}
+{"type":"settled","seq":382,"text":"@ settled through #382"}
+{"type":"settled","seq":384,"text":"@ settled through #384"}
+{"type":"settled","seq":385,"text":"@ settled through #385"}
+{"type":"settled","seq":387,"text":"@ settled through #387"}
+{"type":"settled","seq":388,"text":"@ settled through #388"}
+{"type":"settled","seq":389,"text":"@ settled through #389"}
+{"type":"settled","seq":390,"text":"@ settled through #390"}

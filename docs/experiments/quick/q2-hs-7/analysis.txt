@@ -1,0 +1,74 @@
+# hs usage: 47 calls since 2026-10-17T14:40:11.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 14 | 7 | 0 | 2 | 5 | 3 (2) | 1 | 1 | 0 | 0 | 0 | 0 | 1.9m |
+| a2 | 18 | 10 | 0 | 3 | 7 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 15 | 5 | 0 | 2 | 3 | 4 (4) | 1 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+
+totals: lands 10 (accepted 9), auto-rebased 2, real conflicts 1, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 13635/13635, claims 5991/5991, land 18343/19196, show 116/116, watch 40194/261496, status 2795/2795
+a2: sync 8876/14060, claims 11299/11299, land 14099/14792, watch 2022/567942, status 11406/11406, log 3162/3162
+a3: sync 12186/12186, claims 8497/8497, claim 7510/7510, land 14188/33609, watch 18027/321987, status 7304/7304
+
+## command mix
+a1: sync=2 claims=2 land=3 show=1 watch=5 status=1
+a2: sync=3 claims=2 land=3 watch=7 status=2 log=1
+a3: sync=2 claims=2 claim=2 land=4 watch=3 status=2
+
+## land timeline
+  1.4m a2 landed #57                                              scheduler: plan(day) greedy (payload/range/multi-trip/windows/express)
+  1.4m a1 !! not landed: real conflicts in /CONTRACTS.md (#57 a2) model+geo: loadDay, distanceKm, travelMinutes, orderStops, tripKm; con
+  1.2m a3 incoming from teammates (1), +46 under quiet paths: (re pricing: formula pinned in CONTRACTS.md, price(plan, day) + unit tests
+  1.9m a1 incoming from teammates (1), +11 under quiet paths:     model+geo: loadDay, distanceKm, travelMinutes, orderStops, tripKm; con
+  2.2m a3 incoming from teammates (1), +26 under quiet paths:     cli + report + integration test: plan <day> [--json] = Plan + prices +
+  2.4m a2 incoming from teammates (1), +21 under quiet paths:     scheduler: use a1's loadDay/distanceKm/travelMinutes, drop shim
+  2.7m a3 incoming from teammates (1), +18 under quiet paths:     integration: edge fixture fixtures/edge1.json (too heavy, out of range
+  3.5m a1 landed #138                                             notes: a1 on CR-1 (geo helpers available, not duplicating)
+  4.4m a3 incoming from teammates (1), +45 under quiet paths:     CR-1: pricing per flight minute (2.00 + 0.25/min + 0.40/kg, express x1
+  9.1m a2 landed #375                                             scheduler (CR-1): stops[].flightMinutes (air minutes depot->stop, no s
+
+## metrics (also in metrics.json)
+calls: 47
+minutes: 9.8
+lands: 10
+accepted: 9
+calls_per_accepted_land: 5.22
+auto_rebased: 2
+real_conflicts: 1
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 4
+land_ended_settled: 0
+land_ended_provisional: 5
+land_ms_p50: 14099
+land_ms_p90: 33609
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 1
+wait_min_total: 7.1
+vcs_min_total: 5.2
+vcs_share_pct: 26.9
+watch_calls: 15
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 1
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.33
+minutes_lost_to_hs_total: 6
+confusing_messages_total: 3
+review_usefulness_mean: null
+to_five: ["a1 (4): hs land: merge adjacent-but-distinct markdown sections (by ## heading) in files like CONTRACTS.md automatically instead of stopping with 'real conflicts', showing the merged section boundary in the output","a2 (4): hs watch --path <p> --count 1 --sync should count only changesets after my synced base that are not mine and not already in my files, so it neither returns at once on my own land nor skips lands made between my sync and the start of the wait","a3 (4): hs land --item C… should say 'this closes C… (whole item); add --under C… to land a piece and keep it open' before closing an item whose title covers more than the changeset, or `hs claim --done` should be the only way to close a self-created item."]
