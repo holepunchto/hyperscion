@@ -1,0 +1,83 @@
+# hs usage: 29 calls since 2026-10-17T16:39:51.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 10 | 4 | 0 | 2 | 2 | 3 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.8m |
+| a2 | 10 | 5 | 0 | 1 | 3 | 4 (3) | 1 | 0 | 0 | 0 | 0 | 0 | 1.1m |
+| a3 | 9 | 4 | 0 | 1 | 3 | 4 (4) | 1 | 0 | 0 | 0 | 0 | 0 | 1.1m |
+
+totals: lands 11 (accepted 9), auto-rebased 2, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 9427/9427, land 30646/32934, wait-final 2775/2775, status 126/126, log 2240/2240, watch 162295/162295
+a2: sync 3238/3238, land 21315/38955, watch 38176/200441, status 562/562, log 3316/3316
+a3: sync 8743/8743, land 22978/24843, watch 9042/179861, status 11093/11093
+
+## command mix
+a1: sync=2 land=3 wait-final=1 status=1 log=1 watch=2
+a2: sync=1 land=4 watch=3 status=1 log=1
+a3: sync=1 land=4 watch=3 status=1
+
+## land timeline
+  1.1m a2 landed #53                                              scheduler: greedy plan(day) -> {trips, unassigned}; Plan shape pinned 
+  1.1m a3 incoming from teammates (1), +31 under quiet paths:     a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  1.0m a1                                                         a1: model.js (loadDay) + geo.js (distanceKm, travelMinutes, orderStops
+  1.9m a3 landed #79                                              a3 takes CR-1
+  1.8m a1 incoming from teammates (2), +18 under quiet paths:     a1: model.js (loadDay, raw-shaped Day) + geo.js (distanceKm, travelMin
+  2.1m a2                                                         scheduler CR-1: stops[].flightMinutes for per-flight-minute pricing (p
+  2.5m a1 landed #96                                              a1: note on CR-1
+  2.5m a3 incoming from teammates (2), +21 under quiet paths:     a3: CR-1 pricing per flight minute; CONTRACTS pricing pinned; report s
+  2.4m a2 incoming from teammates (2), +22 under quiet paths:     scheduler CR-1: stops[].flightMinutes for per-flight-minute pricing (p
+  3.0m a3 incoming from teammates (1), +8 under quiet paths: (reb a3 done CR-1 (#103)
+  3.1m a2 incoming from teammates (1), +17 under quiet paths: (re a2 done CR-1 scheduler part
+
+## metrics (also in metrics.json)
+calls: 29
+minutes: 3.7
+lands: 11
+accepted: 9
+calls_per_accepted_land: 3.22
+auto_rebased: 2
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 3
+land_ended_settled: 0
+land_ended_provisional: 6
+land_ms_p50: 21315
+land_ms_p90: 38955
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 2
+wait_min_total: 0.8
+vcs_min_total: 4.4
+vcs_share_pct: 48.6
+watch_calls: 8
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 0
+coordination_share: 0
+wait_scenario_s: 47
+wait_teammate_s: 0
+wait_settle_s: 3
+first_land_min: 1.1
+round_trips_per_land: 1.8
+round_trips_per_land_p90: 3
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.33
+minutes_lost_to_hs_total: 0.5
+confusing_messages_total: 2
+review_usefulness_mean: null
+to_five: ["a1 (4): hs land --check: on failure print only the last ~10 lines of the check's output plus the verdict line (full log saved to .hs/last-check.log)","a2 (4): `hs sync`/`hs land` should surface new NOTES.md/TASKS.md lines that mention my agent name (e.g. 'a2: nothing needed from scheduler') before I start, plus a `hs watch --mentions a2` wait.","a3 (4): hs watch --contracts (or a feed event) that highlights teammates' changes to pinned interface sections in CONTRACTS.md, so overlapping CR work (a2's stops[].flightMinutes vs my pricing computation) shows up before both sides build it."]

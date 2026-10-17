@@ -155,7 +155,25 @@ function classifyImplementation(text, { all = [], fallback = null, defines = nul
   return 'define'
 }
 
+// lands that only post to the team's shared notes (NOTES.md, a TASKS.md board): coordination
+// done by landing, a round trip like a claim. changesets: feed records
+// { type: 'changeset', hash, author, files }, deduplicated by hash; authorRe picks agents
+const NOTE_FILES = new Set(['/NOTES.md', '/TASKS.md'])
+
+function coordinationLands(changesets, authorRe = /^a\d+[a-z]*$/) {
+  const seen = new Set()
+  let n = 0
+  for (const cs of changesets) {
+    if (cs.type !== 'changeset' || !authorRe.test(cs.author || '') || seen.has(cs.hash)) continue
+    seen.add(cs.hash)
+    const files = (cs.files || []).map((f) => f.replace(/^-/, ''))
+    if (files.length && files.every((f) => NOTE_FILES.has(f))) n++
+  }
+  return n
+}
+
 module.exports = {
+  coordinationLands,
   OBSERVE,
   BASE,
   LANDED,

@@ -1,0 +1,28 @@
+{"id":"#1","minute":-0.2,"author":"owner","green":true,"acceptance":0,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#54","minute":1.1,"author":"a2","green":true,"acceptance":0,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#65","minute":1.5,"author":"a3","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#67","minute":1.6,"author":"pm","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#79","minute":2.1,"author":"a3","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#86","minute":2.3,"author":"a1","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#96","minute":2.7,"author":"a1","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#103","minute":2.9,"author":"a3","green":true,"acceptance":1,"perMinute":true,"duplicates":1,"fallbacks":0}
+{"id":"#111","minute":3,"author":"a2","green":true,"acceptance":1,"perMinute":true,"duplicates":2,"fallbacks":0}
+{"id":"#113","minute":3.1,"author":"a3","green":true,"acceptance":1,"perMinute":true,"duplicates":2,"fallbacks":0}
+{"id":"#130","minute":3.5,"author":"a2","green":true,"acceptance":1,"perMinute":true,"duplicates":2,"fallbacks":0}
+{
+  "main_states": 10,
+  "main_green_pct": 100,
+  "main_regressions": 0,
+  "main_longest_red_min": 0,
+  "final_green": true,
+  "acceptance_final_pct": 100,
+  "acceptance_50_at_min": 1.5,
+  "acceptance_80_at_min": 1.5,
+  "acceptance_100_at_min": 2.9,
+  "final_state_min": 3.5,
+  "duplicate_implementations": 2,
+  "duplicate_implementations_max": 2,
+  "fallback_computations": 0,
+  "change_request_at_min": 1.6,
+  "change_request_done_after_min": 1.3
+}

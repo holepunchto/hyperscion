@@ -29,7 +29,7 @@ function normalize(r) {
   return { ...r, argv }
 }
 
-const { OBSERVE, coordinationMetrics } = require('./metrics')
+const { OBSERVE, coordinationMetrics, coordinationLands } = require('./metrics')
 const has = (r, re) => r.out.some((l) => re.test(l))
 const pct = (xs, p) => {
   if (!xs.length) return 0
@@ -260,6 +260,9 @@ const metrics = {
   // coordination cost (scripts/experiment/metrics.js): calls beyond change control, waits by
   // what they waited for, time to first land, round trips per land
   ...(isGit ? {} : coordinationMetrics(runs, started)),
+  // lands that only post to NOTES.md or a TASKS.md board are coordination too (a claim on a
+  // board is a land): counted from the agents' feeds, the same way in every arm
+  ...(isGit ? {} : landCoordination(accepted, calls)),
   ...reports
 }
 // merge over what's there: outcomes.js adds its keys to the same file, and re-scoring an
@@ -332,5 +335,34 @@ function recordToFive(teamdir, rdir) {
       to_five: card.to_five
     }
     fs.appendFileSync(log, JSON.stringify(rec) + '\n')
+  }
+}
+
+function landCoordination(accepted, calls) {
+  const files = []
+  for (const sub of [path.join(dir, 'feeds'), path.join(dir, 'agents')]) {
+    if (!fs.existsSync(sub)) continue
+    for (const name of fs.readdirSync(sub)) {
+      const f = sub.endsWith('feeds')
+        ? path.join(sub, name)
+        : path.join(sub, name, '.hs', 'feed.jsonl')
+      if (fs.existsSync(f) && fs.statSync(f).isFile()) files.push(f)
+    }
+  }
+  if (!files.length) return {}
+  const changesets = []
+  for (const f of files) {
+    for (const line of fs.readFileSync(f, 'utf8').split('\n')) {
+      try {
+        const rec = JSON.parse(line)
+        if (rec.type === 'changeset') changesets.push(rec)
+      } catch {}
+    }
+  }
+  const lands = coordinationLands(changesets)
+  const code = Math.max(0, accepted - lands)
+  return {
+    coordination_lands: lands,
+    calls_per_code_land: code ? Number((calls / code).toFixed(2)) : null
   }
 }

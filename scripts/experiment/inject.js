@@ -139,6 +139,7 @@ const actions = {
     const cwd = path.join(dir, 'agents', 'pm')
     const line = fs.readFileSync(path.join(src, 'NOTES.line'), 'utf8')
     const message = 'CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)'
+    let item = null
     // keep trying for up to 10 minutes: the origin may be down when the request is due
     for (let attempt = 1; attempt <= 60; attempt++) {
       await tool('pm', hs ? ['sync'] : ['pull'], cwd)
@@ -163,21 +164,15 @@ const actions = {
       }
       let res
       if (hs) {
+        // claims (docs/CLAIMS.md): the change request is also an item agents can claim. Made
+        // before the land, so it is on the board when agents see the file (q0b-min: made after,
+        // it lagged by seconds and an agent created a duplicate); after the land only when the
+        // land brings the policy the item's approvals depend on (q2h)
+        const before = !scenario.changeRequestPolicy
+        if (before && !item) item = await crItem(cwd)
         res = await tool('pm', ['land', '-m', message], cwd)
         if (/landed #\d+/.test(res.out)) {
-          // claims (docs/CLAIMS.md): the change request is also an item agents can claim
-          let item = null
-          if (scenario.claims && run.arm !== 'hs-plain') {
-            const lead = scenario.changeRequestLead ? ['--lead', scenario.changeRequestLead] : []
-            const kind = scenario.changeRequestKind || 'implement'
-            const paths = (scenario.changeRequestPaths || []).flatMap((p) => ['--paths', p])
-            const made = await tool(
-              'pm',
-              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', kind, ...paths, ...lead],
-              cwd
-            )
-            item = (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
-          }
+          if (!before) item = await crItem(cwd)
           return { attempt, out: res.out.split('\n').slice(-4), ...(item ? { item } : {}) }
         }
         // a sync during an outage can leave NOTES.md behind main: drop the edit, resync, redo
@@ -207,6 +202,20 @@ function startApprover() {
   child.unref()
   fs.writeFileSync(path.join(dir, 'approver.pid'), String(child.pid) + '\n')
   return child.pid
+}
+
+// the change request's item (none in the task-board arm)
+async function crItem(cwd) {
+  if (!scenario.claims || run.arm === 'hs-plain') return null
+  const lead = scenario.changeRequestLead ? ['--lead', scenario.changeRequestLead] : []
+  const kind = scenario.changeRequestKind || 'implement'
+  const paths = (scenario.changeRequestPaths || []).flatMap((p) => ['--paths', p])
+  const made = await tool(
+    'pm',
+    ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', kind, ...paths, ...lead],
+    cwd
+  )
+  return (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
 }
 
 async function stop() {

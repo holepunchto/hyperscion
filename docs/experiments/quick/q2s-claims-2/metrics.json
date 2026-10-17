@@ -66,5 +66,7 @@
   "first_land_min": 1.3,
   "round_trips_per_land": 5.9,
   "round_trips_per_land_p90": 10,
-  "to_five": []
+  "to_five": [],
+  "coordination_lands": 2,
+  "calls_per_code_land": 11.4
 }

@@ -72,5 +72,7 @@
   "duplicate_implementations_max": 1,
   "fallback_computations": 0,
   "change_request_at_min": 0.5,
-  "change_request_done_after_min": 0.7
+  "change_request_done_after_min": 0.7,
+  "coordination_lands": 6,
+  "calls_per_code_land": 24
 }
