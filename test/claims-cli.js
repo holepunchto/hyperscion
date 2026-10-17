@@ -182,6 +182,12 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   tm.write('a1', 'src/api/v1.js', '// v1\n')
   const refused = await tm.as('a1', ['land', '-m', 'api v1'])
   t.ok(/need.* approval/.test(refused.stdout + refused.stderr), refused.stdout + refused.stderr)
+  t.ok(
+    new RegExp(`hs land --item ${id}\` \\(or --under ${id}\\): ${id} is approved`).test(
+      refused.stdout + refused.stderr
+    ),
+    'the hint names the approved item'
+  )
   const piece = await tm.as('a1', ['land', '-m', 'api v1', '--under', id])
   t.ok(/landed #\d+/.test(piece.stdout), piece.stdout + piece.stderr)
   const open = await tm.as('a1', ['claims'])

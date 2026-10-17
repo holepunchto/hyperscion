@@ -49,6 +49,16 @@ else
   "$ROOT/scripts/team.sh" "$DIR" "$N" --skeleton "$DIR/skeleton" --extra "$EXTRA"
 fi
 
+# people in the loop (docs/CLAIMS.md, phase 2): only the owner can mark a writer human, and it
+# has to be on main before anyone creates an item that needs a person's approval
+HUMANS=$(node -p "(require('$SC/scenario.json').humans || []).join(' ')")
+if [ "$ARM" = hs ]; then
+  for h in $HUMANS; do
+    KEY=$(cd "$DIR/agents/$h" && "$DIR/bin/hs-$h" info | awk '/^writer/{print $2}')
+    (cd "$DIR/owner" && "$DIR/bin/hs-owner" add-writer "$KEY" --as "$h" --human) | tail -1
+  done
+fi
+
 printf '{ "arm": "%s", "scenario": "%s", "bootstrap": "%s" }\n' "$ARM" "$SCENARIO" "${HS_BOOTSTRAP:-}" > "$DIR/run.json"
 # the playbook is copied in: next to docs/AGENTS-git.md, Claude Code also loads
 # docs/AGENTS.md (the hs playbook) as directory instructions, which leaks hs into the git arm

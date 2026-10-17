@@ -69,6 +69,13 @@ Use it before a full round. There are two tiers.
    - **Short LLM run, `q2s` (about 6 minutes):** q2 with the outage from minute 1 to 2.5,
      the change request at 1.5, and agents told to stop once their module and their part of
      the change request are on main. Run `swarm-load.js --minutes 7` alongside.
+   - **A person in the loop, `q2h` (claims phase 2, docs/CLAIMS.md):** q2s where the
+     change request lands with a `/.hsreview` that makes `CONTRACTS.md` changes need
+     approval from ann, a human writer that `setup.sh` marks with `add-writer --human`. The
+     CR is a contract item (a3 leads). `inject.js` starts `approver.js`, a scripted ann who
+     approves what `hs inbox` and `hs proposals` show after 10 s, but holds the CR item for
+     90 s. Her decisions go to `<teamdir>/approvals.jsonl`, and `alerts.js` prints them
+     along with refused lands.
    - **Cut runs short:** `node scripts/experiment/alerts.js <teamdir> --follow` prints one
      line per problem (push timeouts, unfetchable content, stale-copy refusals, stalls,
      lands or syncs over 30 s) and when the change request lands. Stop the agents as soon as

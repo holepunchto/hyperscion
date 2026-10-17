@@ -270,6 +270,16 @@ hs land --item C1a2b3c                        # closes it; protected paths ride 
 hs land --under C1a2b3c                       # a piece of it; the item stays open
 ```
 
+- **Records are pushed before the command exits.** `item new`, `suggest` and `claim` wait
+  up to 5 s for a holder to take their record. In the q2h dry run the CR item had reached
+  everyone online as a signal, but its record, which an approval needs, sat in the pm's
+  oplog until its next online command.
+- **A refused land names the way through:** your pending item for those paths and its
+  approval state, or `hs propose` to whoever the rule names (`@humans` expanded). `propose`
+  adds those reviewers by default too.
+- **Parts don't inherit the kind** (not built yet). A part of a contract item needs nothing
+  of its own, and lands into protected paths go through the lead with `--under`, or
+  through a proposal.
 - **The feed and `hs claims`:** `hs claims` prints `needs 1 approval (0/1, from ann)` on a
   gated item. The feed has `item-request` (for its reviewers), `item-review` and
   `item-approved` (for the item's author and lead).

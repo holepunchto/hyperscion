@@ -28,7 +28,8 @@ const PATTERNS = [
   [/stale copy/, 'refused: edited on a stale copy'],
   [/hs: stalled/, 'stalled'],
   [/no peers reachable/, 'no peers reachable'],
-  [/is using this worktree; wait/, 'worktree busy']
+  [/is using this worktree; wait/, 'worktree busy'],
+  [/not landed: needs review/, 'refused: needs approval']
 ]
 
 function onTrace(d) {
@@ -96,9 +97,17 @@ function reports() {
   }
 }
 
+// q2h: the scripted approver's decisions
+function onApproval(e) {
+  console.log(
+    `EVENT ${at(e.t)} ann ${e.do} ${e.target}${e.waitedS !== undefined ? ` after ${e.waitedS}s` : ''}${e.error ? ': ' + e.error : ''}`
+  )
+}
+
 const polls = [
   tail(path.join(dir, 'trace.jsonl'), onTrace),
-  tail(path.join(dir, 'inject.log'), onInject)
+  tail(path.join(dir, 'inject.log'), onInject),
+  tail(path.join(dir, 'approvals.jsonl'), onApproval)
 ]
 const poll = () => {
   for (const p of polls) p()

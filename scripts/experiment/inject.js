@@ -147,6 +147,13 @@ const actions = {
       }
       const notes = path.join(cwd, 'NOTES.md')
       if (!fs.readFileSync(notes, 'utf8').includes(line.trim())) fs.appendFileSync(notes, line)
+      // q2h: the change request lands with a review policy (contract changes need a person)
+      if (hs && scenario.changeRequestPolicy) {
+        fs.copyFileSync(
+          path.join(src, scenario.changeRequestPolicy),
+          path.join(cwd, scenario.changeRequestPolicy)
+        )
+      }
       let res
       if (hs) {
         res = await tool('pm', ['land', '-m', message], cwd)
@@ -155,9 +162,11 @@ const actions = {
           let item = null
           if (scenario.claims) {
             const lead = scenario.changeRequestLead ? ['--lead', scenario.changeRequestLead] : []
+            const kind = scenario.changeRequestKind || 'implement'
+            const paths = (scenario.changeRequestPaths || []).flatMap((p) => ['--paths', p])
             const made = await tool(
               'pm',
-              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', 'implement', ...lead],
+              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', kind, ...paths, ...lead],
               cwd
             )
             item = (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
@@ -180,8 +189,22 @@ const actions = {
   }
 }
 
+// q2h: a scripted person approving from hs inbox, detached so it outlives the schedule
+function startApprover() {
+  if (!hs || !scenario.approver) return null
+  const logFd = fs.openSync(path.join(dir, 'approver.log'), 'a')
+  const child = spawn('node', [path.join(__dirname, 'approver.js'), dir], {
+    detached: true,
+    stdio: ['ignore', logFd, logFd]
+  })
+  child.unref()
+  fs.writeFileSync(path.join(dir, 'approver.pid'), String(child.pid) + '\n')
+  return child.pid
+}
+
 async function stop() {
   const stopped = []
+  if (await stopPid(readPid(path.join(dir, 'approver.pid')))) stopped.push('approver')
   if (hs && (await stopPid(readPid(path.join(dir, 'hub-seed.pid'))))) stopped.push('hub')
   // quick runs: the local testnet goes last (feeds and the hub were using it)
   const stopTestnet = () => stopPid(readPid(path.join(dir, 'testnet.pid')))
@@ -219,6 +242,8 @@ async function main() {
   const started = new Date(fs.readFileSync(startedFile, 'utf8').trim()).getTime()
   const events = [...scenario.schedule].sort((a, b) => a.at - b.at)
   log({ do: 'schedule', scenario: run.scenario, arm: run.arm, scale, events: events.length })
+  const approver = startApprover()
+  if (approver) log({ do: 'approver', pid: approver })
   // each event fires on its own clock: a slow one (a change request retrying while the
   // origin is down) must not delay the next (the origin coming back)
   await Promise.all(
