@@ -372,4 +372,44 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     tm.read('a2', 'CONTRACTS.md').includes('plan.trips[]'),
     'the proposed edit is still in the worktree'
   )
+
+  // an approved proposal this work went beyond: what was approved lands first, then only the
+  // new lines are proposed (#24)
+  await tm.as('ann', ['review', id4, 'approve'])
+  tm.write(
+    'a2',
+    'CONTRACTS.md',
+    tm.read('a2', 'CONTRACTS.md').replace('plan.trips[]', 'plan.trips[]\nplan.unassigned[]')
+  )
+  tm.write('a2', 'src/z.js', 'z\n')
+  const beyond = await tm.as('a2', ['land', '-m', 'z'])
+  t.ok(
+    new RegExp(`${id4} is approved: landing it as approved first`).test(beyond.stdout),
+    beyond.stdout + beyond.stderr
+  )
+  t.ok(new RegExp(`landed ${id4} as #\\d+`).test(beyond.stdout), beyond.stdout)
+  t.ok(/proposed P\d+ for \/CONTRACTS\.md, asked ann/.test(beyond.stdout), beyond.stdout)
+  await tm.as('a1', ['sync'])
+  const onMain = tm.read('a1', 'CONTRACTS.md')
+  t.ok(onMain.includes('plan.trips[]') && !onMain.includes('plan.unassigned[]'), onMain)
+
+  // a failed --check says what failed and which teammates' changes it read (#25)
+  await tm.as('a2', ['restore', 'CONTRACTS.md'])
+  tm.write('a2', 'src/v.js', 'v\n')
+  await tm.as('a2', ['land', '-m', 'v'])
+  tm.write('a1', 'src/w.js', 'w\n')
+  const failed = await tm.as('a1', [
+    'land',
+    '-m',
+    'w',
+    '--check',
+    'echo "    at frame (x.js:1:1)"; echo "not ok 1 - boom"; exit 1'
+  ])
+  t.not(failed.code, 0)
+  t.ok(/ ! not ok 1 - boom/.test(failed.stderr), failed.stderr)
+  t.absent(/at frame/.test(failed.stderr), 'stack frames left out')
+  t.ok(
+    /new from teammates since your last sync, read by this check: .*#\d+ a2/.test(failed.stderr),
+    failed.stderr
+  )
 })

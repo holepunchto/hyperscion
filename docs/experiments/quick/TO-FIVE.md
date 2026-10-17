@@ -41,8 +41,8 @@ existed).
 | 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Fixed: a one-change wait from your base returns "already in your files" (--new waits for a newer change) | Yes, small |
 | 22 | **An open proposal covers only the protected paths**: other files always land, and the proposal is updated to just the protected ones | q2h-6 a2 | 1 | Fixed: a proposal made for protected files stays out of lands that touch none; extra files land and the protected ones stay with it | Yes, small: attach the proposal only when the land carries protected changes; split otherwise |
 | 23 | **Say when a change request gives me no part** (`CR-1: no part for a1`), so an agent with none knows it is done | q2h-7 a1 | 1 | Open | Yes, small: the CR item can name its parts' owners |
-| 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Open | Yes, small-medium: split the protected change against the approved text |
-| 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Open | Yes, small |
+| 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Fixed: a split past an approved proposal lands the approved revision first, then proposes only the new lines; a re-proposal of an approved one warns | Yes, small-medium: split the protected change against the approved text |
+| 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Fixed: a failed --check leads with the lines that say what failed, drops stack frames, and names the teammates' changesets it read | Yes, small |
 
 ## Runs
 
