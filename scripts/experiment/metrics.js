@@ -47,6 +47,7 @@ function classify(r) {
   const cmd = argv[0] || ''
   if (isHelp(r)) return 'help'
   if (cmd === 'wait-final') return 'wait'
+  if (cmd === 'keepalive') return 'feed' // a running feed calls it, not the agent
   if (cmd === 'watch') {
     if (argv.includes('--count') || argv.includes('-c')) return 'wait'
     return 'feed'

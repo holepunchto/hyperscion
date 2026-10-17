@@ -1,0 +1,33 @@
+2026-10-17T22:40:39.040Z 463214 - +582ms checkout: written 0 missing 16
+2026-10-17T22:40:45.513Z 463477 fetch +4ms start
+2026-10-17T22:40:45.653Z 463477 fetch +144ms pull: peers 1 holder=true
+2026-10-17T22:40:45.971Z 463477 fetch +462ms pull: settled=true
+2026-10-17T22:40:45.972Z 463477 fetch +463ms pull: view gaps 0
+2026-10-17T22:40:45.978Z 463477 fetch +469ms prefetch: fetched 0 missing 0
+2026-10-17T22:40:46.483Z 463513 info +3ms start
+2026-10-17T22:41:05.604Z 463699 sync +3ms start
+2026-10-17T22:41:05.730Z 463699 sync +129ms pull: peers 1 holder=true
+2026-10-17T22:41:06.045Z 463699 sync +444ms pull: settled=true
+2026-10-17T22:41:06.045Z 463699 sync +444ms pull: view gaps 0
+2026-10-17T22:41:06.052Z 463699 sync +451ms prefetch: fetched 0 missing 0
+2026-10-17T22:41:06.058Z 463699 sync +457ms checkout: written 0 missing 0
+2026-10-17T22:41:06.684Z 463735 item +5ms start
+2026-10-17T22:41:08.085Z 463818 land +4ms start
+2026-10-17T22:41:08.263Z 463818 land +182ms pull: peers 1 holder=true
+2026-10-17T22:41:08.577Z 463818 land +496ms pull: settled=true
+2026-10-17T22:41:08.577Z 463818 land +496ms pull: view gaps 0
+2026-10-17T22:41:08.583Z 463818 land +502ms prefetch: fetched 0 missing 0
+2026-10-17T22:41:08.590Z 463818 land +509ms land op
+2026-10-17T22:41:08.615Z 463818 land +534ms land op: accepted #2
+2026-10-17T22:41:08.630Z 463818 land +549ms checkout: written 0 missing 0
+2026-10-17T22:41:08.683Z 463818 land +602ms push: held=true
+2026-10-17T22:41:09.484Z 463854 sync +5ms start
+2026-10-17T22:41:24.648Z 463854 sync +15168ms pull: no peers
+2026-10-17T22:41:24.657Z 463854 sync +15177ms checkout: written 0 missing 0
+2026-10-17T22:41:30.300Z 464311 sync +4ms start
+2026-10-17T22:41:30.473Z 464311 sync +177ms pull: peers 2 holder=false
+2026-10-17T22:41:30.784Z 464311 sync +489ms pull: settled=true
+2026-10-17T22:41:30.785Z 464311 sync +489ms pull: view gaps 0
+2026-10-17T22:41:30.789Z 464311 sync +493ms prefetch: fetched 0 missing 0
+2026-10-17T22:41:30.795Z 464311 sync +499ms checkout: written 0 missing 0
+2026-10-17T23:06:14.231Z 467876 claims +3ms start

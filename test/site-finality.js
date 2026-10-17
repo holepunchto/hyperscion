@@ -176,3 +176,38 @@ test('site split longer than the claim lease: a running feed keeps a claim live'
   t.ok(/lead a1/.test(block(kept)), 'kept: a1 still leads, renewed by its feed:\n' + board)
   t.ok(/lead a3/.test(block(lapsed)), "lapsed: a2's claim lapsed, a3 leads:\n" + board)
 })
+
+// The same, for a claimant that waits out the split in `wait-final` (it holds the worktree, so
+// a feed's keepalive can't renew): the wait renews the claim itself (q0bsl-min-1)
+test('site split longer than the claim lease: waiting in wait-final keeps a claim live', async (t) => {
+  t.timeout(300_000)
+  const tm = await team(t, {
+    agents: ['a1', 'a2', 'a3'],
+    files: { 'a.txt': 'a\n' },
+    env: { HS_CLAIM_TTL_MS: '20000' }
+  })
+  const owner = require('bare-path').join(tm.dir, 'owner')
+  const id = (await tm.hs(owner, ['item', 'new', 'CR-wait'], 'owner')).stdout.match(
+    /item (C[0-9a-f]{6})/
+  )[1]
+  for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
+  await tm.split(['a1', 'a2'])
+  const peer = tm.bgAs('a2', ['watch', '--json']) // a1 has a teammate on its side
+  await sleep(3000)
+  t.ok(/you lead/.test((await tm.as('a1', ['claim', id])).stdout), 'a1 leads on site B')
+  tm.write('a1', 'b.txt', 'b\n')
+  await tm.as('a1', ['land', '-m', 'b'])
+  const waiting = tm.bgAs('a1', ['wait-final', '--timeout', '40'])
+  await sleep(2000)
+  t.ok(/you lead/.test((await tm.as('a3', ['claim', id])).stdout), 'a3 leads on site A')
+  await waitFor(() => waiting.exited(), 60_000)
+  await peer.stop()
+  tm.heal(['a1', 'a2'])
+  let board = ''
+  await waitFor(async () => {
+    await tm.as('a1', ['sync'])
+    board = (await tm.as('a3', ['claims'])).stdout
+    return /lead a1/.test(board)
+  }, 15_000).catch(() => {})
+  t.ok(/lead a1/.test(board), 'a1 still leads after a wait longer than the lease:\n' + board)
+})

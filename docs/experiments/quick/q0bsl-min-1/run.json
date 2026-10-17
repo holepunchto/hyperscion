@@ -1,0 +1,1 @@
+{ "arm": "hs-min", "scenario": "q0bsl", "bootstrap": "127.0.0.1:49737", "siteB": "127.0.0.1:51740" }

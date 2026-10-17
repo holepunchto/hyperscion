@@ -1,0 +1,4 @@
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" claimed by a3; they lead"}
+{"type":"done","n":5,"proposal":null,"seq":3,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" done by a3 in #3"}
+{"type":"changeset","seq":3,"hash":"68rz17jjpmi3e8j77qdnm1pyrrpuh93nxio6qc6ew9h1p93wxnzy","author":"a3","time":1792276905066,"message":"CR-1: pricing per flight-minute (2 + 0.25/min + 0.40/kg, express x1.5, half-up cents); unit tests; CONTRACTS updated","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}

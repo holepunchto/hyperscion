@@ -1,0 +1,22 @@
+{"type":"offline","at":"2026-10-17T22:41:15.060Z"}
+{"type":"online","at":"2026-10-17T22:41:27.048Z"}
+{"type":"item","n":2,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ item Caeea75 \"Change request CR-1 (from pm)\" by pm: `hs claim Caeea75`"}
+{"type":"changeset","seq":2,"hash":"yn6mh3zhabcyais3nzt6kqikkobe1fnxsn5ts9negxur7oihhuay","author":"pm","time":1792276868590,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" claimed by a2; they lead"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"offline","at":"2026-10-17T22:41:43.027Z"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"release","n":7,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" released by a1; a2 leads it"}
+{"type":"item","n":8,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Cb2b0b9","text":"@ item Cb2b0b9 \"CR-1 unit tests for flight-minute pricing (test/pricing.test.js only)\" by a1: `hs claim Cb2b0b9`"}
+{"type":"claim","n":9,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Cb2b0b9","text":"@ Cb2b0b9 \"CR-1 unit tests for flight-minute pricing (test/pricing.test.js only)\" claimed by a1; they lead"}
+{"type":"changeset","seq":3,"hash":"jp4874zzow4ckdszmbdikz5b37pmd7f5e6fc1nyccshtkecn57uo","author":"a1","time":1792276917104,"message":"NOTES: a1 takes CR-1 unit tests in test/pricing.test.js; a2 leads the pricing code","files":["/NOTES.md"]}
+{"type":"done","n":10,"proposal":null,"seq":4,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Caeea75","text":"@ Caeea75 \"Change request CR-1 (from pm)\" done by a2 in #4"}
+{"type":"changeset","seq":4,"hash":"g6f7p4awptfy78e31k36mm3zbyqb1kbuumch7uzu3pya6t3mrg5y","author":"a2","time":1792276919695,"message":"CR-1: price per flight minute (pricing.js, CONTRACTS.md, unit tests)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"changeset","seq":5,"hash":"zmzamfir59wwb6w6xnwrrht8e1mputynb3d7oocezh4m8rioc5gy","author":"a2","time":1792276925379,"message":"NOTES: a2 to a1 re pricing tests","files":["/NOTES.md"]}
+{"type":"online","at":"2026-10-17T22:42:20.915Z"}
+{"type":"hub","state":"stalled","settled":2,"head":5,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"done","n":11,"proposal":null,"seq":6,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Cb2b0b9","text":"@ Cb2b0b9 \"CR-1 unit tests for flight-minute pricing (test/pricing.test.js only)\" done by a1 in #6"}
+{"type":"changeset","seq":6,"hash":"fp78bzn7b7n8ga6zrb7f7bgbt73bijo9mxmjea7ak4xf468d6s1o","author":"a1","time":1792276972376,"message":"CR-1 tests: price-level half-up, exact express case, unassigned not priced (test/pricing.test.js)","files":["/NOTES.md","/test/pricing.test.js"]}
+{"type":"review","n":12,"proposal":null,"seq":4,"actor":"a1","verdict":"approved","comment":null,"reviewers":[],"item":null,"text":"@ #4 approved by a1"}
+{"type":"settled","seq":4,"text":"@ settled through #4"}

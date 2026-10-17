@@ -1,0 +1,80 @@
+# hs usage: 62 calls since 2026-10-17T22:40:47.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 30 | 11 | 0 | 5 | 4 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.2m |
+| a2 | 24 | 11 | 0 | 3 | 4 | 3 (3) | 0 | 0 | 1 | 0 | 0 | 0 | 1.2m |
+| a3 | 8 | 4 | 0 | 2 | 2 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.9m |
+
+totals: lands 6 (accepted 6), auto-rebased 0, real conflicts 0, flip banners 1, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 500/750, watch 317338/1475481, claims 756/756, claim 2337/2352, land 1172/1172, review 544/544, status 479/491, log 491/491, wait-final 540495/560593, keepalive 16/16, cat 98/98, restore 143/143
+a2: sync 507/572, watch 115663/1476199, claims 726/726, claim 2257/2257, land 1320/1725, status 498/510, wait-final 580492/580644, log 491/491, cat 99/99, restore 142/142
+a3: sync 583/583, claim 2255/2255, land 1717/1717, status 121/121, log 94/94, watch 54750/54750
+
+## command mix
+a1: sync=5 watch=4 claims=2 claim=3 land=2 review=1 status=3 log=2 wait-final=3 keepalive=1 cat=2 restore=2
+a2: sync=3 watch=4 claims=1 claim=1 land=3 status=4 wait-final=4 log=2 cat=1 restore=1
+a3: sync=2 claim=1 land=1 status=1 log=1 watch=2
+
+## land timeline
+  0.9m a3 landed #3                                               CR-1: pricing per flight-minute (2 + 0.25/min + 0.40/kg, express x1.5,
+  1.2m a1 landed #3                                               NOTES: a1 takes CR-1 unit tests in test/pricing.test.js; a2 leads the 
+  1.2m a2 landed #4                                               CR-1: price per flight minute (pricing.js, CONTRACTS.md, unit tests)
+  1.3m a2 landed #5                                               NOTES: a2 to a1 re pricing tests
+  2.1m a1 landed #6                                               CR-1 tests: price-level half-up, exact express case, unassigned not pr
+ 26.7m a2 landed #4                                               NOTES: a2 keeps a3's CR-1 (#3) after the split
+
+## metrics (also in metrics.json)
+calls: 62
+minutes: 30.3
+lands: 6
+accepted: 6
+calls_per_accepted_land: 10.33
+auto_rebased: 0
+real_conflicts: 0
+flips: 1
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 2
+land_ended_settled: 0
+land_ended_provisional: 4
+land_ms_p50: 1320
+land_ms_p90: 1725
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.4
+vcs_min_total: 52.3
+vcs_share_pct: 91.1
+watch_calls: 10
+proposals: 0
+reviews_given: 1
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 1
+exit_warnings: 11
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 12
+coordination_share: 0.23
+wait_scenario_s: 27
+wait_teammate_s: 0
+wait_settle_s: 3104
+first_land_min: 1.2
+round_trips_per_land: 5.5
+round_trips_per_land_p90: 13
+coordination_lands: 2
+calls_per_code_land: 15.5
+usefulness_vs_git: [3,3,4]
+would_choose_hs: "1/3"
+output_clarity_mean: 4
+land_state_trust_mean: 4.33
+minutes_lost_to_hs_total: 18
+confusing_messages_total: 3
+review_usefulness_mean: null
+to_five: ["a1 (3): Make `hs claim` and `hs claims` say when the lead is only partition-local (hub unreachable, so not settled), and make `hs status` drop the feed head from an undone history, so no false 'main is at #6 or later'.","a2 (3): hs claim should say when the hub/other teammates are unreachable ('lead is provisional: a3 + hub unreachable') and, when that's the case, hs land should warn that a provisional land of a claimed item may be undone by a duplicate on the other side; also clear stale feed head after a reorg","a3 (4): `hs status` (and feed) listing online teammates and their current claims/last activity, e.g. 'a1 online, syncing #3; a2 offline 2m', so I could see coordination is real without reading NOTES.md."]
