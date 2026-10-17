@@ -1,0 +1,17 @@
+ALERT m1.8 a1 land 35s exit 1 landed #62: slow
+ALERT m1.4 a3 land 71s exit 2 landed #70: content unfetchable, slow
+ALERT m3.1 a2 status 0s exit 1: stalled
+ALERT m5.5 a2 status 5s exit 1: stalled
+ALERT m6.3 a2 fetch 5s exit 1: stalled
+ALERT m6.4 a2 log 5s exit 1: stalled
+ALERT m6.6 a2 land 5s exit 1: stalled
+ALERT m6.7 a3 sync 33s exit 0: slow
+EVENT m1.02 origin-down
+EVENT m1.68 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT m0.0 ann start undefined
+EVENT m1.8 ann seen Ce2212b
+EVENT m3.3 ann approved Ce2212b after 92s
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md

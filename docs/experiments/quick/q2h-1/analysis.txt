@@ -1,0 +1,71 @@
+# hs usage: 39 calls since 2026-10-17T02:58:21.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 18 | 10 | 0 | 3 | 3 | 3 (3) | 0 | 0 | 1 | 0 | 0 | 0 | 1.1m |
+| a2 | 8 | 5 | 0 | 1 | 2 | 1 (0) | 0 | 0 | 0 | 5 | 0 | 0 | - |
+| a3 | 13 | 5 | 0 | 3 | 3 | 3 (3) | 0 | 0 | 0 | 0 | 1 | 0 | 0.9m |
+
+totals: lands 7 (accepted 6), auto-rebased 0, real conflicts 0, flip banners 1, stalls 5, unavailable 1, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 6140/9361, claims 8451/8451, land 3832/34532, status 3586/6967, watch 19653/158785, cat 142/142, log 163/2436
+a2: sync 9358/9358, status 5131/5131, fetch 5105/5105, log 5119/5119, land 5118/5118, watch 389022/389022
+a3: sync 9267/33417, land 14706/71084, claims 3077/3077, claim 3818/3818, status 31843/31843, watch 150243/430607
+
+## command mix
+a1: sync=3 claims=2 land=3 status=3 watch=3 cat=1 log=3
+a2: sync=1 status=2 fetch=1 log=1 land=1 watch=2
+a3: sync=3 land=3 claims=1 claim=1 status=2 watch=3
+
+## land timeline
+  1.1m a1 landed #49                                              model+geo: loadDay, distanceKm, travelMinutes, orderStops, routeKm; co
+  0.9m a3 incoming from teammates (1), +32 under quiet paths:     a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  1.8m a1 landed #62                                              a1: NOTES on CR-1 (geo.travelMinutes available for flight minutes)
+  1.4m a3 incoming from teammates (1), +16 under quiet paths:     a3: pricing accepts loadDay's depots map
+  2.6m a1 landed #87                                              a1: NOTES on CR-1 (geo.travelMinutes available for flight minutes)
+  3.2m a3 incoming from teammates (1), +47 under quiet paths:     a3: CR-1 per-flight-minute pricing, flight minutes in report/--json, C
+  6.6m a2 hs: stalled: this command needs data that is not local  scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+
+## metrics (also in metrics.json)
+calls: 39
+minutes: 7.5
+lands: 7
+accepted: 6
+calls_per_accepted_land: 6.5
+auto_rebased: 0
+real_conflicts: 0
+flips: 1
+stalls: 5
+unavailable: 1
+push_timeouts: 0
+land_ended_final: 2
+land_ended_settled: 0
+land_ended_provisional: 3
+land_ms_p50: 10856
+land_ms_p90: 14706
+tool: "hs"
+polling_calls: 1
+push_rejected: 0
+not_landed: 0
+wait_min_total: 2.8
+vcs_min_total: 5.5
+vcs_share_pct: 33.2
+watch_calls: 8
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 6
+exit_warnings: 2
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,1,4]
+would_choose_hs: "2/3"
+output_clarity_mean: 3.33
+land_state_trust_mean: 3
+minutes_lost_to_hs_total: 5.5
+confusing_messages_total: 4
+review_usefulness_mean: null
+to_five: ["a1 (4): hs land: when the land is undone by a concurrent land, automatically sync and re-land (re-running --check) instead of exiting 1, at least when the only overlap is merge=union files like NOTES.md","a2 (1): Make `hs land`/`hs sync` print what they are fetching and from whom, time out after ~20 s with the missing object named, and keep `hs status`/`hs log` purely local; with that I would have landed in seconds (git push would have).","a3 (4): `hs watch --path X` (and `hs claims`) should report the owner's presence/WIP for that path (e.g. 'a2 online, editing /src/scheduler.js uncommitted, last seen 10s ago') so waiting on a dependency is informed."]
