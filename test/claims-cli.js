@@ -206,13 +206,11 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   const props = await tm.as('a1', ['proposals'])
   t.absent(new RegExp(`${fallbackId} (open|approved)`).test(props.stdout), props.stdout)
 
-  // --split (TO-FIVE #14): a land that is only partly protected lands the rest now
+  // split by default (TO-FIVE #14, #16): a land that is only partly protected lands the rest
   tm.write('a1', 'src/api/v3.js', '// v3\n')
   tm.write('a1', 'src/b.js', 'b\n')
-  const mixed = await tm.as('a1', ['land', '-m', 'v3 and b'])
-  t.ok(/hs land --split/.test(mixed.stdout + mixed.stderr), mixed.stdout + mixed.stderr)
-  const split = await tm.as('a1', ['land', '-m', 'v3 and b', '--split'])
-  t.ok(/setting aside \/src\/api\/v3\.js/.test(split.stdout), split.stdout + split.stderr)
+  const split = await tm.as('a1', ['land', '-m', 'v3 and b'])
+  t.ok(/split: \/src\/api\/v3\.js needs approval/.test(split.stdout), split.stdout + split.stderr)
   t.ok(/landed #\d+/.test(split.stdout), split.stdout + split.stderr)
   t.ok(/proposed P\d+ .*for \/src\/api\/v3\.js, asked ann/.test(split.stdout), split.stdout)
   t.is(tm.read('a1', 'src/api/v3.js'), '// v3\n', 'the protected file is back in the worktree')
@@ -221,4 +219,41 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   t.is(ok.code, 0, ok.stdout + ok.stderr)
   const last = await tm.as('a1', ['land'])
   t.ok(new RegExp(`landed ${pid} as #\\d+`).test(last.stdout), last.stdout + last.stderr)
+
+  // all protected, nothing approved: refused before --check runs the tests (#16)
+  tm.write('a1', 'src/api/v9.js', '// v9\n')
+  const early = await tm.as('a1', ['land', '-m', 'v9', '--check', 'echo RAN-THE-CHECK'])
+  t.not(early.code, 0)
+  t.absent(/RAN-THE-CHECK|checking main/.test(early.stdout), early.stdout)
+  t.ok(/needs approval/.test(early.stdout + early.stderr), early.stdout + early.stderr)
+  await tm.as('a1', ['restore', 'src/api/v9.js'])
+
+  // --item with a split (#18): the item's paths land under it, the rest is proposed, and the
+  // item stays open until that proposal lands with --item
+  const made2 = await tm.as('a1', [
+    'item',
+    'new',
+    'v4 endpoint',
+    '--kind',
+    'contract',
+    '--paths',
+    'src/api/v4.js'
+  ])
+  const id2 = made2.stdout.match(/item (C[0-9a-f]{6})/)[1]
+  await tm.as('ann', ['review', id2, 'approve'])
+  tm.write('a1', 'src/api/v4.js', '// v4\n')
+  tm.write('a1', 'src/api/v5.js', '// v5\n')
+  tm.write('a1', 'src/c.js', 'c\n')
+  const mix = await tm.as('a1', ['land', '-m', 'v4 v5 c', '--item', id2])
+  t.ok(/split: \/src\/api\/v5\.js needs approval/.test(mix.stdout), mix.stdout + mix.stderr)
+  t.ok(/landed #\d+/.test(mix.stdout), mix.stdout + mix.stderr)
+  t.absent(/completes/.test(mix.stdout), 'the item is not complete yet')
+  t.ok(new RegExp(`once approved: hs land --item ${id2}`).test(mix.stdout), mix.stdout)
+  const open2 = await tm.as('a1', ['claims'])
+  t.ok(new RegExp(`${id2} "v4 endpoint"`).test(open2.stdout), open2.stdout)
+  const pid2 = mix.stdout.match(/proposed (P\d+)/)[1]
+  await tm.as('ann', ['review', pid2, 'approve'])
+  const fin = await tm.as('a1', ['land', '--item', id2])
+  t.ok(/landed (P\d+ as )?#\d+/.test(fin.stdout), fin.stdout + fin.stderr)
+  t.ok(new RegExp(`completes ${id2}`).test(fin.stdout), fin.stdout)
 })

@@ -126,9 +126,10 @@ hs claim --new "cache the distance matrix"     # something that isn't an item ye
 ann)`). Start anyway: nothing waits except your land into the paths the rule protects.
   Once the feed says `approved`, land with `--item` (or `--under` for a piece). An idea you
   have along the way goes in `hs suggest "..."`, not in NOTES.md.
-- **A land refused because some files need approval** (`/.hsreview`): `hs land --split` lands
-  your other files now and proposes the protected ones to their reviewers in one step; land
-  again once the proposal is approved.
+- **Some files need approval** (`/.hsreview`): `hs land` lands your other files now and proposes
+  the protected ones to their reviewers (`split:` in its output); land again once the proposal
+  is approved (with `--item C…` if it said so). Files an approved item of yours covers land
+  with `--item`/`--under` as they are. `--no-split` lands nothing instead.
 
 ## Ship, Show or Ask
 
