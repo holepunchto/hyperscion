@@ -1,0 +1,11 @@
+00:21:36 a3 claim --new pricing, report, cli + integration test (a3) | you lead Cf571cb "pricing, report, cli + integration test (a3)"
+00:22:11 a3 land -m a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json], | merged teammates' changes into your edits: /CONTRACTS.md (#51 a1)
+00:22:40 a2 claim C78f327 | you lead C78f327 "Change request CR-1 (from pm)"
+00:22:46 a2 item part C78f327 a3: pricing.js per flight-minute + CONTRACTS pricing + report  | item C0e234d "a3: pricing.js per flight-minute + CONTRACTS pricing + report + integration 
+00:22:49 a3 claim C78f327 --with a2 | a2 leads C78f327 (claimed 10.7 s before you)
+00:22:57 a3 claim C0e234d | you lead C0e234d "a3: pricing.js per flight-minute + CONTRACTS pricing + report + integrat
+00:23:38 a3 land -m a3: CR-1 pricing per flight-minute (express x1.5), CONTRACTS pricing upd | merged teammates' changes into your edits: /CONTRACTS.md (#88 a2)
+00:24:02 a2 item --help | hs item [flags] <what> [a] [b]
+
+Work items to claim: a change request, a suggestion, or a 
+00:24:07 a2 land -m CR-1 complete (scheduler #88 + pricing #116); closing item --item C78f32 | checking main #135 + your changes: npm test

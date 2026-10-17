@@ -1,0 +1,101 @@
+{
+  "outcomes": {
+    "main_states": 8,
+    "main_green_pct": 100,
+    "main_regressions": 0,
+    "main_longest_red_min": 0,
+    "final_green": true,
+    "acceptance_final_pct": 100,
+    "acceptance_50_at_min": 1.4,
+    "acceptance_80_at_min": 1.4,
+    "acceptance_100_at_min": 2.9,
+    "final_state_min": 3.5,
+    "duplicate_implementations": 2,
+    "duplicate_implementations_max": 2,
+    "change_request_at_min": 1.6,
+    "change_request_done_after_min": 1.3
+  },
+  "rows": [
+    {
+      "id": "#1",
+      "minute": -0.4,
+      "author": "owner",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#51",
+      "minute": 1.2,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#59",
+      "minute": 1.4,
+      "author": "a3",
+      "green": true,
+      "acceptance": 0.074,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#60",
+      "minute": 1.4,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#70",
+      "minute": 1.6,
+      "author": "pm",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#79",
+      "minute": 1.9,
+      "author": "a1",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 0
+    },
+    {
+      "id": "#88",
+      "minute": 2.2,
+      "author": "a2",
+      "green": true,
+      "acceptance": 0.926,
+      "perMinute": false,
+      "duplicates": 1
+    },
+    {
+      "id": "#116",
+      "minute": 2.9,
+      "author": "a3",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 2
+    },
+    {
+      "id": "#143",
+      "minute": 3.5,
+      "author": "a2",
+      "green": true,
+      "acceptance": 1,
+      "perMinute": true,
+      "duplicates": 2
+    }
+  ]
+}

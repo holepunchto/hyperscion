@@ -1,0 +1,10 @@
+ALERT m2.5 a1 status 1s exit 1: stalled
+ALERT m3.0 a1 status 0s exit 1: stalled
+ALERT m3.5 a1 status 0s exit 1: stalled
+ALERT m4.1 a1 status 0s exit 1: stalled
+ALERT m4.6 a1 status 0s exit 1: stalled
+EVENT m1.01 origin-down
+EVENT m1.65 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT report a2.md
+EVENT report a3.md

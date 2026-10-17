@@ -1,0 +1,70 @@
+# hs usage: 56 calls since 2026-10-17T00:20:52.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 14 | 8 | 0 | 2 | 1 | 2 (2) | 0 | 0 | 0 | 5 | 0 | 0 | 1.2m |
+| a2 | 23 | 7 | 0 | 3 | 4 | 3 (3) | 0 | 0 | 0 | 0 | 0 | 0 | 1.4m |
+| a3 | 19 | 6 | 0 | 4 | 4 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+
+totals: lands 7 (accepted 7), auto-rebased 0, real conflicts 0, flip banners 0, stalls 5, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 24341/24341, claims 2798/2798, land 5469/5469, watch 17749/17749, status 91/863
+a2: sync 2748/23793, claims 2446/5726, land 5405/12577, watch 31588/203878, claim 2416/2416, item 1520/1520, status 123/157
+a3: sync 4878/23928, claims 2349/2915, claim 4865/7258, land 8985/8985, watch 1774/179883, status 1820/1820
+
+## command mix
+a1: sync=2 claims=2 land=2 watch=1 status=7
+a2: sync=3 claims=7 land=3 watch=4 claim=1 item=2 status=3
+a3: sync=4 claims=4 claim=3 land=2 watch=4 status=2
+
+## land timeline
+  1.2m a1 landed #51                                              model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops, ro
+  1.3m a3 incoming from teammates (1), +38 under quiet paths:     a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  1.4m a2 incoming from teammates (2), +38 under quiet paths:     scheduler: greedy plan(day) + tests; Plan shape pinned in CONTRACTS.md
+  1.9m a1 landed #79                                              notes: a1 on CR-1 (geo.travelMinutes available)
+  2.2m a2 incoming from teammates (1), +12 under quiet paths:     CR-1 scheduler side: trip.flightMinutes[id] per stop, pinned in CONTRA
+  2.8m a3 incoming from teammates (2), +35 under quiet paths:     a3: CR-1 pricing per flight-minute (express x1.5), CONTRACTS pricing u
+  3.3m a2 landed #143                                             CR-1 complete (scheduler #88 + pricing #116); closing item
+
+## metrics (also in metrics.json)
+calls: 56
+minutes: 4.6
+lands: 7
+accepted: 7
+calls_per_accepted_land: 8
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 5
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 2
+land_ended_settled: 0
+land_ended_provisional: 5
+land_ms_p50: 5469
+land_ms_p90: 12577
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.9
+vcs_min_total: 3.1
+vcs_share_pct: 28.3
+watch_calls: 9
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 5
+exit_warnings: 0
+help_calls: 1
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [4,4]
+would_choose_hs: "2/2"
+output_clarity_mean: 4
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 0.5
+confusing_messages_total: 1
+review_usefulness_mean: null
