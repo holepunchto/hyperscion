@@ -1,0 +1,10 @@
+{"t":"2026-10-17T13:44:41.674Z","do":"start","as":"ann","delayS":10,"holdS":90,"holdMatching":"CR-1"}
+{"t":"2026-10-17T13:46:23.624Z","do":"seen","target":"C8604f9","kind":"item","title":"Change request CR-1 (from pm)","holdS":90}
+{"t":"2026-10-17T13:46:24.357Z","do":"seen","target":"P1","kind":"proposal","title":"scheduler: plan(day) greedy (payload/range/windows/express), Plan shape pinned in CONTRACTS.md (protected part)","holdS":10}
+{"t":"2026-10-17T13:46:39.957Z","do":"approved","target":"P1","waitedS":16}
+{"t":"2026-10-17T13:47:01.768Z","do":"revised","target":"P1"}
+{"t":"2026-10-17T13:47:01.769Z","do":"seen","target":"P1","kind":"proposal","title":"scheduler: CR-1 stops[].flightMinutes for pricing; accept loadDay Day (depots keyed by id) (protected part)","holdS":10}
+{"t":"2026-10-17T13:47:18.334Z","do":"approved","target":"P1","waitedS":17}
+{"t":"2026-10-17T13:47:56.413Z","do":"seen","target":"P2","kind":"proposal","title":"a3: CR-1 per-flight-minute pricing, report shows flight minutes, cli+integration test; CONTRACTS pricing pinned (needs ann) (protected part)","holdS":10}
+{"t":"2026-10-17T13:47:57.787Z","do":"approved","target":"C8604f9","waitedS":94}
+{"t":"2026-10-17T13:48:13.870Z","do":"approved","target":"P2","waitedS":17}

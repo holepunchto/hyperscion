@@ -40,6 +40,9 @@ existed).
 | 20 | **Say why an approval still counts after a merge** (`approval kept: merged lines from #105`) | q2h-5 a3 | 1 | Fixed: land says "approval of P kept for <file>: your lines are the ones approved; teammates' changes merged in (#n)" | Yes, small: land knows when the line check carried it |
 | 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Fixed: a one-change wait from your base returns "already in your files" (--new waits for a newer change) | Yes, small |
 | 22 | **An open proposal covers only the protected paths**: other files always land, and the proposal is updated to just the protected ones | q2h-6 a2 | 1 | Fixed: a proposal made for protected files stays out of lands that touch none; extra files land and the protected ones stay with it | Yes, small: attach the proposal only when the land carries protected changes; split otherwise |
+| 23 | **Say when a change request gives me no part** (`CR-1: no part for a1`), so an agent with none knows it is done | q2h-7 a1 | 1 | Open | Yes, small: the CR item can name its parts' owners |
+| 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Open | Yes, small-medium: split the protected change against the approved text |
+| 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Open | Yes, small |
 
 ## Runs
 
@@ -50,3 +53,4 @@ existed).
 - **q2h-4:** 4, 4, 4 (3/3 choose). Nobody asks #14 again; a1 asks #16, a2 #17, a3 #18. Every remaining ask is about the approval flow, none about stalls or the outage.
 - **q2h-5:** 4, 4, 4 (3/3 choose), zero alerts, 1 min lost. a1 asks #19, a2 #11, a3 #20: all small, none about the approval flow working, the outage or stalls.
 - **q2h-6:** 4, 4, 4 (3/3 choose). a3 asks #1 again (seventh time), a2 #22, a1 #21. q2h-5's asks (#11, #19, #20) were all fixed, and three new ones appeared: the 4 has held for three runs while the asks keep shrinking.
+- **q2h-7:** 4, 4, 4 (3/3 choose), zero alerts. a1 #23, a2 #24, a3 #25: all small and new. Four runs at 4,4,4 (q2h-4..7) with every earlier ask fixed: the asks keep coming, smaller each time, and the rating doesn't move. Read as the agents' ceiling for this task, not a product gap.

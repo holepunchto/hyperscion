@@ -1,0 +1,15 @@
+EVENT m1.01 origin-down
+EVENT m1.65 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT m1.7 ann seen C8604f9
+EVENT m1.7 ann seen P1
+EVENT m2.0 ann approved P1 after 16s
+EVENT m2.3 ann revised P1
+EVENT m2.3 ann seen P1
+EVENT m2.6 ann approved P1 after 17s
+EVENT m3.3 ann seen P2
+EVENT m3.3 ann approved C8604f9 after 94s
+EVENT m3.5 ann approved P2 after 17s
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md
