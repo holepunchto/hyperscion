@@ -407,6 +407,41 @@ test('claim signals: relayed by the hub, and in the snapshot for a late command'
   )
 })
 
+// q2s-claims-2: after a pull applied new changesets, reads of main (`status`, `log`) waited
+// for view blocks the pull never fetched, and stalled once nobody could serve them
+test('a pull holds the view blocks it applied, so main reads offline afterwards', async (t) => {
+  const testnet = await createTestnet(3, t.teardown)
+  const { bootstrap } = testnet
+  const a = await peer(t, null, bootstrap)
+  const b = await peer(t, a.repo.key, bootstrap)
+  await b.net.waitForPeers()
+  await a.repo.addWriter(b.repo.writerKey)
+  await b.net.settle()
+  const wa = await a.repo.workspace('w')
+  const wb = await b.repo.workspace('w')
+  for (let i = 0; i < 8; i++) {
+    await wa.commit([put(`/a/${i}.txt`, 'a' + i)])
+    await wa.land()
+    await wb.sync()
+    await wb.commit([put(`/b/${i}.txt`, 'b' + i)])
+    await wb.land()
+  }
+  const c = await peer(t, a.repo.key, bootstrap)
+  await c.net.waitForPeers()
+  await c.net.settle()
+  t.comment(`view gaps after settle: ${await c.repo.viewGaps()}`)
+  t.is(await c.net.fetchViews(), 0, 'every view core fetched')
+  t.is(await c.repo.viewGaps(), 0, 'no gaps left')
+  await a.close()
+  await b.close()
+  await c.net.close()
+  // nobody to ask now: reading all of main's history is local
+  const meta = await c.repo.meta()
+  let read = 0
+  for (let seq = 1; seq <= meta.seq; seq++) if (await c.repo.changeset(seq)) read++
+  t.is(read, meta.seq, `all ${meta.seq} changesets read offline`)
+})
+
 test('after prefetch, everything in the sparse set works offline', async (t) => {
   const Worktree = require('../lib/worktree')
   const testnet = await createTestnet(3, t.teardown)

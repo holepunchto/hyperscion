@@ -116,6 +116,9 @@ hs claim --new "cache the distance matrix"     # something that isn't an item ye
   someone's claimed paths just prints a `note:`.
 - **Claims expire** after 20 min without activity; your `land` and `sync` keep yours alive.
   Hold at most 3. `hs claim C1a2b3c --release` when you stop, `--take` for a stale one.
+- **Closing:** a land with `--item` closes what it completes. When all parts of your item
+  have landed, the feed says so: close the parent with `hs claim C1a2b3c --done` once your
+  own work on it is in.
 
 ## Ship, Show or Ask
 

@@ -123,11 +123,21 @@ async function main() {
   }
 
   await inject(['--do', 'origin-up'])
+  // right after the hub restarts, read main: in q2s-claims-2 `status` stalled here, on view
+  // blocks of swarm writers the restarted hub hadn't mirrored yet
+  await sleep(3000)
+  const reads = []
+  for (const args of [['sync'], ['status'], ['status'], ['log', '-n', '5'], ['status']]) {
+    const res = await hs('a1', args)
+    reads.push({ cmd: args[0], ms: res.ms, code: res.code, stalled: /stalled/.test(res.text) })
+  }
+  log({ do: 'reads after the hub is back', reads })
   log({
     do: 'summary',
     landMs: r.ms,
     pushed: /pushed: a holder has the changes/.test(r.text),
     arrivedAfterS: arrived,
+    stalledReads: reads.filter((r) => r.stalled).length,
     phases: phasesOf(path.join(dir, 'debug', 'land-a2.log'), landAt)
   })
   for (const p of procs) p.kill('SIGINT')

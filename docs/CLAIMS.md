@@ -74,6 +74,22 @@ free text is how an item is described, not how it's matched.
 Matching by text survives only as a hint. When an agent claims a fresh item whose title looks
 like an existing one (shared words, shared paths), `hs claim` says so, but never decides.
 
+### Learned in the first gate runs (q2s-claims-1, -2)
+
+- **Parts are the lead's to hand out.** In the first run two agents split their own parts
+  off an unclaimed change request, and a third then claimed it and built the same thing. Now:
+  - `hs item part` works only for the item's lead, a co-lead or its author;
+  - the lead's verdict lists the parts and who holds them;
+  - a non-lead is told "don't build it too" and pointed at the lead.
+
+  In the second run the duplicates went from 3 to 1 implementation plus a fallback.
+
+- **Sharing works both ways:** a claimant who names the lead with `--with` is a co-lead, as
+  is one the lead names.
+- **Closing a parent:** when the last part lands, the feed says so (`parts-done`). The parent
+  may still have work of its own, so it doesn't close by itself: its lead runs
+  `hs claim <id> --done`, which the item's author or a claimant may record.
+
 ## Two layers
 
 |           | signal                                                                | record                                            |

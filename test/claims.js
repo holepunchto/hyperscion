@@ -60,6 +60,50 @@ test('items and claims are records; a land completes its items', async (t) => {
   t.ok(b4a.equals(done.doneBy, b.writerKey))
 })
 
+test('parts: the last part landing says so; the parent is closed by its lead', async (t) => {
+  const [a, b] = await pair(t)
+  const time = Date.now()
+  const parent = claims.itemId({ writer: a.writerKey, time, title: 'CR-1' })
+  await a.itemOp({ item: parent, action: claims.NEW, time, at: time, title: 'CR-1' })
+  await a.itemOp({ item: parent, action: claims.CLAIM, time, at: time })
+  const parts = []
+  for (const title of ['scheduler side', 'pricing side']) {
+    const id = claims.itemId({ writer: a.writerKey, time: time + parts.length + 1, title, parent })
+    await a.itemOp({
+      item: id,
+      action: claims.NEW,
+      time: time + parts.length + 1,
+      at: time,
+      title,
+      parent
+    })
+    parts.push(id)
+  }
+  await sync(a, b)
+  const ws = await b.workspace('w')
+  const types = async () => (await a.events({ since: 0 })).map((e) => e.type)
+  for (const [i, id] of parts.entries()) {
+    await b.itemOp({ item: id, action: claims.CLAIM, time: time + 10, at: time + 10 })
+    await ws.commit([put(`/part${i}.txt`, 'x')])
+    t.is((await ws.land({ items: [id] })).outcome.status, 'accepted')
+    await sync(a, b)
+    const seen = await types()
+    t.is(
+      seen.includes('parts-done'),
+      i === 1,
+      i === 1 ? 'all parts done: said so' : 'one part left: not yet'
+    )
+  }
+  t.is((await a.item(parent)).done, 0, 'the parent stays open (it may have work of its own)')
+
+  // b neither made nor claimed the parent: can't close it; a, its claimant, can
+  const notB = await b.itemOp({ item: parent, action: claims.DONE, time, at: Date.now() })
+  t.is(notB.outcome.status, 'invalid')
+  const byA = await a.itemOp({ item: parent, action: claims.DONE, time, at: Date.now() })
+  t.is(byA.outcome.status, 'accepted')
+  t.ok((await a.item(parent)).done > 0, 'closed by its lead')
+})
+
 test('board: the lead is the earliest claim; renewals never move it; stale claims lose it', (t) => {
   const board = new claims.Board()
   const item = b4a.alloc(32, 1)
@@ -86,6 +130,24 @@ test('board: the lead is the earliest claim; renewals never move it; stale claim
   other.add({ item, action: claims.CLAIM, writer: w1, time: now - 2000, at: now - 2000 })
   other.add({ item, action: claims.CLAIM, writer: w2, time: now - 3000, at: now - 3000 })
   t.ok(b4a.equals(other.lead(item, now).lead.writer, w2), 'same lead whatever the arrival order')
+  // asking to share (--with the lead) makes a co-lead, as the lead naming you does
+  const shared = new claims.Board()
+  shared.add({ item, action: claims.CLAIM, writer: w2, time: now - 3000, at: now - 3000 })
+  shared.add({
+    item,
+    action: claims.CLAIM,
+    writer: w1,
+    time: now - 2000,
+    at: now - 2000,
+    with: [w2]
+  })
+  const sl = shared.lead(item, now)
+  t.ok(
+    b4a.equals(sl.lead.writer, w2) &&
+      sl.coLeads.length === 1 &&
+      b4a.equals(sl.coLeads[0].writer, w1),
+    'co-lead by asking to share'
+  )
   // release
   board.add({ item, action: claims.RELEASE, writer: w2, time: now - 3000, at: now })
   t.ok(b4a.equals(board.lead(item, now + 1).lead.writer, w1), 'a release hands the lead on')
