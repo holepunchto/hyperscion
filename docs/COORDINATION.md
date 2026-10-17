@@ -36,12 +36,15 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 ## Limits of this evidence
 
 - One run per arm per scenario; outcomes are within the noise floor everywhere.
-- No run ever undid a TASKS.md claim (the outages were short and feeds stayed up), so the
-  case where a board claim is lost is still untested.
+- No LLM run ever undid a TASKS.md claim (the outages were short and feeds stayed up). The
+  scripted flow F9 (test/flows.js) covers the partition case: two agents claim the same item,
+  and put a claim line on the board, while they can't see each other; when they meet, the
+  claim has one lead by the same rule on every peer (exit 0 for the lead, 2 for the other),
+  and the board keeps both lines with nothing to say who holds it.
 - The agents are one model family on one small task.
 
 ## Next
 
-- Cut the claim round trips agents still pay: a claim's verdict when the lead changes (feed
-  line), the board in `sync` output, `hs claim` exiting non-zero when someone else leads.
+- Done: `hs claim` exits 2 when someone else leads; the feed's claim line names who leads;
+  `sync` lists the open items and their leads. Measured by a q0b minimal-arm rerun.
 - A longer partitioned run (hours, sites, a lost claim) before revisiting the board question.

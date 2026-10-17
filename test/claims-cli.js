@@ -23,8 +23,8 @@ test('claims: a race has one lead, the board shows it, a land completes the item
 
   // the race at time zero: both claim at once
   const [c1, c2] = await Promise.all([tm.as('a1', ['claim', id]), tm.as('a2', ['claim', id])])
-  t.is(c1.code, 0, c1.stderr)
-  t.is(c2.code, 0, c2.stderr)
+  // the lead exits 0, the other 2: the verdict is in the exit code too
+  t.alike([c1.code, c2.code].sort(), [0, 2], c1.stderr + c2.stderr)
   const leads = [c1, c2].filter((r) => /you lead/.test(r.stdout))
   t.is(leads.length, 1, 'exactly one leads:\n' + c1.stdout + '\n' + c2.stdout)
   const lead = leads[0] === c1 ? 'a1' : 'a2'

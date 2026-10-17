@@ -211,6 +211,42 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     t.ok(/re-landed as #\d+/.test(out), out)
   })
 
+  // F9: a partition. Two agents claim the same item, and also put a claim line on a TASKS.md
+  // board, while the hub is down and they never overlap: neither sees the other. When they
+  // meet, the claim has one lead by the same rule on every peer; the board keeps both lines
+  // and nothing says who holds it (the case q0bo's board agents worried about)
+  await flow('F9 partition: claim vs board', async () => {
+    const [x, y] = others
+    for (const a of [x, y]) await tm.as(a, ['sync'])
+    const made = await ownerHs(['item', 'new', 'CR-2: cache distances'])
+    const id2 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    for (const a of [x, y]) await tm.as(a, ['sync'])
+    await tm.stopHub()
+    for (const a of [x, y]) {
+      await tm.as(a, ['claim', id2])
+      fs.appendFileSync(path.join(tm.agents[a], 'NOTES.md'), `- [${a}] taking CR-2\n`)
+      await tm.as(a, ['land', '-m', `${a} takes CR-2`, '--offline'])
+    }
+    await tm.startHub()
+    for (const a of [x, y]) await tm.as(a, ['push'])
+    for (const a of [x, y]) await tm.as(a, ['sync'])
+    const verdicts = []
+    for (const a of [x, y]) verdicts.push(await tm.as(a, ['claim', id2]))
+    const leads = verdicts.filter((v) => /you lead/.test(v.stdout))
+    t.is(leads.length, 1, 'the claim converges: ' + verdicts.map((v) => v.stdout).join(' | '))
+    t.alike(
+      verdicts.map((v) => v.code).sort(),
+      [0, 2],
+      'one leads (0), the other knows it lost (2)'
+    )
+    await tm.as(x, ['sync'])
+    const board = tm.read(x, 'NOTES.md')
+    t.ok(
+      board.includes(`- [${x}] taking CR-2`) && board.includes(`- [${y}] taking CR-2`),
+      'the board keeps both claims, with no rule for which holds'
+    )
+  })
+
   fs.writeFileSync(path.join(tm.dir, 'flows.json'), JSON.stringify(results, null, 2) + '\n')
   // loose ceilings: a flow that suddenly needs many more calls is a regression to look at
   for (const r of results) t.ok(r.calls <= 30, `${r.flow}: ${r.calls} calls`)
