@@ -44,6 +44,12 @@ existed).
 | 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Fixed: a split past an approved proposal lands the approved revision first, then proposes only the new lines; a re-proposal of an approved one warns | Yes, small-medium: split the protected change against the approved text |
 | 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Fixed: a failed --check leads with the lines that say what failed, drops stack frames, and names the teammates' changesets it read | Yes, small |
 | 26 | **Warn before `land --item` closes a whole multi-part item** after one piece (suggest `--under`) | q2-hs-7 a3 | 1 | Fixed by #6: auto-linked lands attach as `under`, so a piece never closes the item | Yes, small: the item has open parts or a title wider than the land |
+| 27 | **`wait-final` says whether the hub is reachable** while it waits, and returns as soon as it acks | q0bs-min-1 a1, a2 | 2 | Fixed: a progress line every 30 s says whether the hub can be reached and that you can stop waiting | Yes, small |
+| 28 | **Bare numbers everywhere** (`hs wait-final 4`): `#4` is a comment in fish | q0bs-min-2 a2 | 1 | Open | Yes, small |
+| 29 | **Say how many peers heard a claim, and whether the hub did** (`you lead (hub + 2/2 peers)`) | q0bs-min-2 a3, q0bs-min-3 a3, q0bs-plain-1 a3 | 3 | Partly: a claim heard by nobody says so (q0bp) | Yes, small: the claim's signal knows its connections |
+| 30 | **A claim records the paths it will touch** and warns on edits inside someone else's | q0bs-min-2 a1 | 1 | Open (frozen: no flow or run shows the need yet) | Maybe |
+| 31 | **Say when my land was superseded,** not only undone, and don't advise re-landing a duplicate | q0bs-min-3 a1, a2; q0bs-plain-1 a1, a2 | 4 | Fixed: a conflicting restore names who landed first and offers `hs restore <paths>` | Yes, small |
+| 32 | **An approval that points at a renumbered changeset** (#4 became another land after the heal) | q0bs-min-3 a2 | 1 | Open | Yes: bind reviews to the changeset hash, show the new number |
 
 ## Runs
 
@@ -56,3 +62,5 @@ existed).
 - **q2h-6:** 4, 4, 4 (3/3 choose). a3 asks #1 again (seventh time), a2 #22, a1 #21. q2h-5's asks (#11, #19, #20) were all fixed, and three new ones appeared: the 4 has held for three runs while the asks keep shrinking.
 - **q2h-7:** 4, 4, 4 (3/3 choose), zero alerts. a1 #23, a2 #24, a3 #25: all small and new. Four runs at 4,4,4 (q2h-4..7) with every earlier ask fixed: the asks keep coming, smaller each time, and the rating doesn't move. Read as the agents' ceiling for this task, not a product gap.
 - **q2-hs-7 (full q2):** 4, 4, 4 (3/3 choose). a1 #9, a2 #21 (reopened: my fix regressed the wait), a3 #26.
+- **q0bs-min-1/2 (two-site split):** 4,4,4 both. Asks #27 (hub reachability in waits), #28, #29, #30.
+- **q0bs round 2 (fixed core):** claims 3,3,4, board 3,3,4. Every 3 is about the heal: #31 (superseded, not undone) from both arms, #32. Not a claims or board gap: no mechanism coordinates sites that can't hear each other.

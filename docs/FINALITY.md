@@ -92,3 +92,18 @@ That assumption no longer holds:
   - the seed 1–8 × 40-round sweeps of `handover` and `hub` have 0 violations (`hub` reordered
     settled changesets on 3 of 8 seeds before);
   - `test/site-finality.js` passes (seq and hash unchanged) and is a regular test now.
+
+## Open
+
+- **Repos created by the new `init --hub` need the new code.** Under the old apply rules, the
+  genesis's self-removal is invalid, so the genesis stays a settler that never acks and
+  nothing settles. Reverting the code doesn't revert those repos.
+- **Repos made between milestone 7 and this fix settle on every writer.** Running feeds ack
+  (a feed acks when its own writer is a settler), but the owner rarely runs one: `hs
+remove-writer <owner>` (a light owner is removable while the hub remains) takes it out, and
+  `doctor` says so. A re-init is the full fix.
+- **A hub replacement needs a live hub to grant weight 2,** and the hub's store is locked
+  while `seed` runs: in practice, stop the seed, `add-writer --indexer`, restart. A one-step
+  `seed --admit-hub` would be the next step if teams hit it.
+- **The superseded hint reads `cs.files`,** which keeps only the first paths of a changeset;
+  a conflict beyond those falls back to "what landed first".
