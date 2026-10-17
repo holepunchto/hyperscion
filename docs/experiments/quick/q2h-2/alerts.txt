@@ -1,0 +1,24 @@
+ALERT m2.8 a2 land 7s exit 1: refused: needs approval
+ALERT m3.0 a1 land 21s exit 1: refused: needs approval
+ALERT m5.4 a3 land 8s exit 1: refused: needs approval
+ALERT m5.7 a3 land 4s exit 1: refused: needs approval
+ALERT m6.0 a2 land 6s exit 1: stalled
+ALERT m6.0 a3 land 12s exit 1: refused: needs approval
+ALERT m6.4 a3 land 6s exit 1: refused: needs approval
+ALERT m7.6 a2 land 43s exit 1: slow
+ALERT m9.1 a2 land 0s exit 1: worktree busy
+ALERT m9.2 a2 land 43s exit 1: slow
+EVENT m1.01 origin-down
+EVENT m1.65 change request landed (attempt 1)
+EVENT m2.5 origin-up
+EVENT m2.8 ann seen C704425
+EVENT m4.0 ann seen P1
+EVENT m4.3 ann seen P2
+EVENT m4.3 ann seen P3
+EVENT m4.4 ann approved C704425 after 93s
+EVENT m4.6 ann approved P2 after 18s
+EVENT m5.5 ann approved P1 after 95s
+EVENT m5.9 ann approved P3 after 96s
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md

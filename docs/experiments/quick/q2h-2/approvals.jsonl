@@ -1,0 +1,9 @@
+{"t":"2026-10-17T03:50:51.269Z","do":"start","as":"ann","delayS":10,"holdS":90,"holdMatching":"CR-1"}
+{"t":"2026-10-17T03:53:39.772Z","do":"seen","target":"C704425","kind":"item","title":"Change request CR-1 (from pm)","holdS":90}
+{"t":"2026-10-17T03:54:48.064Z","do":"seen","target":"P1","kind":"proposal","title":"a3: CONTRACTS pricing section for CR-1 (flight-minute formula, price/renderReport signatures)","holdS":90}
+{"t":"2026-10-17T03:55:11.078Z","do":"seen","target":"P2","kind":"proposal","title":"CONTRACTS: pin model + geo sections to what landed in #159 (no other sections touched)","holdS":10}
+{"t":"2026-10-17T03:55:11.078Z","do":"seen","target":"P3","kind":"proposal","title":"CONTRACTS: pin scheduler Plan shape incl. arrivals[].flightMinutes (CR-1)","holdS":90}
+{"t":"2026-10-17T03:55:12.764Z","do":"approved","target":"C704425","waitedS":93}
+{"t":"2026-10-17T03:55:29.165Z","do":"approved","target":"P2","waitedS":18}
+{"t":"2026-10-17T03:56:23.173Z","do":"approved","target":"P1","waitedS":95}
+{"t":"2026-10-17T03:56:47.274Z","do":"approved","target":"P3","waitedS":96}

@@ -196,6 +196,9 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
 
   // the plan is approved: its author lands into the protected paths it names
   tm.write('a1', 'src/api/v2.js', '// v2\n')
+  // a proposal made as a fallback doesn't get in the way of the approved item (q2h-2)
+  const fallback = await tm.as('a1', ['propose', '-m', 'api v2, in case'])
+  t.ok(/proposed P\d+.*asked ann/.test(fallback.stdout), fallback.stdout + fallback.stderr)
   const landed = await tm.as('a1', ['land', '-m', 'api v2', '--item', id])
   t.ok(/landed #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
 })

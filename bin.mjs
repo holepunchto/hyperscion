@@ -19,9 +19,9 @@ Bare.on('beforeExit', () => {
   if (!running) return
   running = false
   console.error(
-    'hs: stalled: this command needs data that is not local and no connected peer provided it. ' +
-      'Run `hs fetch` (needs a holder online: `hs seed` on a hub, or a blind peer), ' +
-      'then retry. `hs doctor` checks connectivity.'
+    'hs: stalled: this command needs data that is not local (often part of main left behind ' +
+      'by an interrupted download) and no connected peer provided it. Nothing is lost: retry ' +
+      "when the hub or a teammate's `hs watch` is online. `hs doctor` checks connectivity."
   )
   Bare.exitCode = 1
   // the command never got to clean up: don't leave this worktree marked busy (q2h-1: a stale

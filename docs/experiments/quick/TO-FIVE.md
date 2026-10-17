@@ -29,10 +29,13 @@ existed).
 | 9 | **Section-aware merge for CONTRACTS.md** | q2-hs-6 a2 | 1 | Open | Maybe: a markdown-sections merge driver; medium |
 | 10 | **How long the hub has been gone, on the provisional line** | q2-hs-6 a2 | 1 | Open | Yes, small |
 | 11 | **`watch --sync`:** sync when the wait returns | q2s-claims-2 a3 | 1 | Open | Yes, small |
-| 12 | **Never hang silently; local commands stay local.** `land`/`sync` say what they fetch and from whom, give up after ~20 s naming the missing piece; `status`/`log` never need the network | q2h-1 a2 (rated 1) | 1 | Fixed, not yet confirmed in a run: missing view blocks are fetched before a command reads main, or it fails with one clear line; the board loads after joining; settle is bounded (RUNLOG q2h-1) | Yes: fetch view gaps online before reading main, bounded, and a clear error when nobody has them |
+| 12 | **Never hang silently; local commands stay local.** `land`/`sync` say what they fetch and from whom, give up after ~20 s naming the missing piece; `status`/`log` never need the network | q2h-2 a2, a3 (rated 2) | 3 | Open: the first fix (refuse when blocks are missing) made it worse in q2h-2; now fill what peers serve and keep the connection for the whole command (RUNLOG q2h-2) | Yes: fetch view gaps online before reading main, bounded, and a clear error when nobody has them |
 | 13 | **Teammates' presence and work in progress on a path** (`a2 online, editing /src/scheduler.js, last seen 10 s ago`) in `watch --path` and `claims` | q2h-1 a3 | 1 | Open | Partly: liveness from claims' heartbeats and the signal channel exists; uncommitted edits would need a new signal |
+| 14 | **Split a land: unprotected files land, protected ones become a proposal** to the required reviewers in one step | q2h-2 a1 | 1 | Open | Yes: `land` already knows which paths need review |
+| 15 | **An "approved" line only when the current revision counts it** | q2h-2 a3 | 1 | Fixed: the history line no longer prints a count | Done |
 
 ## Runs
 
 - **Seed (before `to_five`):** all 4s except q2s-claims-4 a1 (3, ask #1).
 - **q2h-1:** 4, 1, 4. a1 (4) asks #1 in its achievable form, a2 (1) asks #12 (the stall that lost it the run), a3 (4) asks #13.
+- **q2h-2:** 4, 2, 2. a1 (4) asks #14 and #12; a2 (2) and a3 (2) ask #12 (the overreaching gap check), a3 also #15.

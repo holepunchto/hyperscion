@@ -50,7 +50,8 @@ const done = new Set()
 
 function notice(target, title, kind) {
   if (seen.has(target) || done.has(target)) return
-  const waitS = hold && hold.test(title) ? cfg.holdS : cfg.delayS
+  // the hold is for items (the change request), not proposals that mention it
+  const waitS = kind === 'item' && hold && hold.test(title) ? cfg.holdS : cfg.delayS
   seen.set(target, { at: Date.now(), title, waitS })
   log({ do: 'seen', target, kind, title, holdS: waitS })
 }
@@ -69,8 +70,14 @@ async function tick() {
   // every open proposal, not only those naming us: a person would look at what's blocked
   const props = await hs(['proposals', '--offline'])
   for (const line of props.out.split('\n')) {
-    const m = line.match(/^P(\d+) open .* by (\S+) .*:: (.*)$/)
-    if (m && m[2] !== me) notice('P' + m[1], m[3], 'proposal')
+    const m = line.match(/^P(\d+) open\s+(\d+)\/(\d+) by (\S+) .*:: (.*)$/)
+    if (!m || m[4] === me) continue
+    // approved before, open again with fewer approvals: a new revision reset them
+    if (done.has('P' + m[1]) && Number(m[2]) < Number(m[3])) {
+      done.delete('P' + m[1])
+      log({ do: 'revised', target: 'P' + m[1] })
+    }
+    notice('P' + m[1], m[5], 'proposal')
   }
   for (const [target, s] of seen) {
     if (Date.now() - s.at < s.waitS * 1000) continue
