@@ -96,41 +96,29 @@ as #N`). A `land` that finds its own land undone does this by itself.
 
 ## Claims: say what you're about to build
 
-Duplicate work is the costliest mistake in a team: three people building the same thing in
-three files, unaware of each other. Before you start something new:
+Duplicate work is the costliest mistake in a team. Before you start something new:
 
 ```sh
 hs claims                      # open items and who is on them (a change request is an item)
-hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claiming at the same time
+hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claiming at once
 hs claim --new "cache the distance matrix"     # something that isn't an item yet
 ```
 
-- **An item may name its lead** (`hs claims` shows `suggested lead: a3`). If that's you, claim it;
-  if not, don't race them for it.
-- **Claim the whole item before working on any of it.** Don't split off your own piece of an
-  item nobody leads yet: claim it, then split it.
-- **You lead** (the earliest claim): build it, and land with `--item C1a2b3c` so it closes. To
-  share the work, split it (`hs item part C1a2b3c "the scheduler side"`). Teammates see the
-  parts in their feed, and your `hs claim` shows who holds each one.
+- **You lead** (the earliest claim, or the lead the item names): build it and land as usual. A
+  land links itself to the item you lead (`linked to C1a2b3c`). Close it when it's all in:
+  `hs claim C1a2b3c --done` (or land with `--item C1a2b3c`).
 - **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too.
-  Take an open part they split off, ask them for a piece, share it
-  (`hs claim C1a2b3c --with a2`), or review their land when it comes.
-- **A claim never blocks anyone,** and nobody's claim stops you landing. A land into
-  someone's claimed paths just prints a `note:`.
-- **Claims expire** after 20 min without activity; your `land` and `sync` keep yours alive.
-  Hold at most 3. `hs claim C1a2b3c --release` when you stop, `--take` for a stale one.
-- **Closing:** a land with `--item` closes what it completes. When all parts of your item
-  have landed, the feed says so: close the parent with `hs claim C1a2b3c --done` once your
-  own work on it is in.
-
-- **Some items need a person's approval** (`hs claims` shows `needs 1 approval (0/1, from
-ann)`). Start anyway: nothing waits except your land into the paths the rule protects.
-  Once the feed says `approved`, land with `--item` (or `--under` for a piece). An idea you
-  have along the way goes in `hs suggest "..."`, not in NOTES.md.
+  Ask them for a piece in NOTES.md, or review their land when it comes.
+- **A claim never blocks anyone,** and works while the hub is down (claims travel between
+  peers). Claims expire after 20 min without activity; `land` and `sync` keep yours alive.
+  `hs claim C1a2b3c --release` when you stop.
 - **Some files need approval** (`/.hsreview`): `hs land` lands your other files now and proposes
   the protected ones to their reviewers (`split:` in its output); land again once the proposal
-  is approved (with `--item C…` if it said so). Files an approved item of yours covers land
-  with `--item`/`--under` as they are. `--no-split` lands nothing instead.
+  is approved. If an item needs a person's approval (`needs 1 approval` in `hs claims`), start
+  anyway: only your land into the protected paths waits.
+
+Splitting an item into parts, sharing it (`--with`), taking over a stale claim and the
+approval commands for people are in docs/CLAIMS.md; you rarely need them.
 
 ## Ship, Show or Ask
 

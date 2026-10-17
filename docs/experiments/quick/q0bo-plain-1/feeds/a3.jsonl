@@ -1,0 +1,10 @@
+{"type":"changeset","seq":2,"hash":"wi635phbx985dec8mimhh575364n967mbgamhorpeswecpgjmhgo","author":"pm","time":1792256174142,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md","/TASKS.md"]}
+{"type":"offline","at":"2026-10-17T16:56:17.711Z"}
+{"type":"changeset","seq":3,"hash":"b7ukisht4u6x5jnjx9oknb4sf6e1spp3kho3qu4i9hjcuauabwao","author":"a1","time":1792256179314,"message":"a1 takes CR-1","files":["/TASKS.md"]}
+{"type":"changeset","seq":4,"hash":"b7f4qay1depizmbuj91pdupaaqrz8unb5hafgfaiasgxmzfujimo","author":"a2","time":1792256183954,"message":"a2 takes CR-1","files":["/TASKS.md"]}
+{"type":"changeset","seq":5,"hash":"16aztbwhu4myiofgboxfy6z94xpuxmbyhymr87cm6ts9dbwnn6ho","author":"a3","time":1792256184701,"message":"a3 takes CR-1","files":["/TASKS.md"]}
+{"type":"changeset","seq":6,"hash":"uttkdr6cc9mtxxrbcpsdikxcc49jzrfofhbuxi5xrx3a44zzjp6o","author":"a2","time":1792256191489,"message":"a2 withdraws CR-1 claim: a1 has it","files":["/NOTES.md","/TASKS.md"]}
+{"type":"changeset","seq":7,"hash":"wwfjgjut96upg1ygbfhtpqabqcbwckac3bzy7pxx3yrwo14jkdco","author":"a3","time":1792256192218,"message":"a3 defers CR-1 to a1 (first claim #3)","files":["/NOTES.md","/TASKS.md"]}
+{"type":"hub","state":"stalled","settled":1,"head":7,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":8,"hash":"dk5wjtqgs8tq5rouixupkrxzroinf58gqwkjcxdrbc91m8iady8o","author":"a1","time":1792256202003,"message":"CR-1: price per flight minute (pricing.js, tests, CONTRACTS.md)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"changeset","seq":9,"hash":"mak7xhh1i6871xr861q8x1x9uycyhufag8xaybii7rc9qxeei4cy","author":"a1","time":1792256207368,"message":"a1 done CR-1 (#8)","files":["/TASKS.md"]}
