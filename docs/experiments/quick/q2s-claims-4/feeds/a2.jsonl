@@ -1,0 +1,131 @@
+{"type":"settled","seq":8,"text":"@ settled through #8"}
+{"type":"settled","seq":9,"text":"@ settled through #9"}
+{"type":"settled","seq":10,"text":"@ settled through #10"}
+{"type":"settled","seq":11,"text":"@ settled through #11"}
+{"type":"settled","seq":12,"text":"@ settled through #12"}
+{"type":"settled","seq":15,"text":"@ settled through #15"}
+{"type":"settled","seq":16,"text":"@ settled through #16"}
+{"type":"settled","seq":17,"text":"@ settled through #17"}
+{"type":"settled","seq":18,"text":"@ settled through #18"}
+{"type":"settled","seq":19,"text":"@ settled through #19"}
+{"type":"settled","seq":21,"text":"@ settled through #21"}
+{"type":"settled","seq":22,"text":"@ settled through #22"}
+{"type":"settled","seq":23,"text":"@ settled through #23"}
+{"type":"settled","seq":24,"text":"@ settled through #24"}
+{"type":"settled","seq":25,"text":"@ settled through #25"}
+{"type":"settled","seq":26,"text":"@ settled through #26"}
+{"type":"settled","seq":27,"text":"@ settled through #27"}
+{"type":"settled","seq":28,"text":"@ settled through #28"}
+{"type":"settled","seq":29,"text":"@ settled through #29"}
+{"type":"changeset","seq":30,"hash":"d47meuuzo5k5iub3aup5rxc41rauegf68spwz1jogfco8quyw8qo","author":"a3","time":1792199666599,"message":"a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json], integration test (skips until scheduler lands)","files":["/CONTRACTS.md","/NOTES.md","/src/cli.js","/src/pricing.js","/src/report.js","/test/integration.test.js","/test/pricing.test.js"]}
+{"type":"settled","seq":30,"text":"@ settled through #30"}
+{"type":"settled","seq":31,"text":"@ settled through #31"}
+{"type":"settled","seq":32,"text":"@ settled through #32"}
+{"type":"changeset","seq":37,"hash":"txubds4rxpq6m4bg9nxdr7cqkotb6mym47kzkon357kytj6uq3py","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":33,"now":34,"author":"sw3-4","message":"sw3.4 2"}
+{"type":"renumbered","seq":34,"now":35,"author":"sw2-0","message":"sw2.0 2"}
+{"type":"renumbered","seq":35,"now":36,"author":"sw0-3","message":"sw0.3 4"}
+{"type":"reorg","seq":36,"was":{"author":"sw0-1","message":"sw0.1 3"},"now":{"author":"sw0-3","message":"sw0.3 4"}}
+{"type":"reorg","seq":37,"was":{"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"},"now":{"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}}
+{"type":"changeset","seq":37,"hash":"xyi8qauheqfg6rag9osusntyq7tzcua1pw1unfxb51tem47gey1o","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":37,"now":38,"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}
+{"type":"changeset","seq":38,"hash":"jb7c3h394pfrxtdyf4xgkr874568e868mz9314m3fkn4zhxzwnzo","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":36,"now":37,"author":"sw0-3","message":"sw0.3 4"}
+{"type":"renumbered","seq":37,"now":38,"author":"sw1-0","message":"sw1.0 1"}
+{"type":"renumbered","seq":38,"now":39,"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}
+{"type":"changeset","seq":39,"hash":"9kfr49bna7u94x4rgthfndf4wyas1kotafemqdz558rjzsa1i3so","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":36,"now":37,"author":"sw0-4","message":"sw0.4 2"}
+{"type":"renumbered","seq":37,"now":38,"author":"sw0-3","message":"sw0.3 4"}
+{"type":"renumbered","seq":38,"now":39,"author":"sw1-0","message":"sw1.0 1"}
+{"type":"renumbered","seq":39,"now":40,"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}
+{"type":"changeset","seq":40,"hash":"bycanwt47431pepqqsn51q66z7xaqusdwgz73mo8smwzjzcext5y","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":33,"now":34,"author":"sw1-1","message":"sw1.1 1"}
+{"type":"renumbered","seq":34,"now":35,"author":"sw3-4","message":"sw3.4 2"}
+{"type":"renumbered","seq":35,"now":36,"author":"sw2-0","message":"sw2.0 2"}
+{"type":"renumbered","seq":36,"now":37,"author":"sw2-3","message":"sw2.3 1"}
+{"type":"renumbered","seq":37,"now":38,"author":"sw0-4","message":"sw0.4 2"}
+{"type":"renumbered","seq":38,"now":39,"author":"sw0-3","message":"sw0.3 4"}
+{"type":"renumbered","seq":39,"now":40,"author":"sw1-0","message":"sw1.0 1"}
+{"type":"renumbered","seq":40,"now":41,"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}
+{"type":"changeset","seq":41,"hash":"6sw4jekcu98p3hjf9eewwq141om1swfgai8bojwi7o5qfjod6a3y","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":41,"now":42,"author":"a2","message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md"}
+{"type":"renumbered","seq":42,"now":43,"author":"sw2-4","message":"sw2.4 2"}
+{"type":"changeset","seq":42,"hash":"et9meyhb6qc5pecdsytwnzsbtw9q4et7t6q8ug8hi37ohb83wx7y","author":"a2","time":1792199676792,"message":"scheduler: plan(day) greedy (payload/range/multi-trip/windows/express first), Plan shape pinned in CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"hub","state":"stalled","settled":32,"head":45,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":51,"hash":"y5i6munqq6gpqfddhz3p45p5ub663q5r7f1p3p8oospbcjbbsnro","author":"pm","time":1792199706409,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"claim","n":30,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C032210","text":"@ C032210 claimed by a2"}
+{"type":"claim","n":31,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C032210","text":"@ C032210 claimed by a3"}
+{"type":"item","n":32,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Cdb11bb","text":"@ part Cdb11bb \"a3: pricing.js per-flight-minute formula + CONTRACTS pricing + report flight minutes + integration test\" of C032210, led by a2, split off by a2: `hs claim Cdb11bb`"}
+{"type":"item","n":33,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C663f5e","text":"@ part C663f5e \"a2: scheduler stops carry flightMinutes\" of C032210, led by a2, split off by a2: `hs claim C663f5e`"}
+{"type":"claim","n":34,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cdb11bb","text":"@ Cdb11bb \"a3: pricing.js per-flight-minute formula + CONTRACTS pricing + report flight minutes + integration test\" claimed by a3"}
+{"type":"claim","n":35,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C663f5e","text":"@ C663f5e \"a2: scheduler stops carry flightMinutes\" claimed by a2"}
+{"type":"done","n":36,"proposal":null,"seq":69,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C663f5e","text":"@ C663f5e \"a2: scheduler stops carry flightMinutes\" done by a2 in #69"}
+{"type":"changeset","seq":69,"hash":"6cdj65o6dapr53popkg93doh3uxwqndkbwwhx6zhfjst1dbmyobo","author":"a2","time":1792199752154,"message":"CR-1 scheduler: stops carry flightMinutes for pricing (plan.trips[].stops[].flightMinutes)","files":["/CONTRACTS.md","/NOTES.md","/src/scheduler.js","/test/scheduler.test.js"]}
+{"type":"renumbered","seq":55,"now":56,"author":"sw1-0","message":"sw1.0 2"}
+{"type":"reorg","seq":56,"was":{"author":"sw2-1","message":"sw2.1 2"},"now":{"author":"sw1-0","message":"sw1.0 2"}}
+{"type":"reorg","seq":57,"was":{"author":"sw1-1","message":"sw1.1 2"},"now":{"author":"sw3-0","message":"sw3.0 7"}}
+{"type":"renumbered","seq":58,"now":57,"author":"sw3-0","message":"sw3.0 7"}
+{"type":"reorg","seq":59,"was":{"author":"sw2-0","message":"sw2.0 3"},"now":{"author":"sw1-2","message":"sw1.2 3"}}
+{"type":"reorg","seq":60,"was":{"author":"sw2-4","message":"sw2.4 3"},"now":{"author":"sw0-3","message":"sw0.3 6"}}
+{"type":"renumbered","seq":61,"now":58,"author":"sw0-2","message":"sw0.2 4"}
+{"type":"renumbered","seq":62,"now":59,"author":"sw1-2","message":"sw1.2 3"}
+{"type":"renumbered","seq":63,"now":60,"author":"sw0-3","message":"sw0.3 6"}
+{"type":"reorg","seq":64,"was":{"author":"sw3-4","message":"sw3.4 3"},"now":null}
+{"type":"renumbered","seq":65,"now":61,"author":"sw2-2","message":"sw2.2 5"}
+{"type":"renumbered","seq":66,"now":62,"author":"sw2-3","message":"sw2.3 3"}
+{"type":"reorg","seq":67,"was":{"author":"sw1-0","message":"sw1.0 3"},"now":null}
+{"type":"reorg","seq":68,"was":{"author":"sw0-1","message":"sw0.1 4"},"now":null}
+{"type":"reorg","seq":69,"was":{"author":"a2","message":"CR-1 scheduler: stops carry flightMinutes for pricing (plan.trips[].stops[].flightMinutes)"},"now":null}
+{"type":"renumbered","seq":70,"now":63,"author":"sw1-3","message":"sw1.3 3"}
+{"type":"reorg","seq":71,"was":{"author":"sw1-1","message":"sw1.1 3"},"now":null}
+{"type":"reorg","seq":72,"was":{"author":"sw3-0","message":"sw3.0 8"},"now":null}
+{"type":"reorg","seq":73,"was":{"author":"sw2-1","message":"sw2.1 3"},"now":null}
+{"type":"hub","state":"settling","settled":63}
+{"type":"settled","seq":64,"text":"@ settled through #64"}
+{"type":"settled","seq":65,"text":"@ settled through #65"}
+{"type":"settled","seq":66,"text":"@ settled through #66"}
+{"type":"settled","seq":67,"text":"@ settled through #67"}
+{"type":"changeset","seq":68,"hash":"pzy7fuuhpc6j87ocjw666ht4om41xqc1s5dogoe987q3dy1fr5do","author":"a1","time":1792199767390,"message":"model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops (NN), routeKm; contracts pinned (re-land after undo)","files":["/CONTRACTS.md","/NOTES.md","/src/geo.js","/src/model.js","/test/geo.test.js","/test/model.test.js"]}
+{"type":"settled","seq":68,"text":"@ settled through #68"}
+{"type":"settled","seq":69,"text":"@ settled through #69"}
+{"type":"settled","seq":70,"text":"@ settled through #70"}
+{"type":"settled","seq":71,"text":"@ settled through #71"}
+{"type":"done","n":45,"proposal":null,"seq":72,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cdb11bb","text":"@ Cdb11bb \"a3: pricing.js per-flight-minute formula + CONTRACTS pricing + report flight minutes + integration test\" done by a3 in #72"}
+{"type":"changeset","seq":72,"hash":"iwca9th89ybiuf38hxpkh57m5c1udgozw855or5x714fks4bbdfo","author":"a3","time":1792199774376,"message":"CR-1 (a3 part): pricing per flight-minute, CONTRACTS pricing pinned, report shows flight minutes, integration test checks it","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/src/report.js","/test/integration.test.js","/test/pricing.test.js"]}
+{"type":"settled","seq":73,"text":"@ settled through #73"}
+{"type":"settled","seq":74,"text":"@ settled through #74"}
+{"type":"settled","seq":75,"text":"@ settled through #75"}
+{"type":"settled","seq":76,"text":"@ settled through #76"}
+{"type":"settled","seq":77,"text":"@ settled through #77"}
+{"type":"done","n":51,"proposal":null,"seq":78,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C663f5e","text":"@ C663f5e \"a2: scheduler stops carry flightMinutes\" done by a2 in #78"}
+{"type":"changeset","seq":78,"hash":"4kzbryhb1t66n1n1dmup7akrc83amn4wgtuwdss489y8kgxtipey","author":"a2","time":1792199783308,"message":"CR-1 scheduler: stops carry flightMinutes for pricing (re-land after undo)","files":["/CONTRACTS.md","/src/scheduler.js","/swarm/sw0.1/3.txt","/swarm/sw0.1/4.txt","/test/scheduler.test.js"]}
+{"type":"settled","seq":78,"text":"@ settled through #78"}
+{"type":"settled","seq":79,"text":"@ settled through #79"}
+{"type":"settled","seq":82,"text":"@ settled through #82"}
+{"type":"settled","seq":83,"text":"@ settled through #83"}
+{"type":"settled","seq":84,"text":"@ settled through #84"}
+{"type":"settled","seq":86,"text":"@ settled through #86"}
+{"type":"settled","seq":87,"text":"@ settled through #87"}
+{"type":"settled","seq":88,"text":"@ settled through #88"}
+{"type":"settled","seq":90,"text":"@ settled through #90"}
+{"type":"settled","seq":91,"text":"@ settled through #91"}
+{"type":"settled","seq":94,"text":"@ settled through #94"}
+{"type":"settled","seq":95,"text":"@ settled through #95"}
+{"type":"settled","seq":96,"text":"@ settled through #96"}
+{"type":"settled","seq":97,"text":"@ settled through #97"}
+{"type":"settled","seq":98,"text":"@ settled through #98"}
+{"type":"settled","seq":99,"text":"@ settled through #99"}
+{"type":"settled","seq":100,"text":"@ settled through #100"}
+{"type":"settled","seq":101,"text":"@ settled through #101"}
+{"type":"settled","seq":102,"text":"@ settled through #102"}
+{"type":"settled","seq":103,"text":"@ settled through #103"}
+{"type":"settled","seq":104,"text":"@ settled through #104"}
+{"type":"settled","seq":105,"text":"@ settled through #105"}
+{"type":"settled","seq":106,"text":"@ settled through #106"}
+{"type":"settled","seq":107,"text":"@ settled through #107"}
+{"type":"settled","seq":108,"text":"@ settled through #108"}
+{"type":"settled","seq":109,"text":"@ settled through #109"}
+{"type":"settled","seq":110,"text":"@ settled through #110"}
+{"type":"settled","seq":111,"text":"@ settled through #111"}
+{"type":"settled","seq":112,"text":"@ settled through #112"}
+{"type":"settled","seq":113,"text":"@ settled through #113"}

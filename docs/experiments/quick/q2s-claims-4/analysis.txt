@@ -1,0 +1,70 @@
+# hs usage: 49 calls since 2026-10-17T01:13:29.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 13 | 5 | 0 | 3 | 2 | 2 (2) | 0 | 0 | 1 | 0 | 0 | 0 | 0.9m |
+| a2 | 22 | 5 | 0 | 3 | 3 | 3 (3) | 0 | 0 | 1 | 0 | 0 | 0 | 0.9m |
+| a3 | 14 | 4 | 0 | 2 | 3 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 0.7m |
+
+totals: lands 7 (accepted 7), auto-rebased 0, real conflicts 0, flip banners 2, stalls 0, unavailable 0, stale refusals 0, push timeouts 1, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 2776/4000, claims 6075/6075, land 46669/46669, push 30413/30413, status 6048/6048, log 4271/4271, watch 175878/175878
+a2: sync 2254/3202, claims 4662/11771, land 9789/14579, watch 20665/212828, claim 2645/9675, item 1074/1074, status 10899/10899
+a3: sync 4467/4467, claims 1398/4074, land 14318/14318, watch 29506/167463, claim 3586/3586, status 3951/3951
+
+## command mix
+a1: sync=3 claims=2 land=2 push=1 status=2 log=1 watch=2
+a2: sync=3 claims=6 land=3 watch=3 claim=3 item=2 status=2
+a3: sync=2 claims=4 land=2 watch=3 claim=2 status=1
+
+## land timeline
+  0.7m a3 landed #30                                              a3: pricing (formula pinned in CONTRACTS.md), report, cli plan [--json
+  0.9m a2 incoming from teammates (1), +26 under quiet paths:     scheduler: plan(day) greedy (payload/range/multi-trip/windows/express 
+  0.9m a1 incoming from teammates (1), +27 under quiet paths:     model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops (NN
+  2.2m a2 landed #69                                              CR-1 scheduler: stops carry flightMinutes for pricing (plan.trips[].st
+  2.6m a1 landed #68                                              model+geo: loadDay/DayError, distanceKm, travelMinutes, orderStops (NN
+  2.5m a3 incoming from teammates (1), +16 under quiet paths:     CR-1 (a3 part): pricing per flight-minute, CONTRACTS pricing pinned, r
+  2.8m a2 landed #78                                              CR-1 scheduler: stops carry flightMinutes for pricing (re-land after u
+
+## metrics (also in metrics.json)
+calls: 49
+minutes: 3.7
+lands: 7
+accepted: 7
+calls_per_accepted_land: 7
+auto_rebased: 0
+real_conflicts: 0
+flips: 2
+stalls: 0
+unavailable: 0
+push_timeouts: 1
+land_ended_final: 4
+land_ended_settled: 0
+land_ended_provisional: 3
+land_ms_p50: 13259
+land_ms_p90: 14579
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.8
+vcs_min_total: 4.3
+vcs_share_pct: 46.9
+watch_calls: 8
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 2
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+usefulness_vs_git: [3,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 3.67
+land_state_trust_mean: 4
+minutes_lost_to_hs_total: 2.5
+confusing_messages_total: 5
+review_usefulness_mean: null
