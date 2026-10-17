@@ -154,9 +154,10 @@ const actions = {
           // claims (docs/CLAIMS.md): the change request is also an item agents can claim
           let item = null
           if (scenario.claims) {
+            const lead = scenario.changeRequestLead ? ['--lead', scenario.changeRequestLead] : []
             const made = await tool(
               'pm',
-              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', 'implement'],
+              ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', 'implement', ...lead],
               cwd
             )
             item = (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)

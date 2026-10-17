@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "schema": [
     {
       "name": "head",
@@ -920,6 +920,11 @@
           "name": "sig",
           "type": "buffer",
           "version": 11
+        },
+        {
+          "name": "lead",
+          "type": "fixed32",
+          "version": 12
         }
       ]
     },
@@ -980,6 +985,11 @@
           "name": "dropped",
           "type": "bool",
           "version": 11
+        },
+        {
+          "name": "lead",
+          "type": "fixed32",
+          "version": 12
         }
       ]
     }

@@ -148,6 +148,17 @@ test('board: the lead is the earliest claim; renewals never move it; stale claim
       b4a.equals(sl.coLeads[0].writer, w1),
     'co-lead by asking to share'
   )
+  // a suggested lead (the item names them): an earlier claim leads until they claim it
+  const named = new claims.Board()
+  const cr = b4a.alloc(32, 9)
+  named.add({ item: cr, action: claims.NEW, writer: w3, time: now - 9000, title: 'CR-1', lead: w2 })
+  named.add({ item: cr, action: claims.CLAIM, writer: w1, time: now - 5000, at: now - 5000 })
+  t.ok(
+    b4a.equals(named.lead(cr, now).lead.writer, w1),
+    'first claim leads while the named lead is away'
+  )
+  named.add({ item: cr, action: claims.CLAIM, writer: w2, time: now - 1000, at: now - 1000 })
+  t.ok(b4a.equals(named.lead(cr, now).lead.writer, w2), 'the named lead leads once they claim')
   // release
   board.add({ item, action: claims.RELEASE, writer: w2, time: now - 3000, at: now })
   t.ok(b4a.equals(board.lead(item, now + 1).lead.writer, w1), 'a release hands the lead on')

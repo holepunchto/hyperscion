@@ -104,6 +104,8 @@ hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claim
 hs claim --new "cache the distance matrix"     # something that isn't an item yet
 ```
 
+- **An item may name its lead** (`hs claims` shows `suggested lead: a3`). If that's you, claim it;
+  if not, don't race them for it.
 - **Claim the whole item before working on any of it.** Don't split off your own piece of an
   item nobody leads yet: claim it, then split it.
 - **You lead** (the earliest claim): build it, and land with `--item C1a2b3c` so it closes. To

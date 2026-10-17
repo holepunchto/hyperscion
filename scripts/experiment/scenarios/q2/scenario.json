@@ -38,5 +38,6 @@
     "think": 30,
     "minutes": 12
   },
-  "claims": true
+  "claims": true,
+  "changeRequestLead": "a3"
 }

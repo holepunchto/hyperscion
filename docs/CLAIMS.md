@@ -76,6 +76,10 @@ like an existing one (shared words, shared paths), `hs claim` says so, but never
 
 ### Learned in the first gate runs (q2s-claims-1, -2)
 
+- **A suggested lead:** a change request that says "a3 leads" made agents argue with hs when
+  a2 claimed first (q2s-claims-2, -4). `hs item new --lead a3` names one: the first claim leads
+  until a3 claims, then a3 does.
+
 - **Parts are the lead's to hand out.** In the first run two agents split their own parts
   off an unclaimed change request, and a third then claimed it and built the same thing. Now:
   - `hs item part` works only for the item's lead, a co-lead or its author;
@@ -145,8 +149,9 @@ like an existing one (shared words, shared paths), `hs claim` says so, but never
 A **lead** is computed from content, never from autobee's order: the earliest signed `time`
 among valid claims on the item, then the smaller writer key.
 
-- **What's guaranteed:** the rule depends only on the claims' content. So a lead can only
-  be displaced by a claim with an earlier signed time, never by a reorg or by the order in
+- **What's guaranteed:** the rule depends only on the claims' content and the item's. So a lead
+  can only be displaced by a claim with an earlier signed time, or by the lead the item names
+  (`hs item new --lead a3`) claiming it. Never by a reorg or by the order in which claims arrive.
   which claims arrive.
   - **The signal view can be incomplete:** at 1.5 s it may not have heard every claim, so
     its verdict is provisional. `hs claims` always shows the current lead.

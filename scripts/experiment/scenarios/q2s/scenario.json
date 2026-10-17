@@ -39,5 +39,6 @@
     "minutes": 7
   },
   "stop": "Stop as soon as your module and your part of the change request are on main, `npm test` passes there, and `hs status` shows your last land as final (the shared server may be down for a while; keep going and check again), or at minute 7 (`date` against when you started), whichever comes first. Don't wait for teammates to finish.",
-  "claims": true
+  "claims": true,
+  "changeRequestLead": "a3"
 }
