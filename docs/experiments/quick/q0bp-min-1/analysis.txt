@@ -1,0 +1,77 @@
+# hs usage: 35 calls since 2026-10-17T18:17:49.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 18 | 5 | 0 | 2 | 2 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 1.3m |
+| a2 | 6 | 2 | 0 | 1 | 2 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.8m |
+| a3 | 11 | 4 | 0 | 1 | 3 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.7m |
+
+totals: lands 3 (accepted 3), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 569/569, watch 4773/4773, claim 27688/27688, land 21583/21583, push 30162/30193, claims 717/717, status 119/119, cat 79/79, restore 137/137
+a2: sync 590/590, claims 740/740, claim 2283/2283, land 1753/1753, watch 36870/36870
+a3: sync 581/581, claims 786/786, claim 2459/2459, land 987/987, watch 5805/39762, review 564/564, log 79/79
+
+## command mix
+a1: sync=2 watch=2 claim=1 land=1 push=7 claims=1 status=2 cat=1 restore=1
+a2: sync=1 claims=1 claim=1 land=1 watch=2
+a3: sync=1 claims=2 claim=2 land=1 watch=3 review=1 log=1
+
+## land timeline
+  0.7m a3 landed #3                                               notes: a3 reviews CR-1
+  0.8m a2 landed #4                                               CR-1: price per flight minute (pricing.js, unit tests, CONTRACTS.md)
+  1.3m a1 landed #3                                               CR-1: pricing per flight-minute (pricing.js, tests, CONTRACTS.md)
+
+## metrics (also in metrics.json)
+calls: 35
+minutes: 5.7
+lands: 3
+accepted: 3
+calls_per_accepted_land: 11.67
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 2
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 1753
+land_ms_p90: 1753
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.1
+vcs_min_total: 4.6
+vcs_share_pct: 70.1
+watch_calls: 7
+proposals: 0
+reviews_given: 1
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 11
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 10
+coordination_share: 0.34
+wait_scenario_s: 0
+wait_teammate_s: 6
+wait_settle_s: 0
+first_land_min: 0.8
+round_trips_per_land: 4
+round_trips_per_land_p90: 5
+coordination_lands: 1
+calls_per_code_land: 17.5
+usefulness_vs_git: [3,4,4]
+would_choose_hs: "2/3"
+output_clarity_mean: 4.33
+land_state_trust_mean: 4.67
+minutes_lost_to_hs_total: 2
+confusing_messages_total: 2
+review_usefulness_mean: null
+to_five: ["a1 (3): hs claim: when no peer acks the claim, report 'you lead (unconfirmed: offline)' with exit 2 and have hs land --done refuse to close an item whose claim was never confirmed until push succeeds","a2 (4): hs claim <item> should report the co-claimer's response when it arrives (e.g. wait ~2s more and print 'a3 withdrew (--if-free)') so leading is unambiguous without tailing the feed","a3 (4): hs claim <item> --if-free should withdraw without emitting a new claim event, and a losing claim should auto-subscribe me to review the leader's land (hs watch --for-me fires when it lands)"]

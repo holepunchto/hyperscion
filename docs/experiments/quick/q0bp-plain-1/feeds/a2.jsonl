@@ -1,0 +1,10 @@
+{"type":"changeset","seq":3,"hash":"emqtp7tjt5dbgc5kj6h879sthrcqhty5d65f3j8bc1p4ojzrs5ay","author":"a3","time":1792260861005,"message":"a3 takes CR-1","files":["/TASKS.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"s8xbgjx1c899k499imexo86owq7ka8pja87atdqwkh5rk4dyi9iy","author":"a2","time":1792260862940,"message":"a2 takes CR-1","files":["/TASKS.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"17rd1sz8i35996zirt17cjdw393owah3367g4tjthy8eomrmgugy","author":"a2","time":1792260870686,"message":"a2 withdraws CR-1 impl to a3; takes test/pricing.test.js","files":["/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"changeset","seq":6,"hash":"kydc7wdwe5qrtgdn4c485zmug3wkpf1kusewofipfrqkhqmsgtqy","author":"a3","time":1792260897234,"message":"CR-1: pricing per flight minute (src/pricing.js, CONTRACTS.md, test/pricing-impl.test.js)","files":["/CONTRACTS.md","/NOTES.md","/TASKS.md","/src/pricing.js","/test/pricing-impl.test.js"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
+{"type":"changeset","seq":7,"hash":"651ki79mmgjpjwmiho51ggiwt7z4j69qyo45rjc83w687y56hgto","author":"a2","time":1792260903453,"message":"CR-1: independent unit tests for flight-minute pricing (multi-stop, express) pass on a3's #6","files":["/TASKS.md","/test/pricing.test.js"]}
+{"type":"settled","seq":7,"text":"@ settled through #7"}

@@ -1,0 +1,41 @@
+2026-10-17T18:17:38.089Z 176734 - +505ms checkout: written 0 missing 16
+2026-10-17T18:17:42.714Z 176898 fetch +4ms start
+2026-10-17T18:17:42.863Z 176898 fetch +153ms pull: peers 1 holder=true
+2026-10-17T18:17:43.209Z 176898 fetch +499ms pull: settled=true
+2026-10-17T18:17:43.210Z 176898 fetch +500ms pull: view gaps 0
+2026-10-17T18:17:43.216Z 176898 fetch +506ms prefetch: fetched 0 missing 0
+2026-10-17T18:17:43.672Z 176934 info +2ms start
+2026-10-17T18:18:11.367Z 177471 sync +4ms start
+2026-10-17T18:18:11.500Z 177471 sync +137ms pull: peers 2 holder=true
+2026-10-17T18:18:11.889Z 177471 sync +526ms pull: settled=true
+2026-10-17T18:18:11.891Z 177471 sync +528ms pull: view gaps 0
+2026-10-17T18:18:11.901Z 177471 sync +538ms prefetch: fetched 2 missing 0
+2026-10-17T18:18:11.917Z 177471 sync +554ms checkout: written 2 missing 0
+2026-10-17T18:18:17.297Z 177803 claim +3ms start
+2026-10-17T18:19:06.976Z 178586 land +4ms start
+2026-10-17T18:19:28.148Z 178586 land +21176ms pull: no peers
+2026-10-17T18:19:28.160Z 178586 land +21188ms check round 0: synced to #2
+2026-10-17T18:19:28.163Z 178586 land +21191ms checkout: written 0 missing 0
+2026-10-17T18:19:28.163Z 178586 land +21191ms check round 0: materialized
+2026-10-17T18:19:28.507Z 178586 land +21535ms check round 0: check ran
+2026-10-17T18:19:28.507Z 178586 land +21535ms land op
+2026-10-17T18:19:28.535Z 178586 land +21563ms land op: accepted #3
+2026-10-17T18:19:28.543Z 178586 land +21571ms checkout: written 0 missing 0
+2026-10-17T18:19:32.402Z 178680 push +2ms start
+2026-10-17T18:20:02.999Z 178728 claims +3ms start
+2026-10-17T18:20:07.988Z 178780 push +5ms start
+2026-10-17T18:20:38.603Z 178832 push +3ms start
+2026-10-17T18:21:09.269Z 178879 push +4ms start
+2026-10-17T18:21:39.897Z 178947 push +3ms start
+2026-10-17T18:22:10.474Z 179007 push +3ms start
+2026-10-17T18:22:41.192Z 179054 push +4ms start
+2026-10-17T18:23:16.246Z 179118 sync +3ms start
+2026-10-17T18:23:16.350Z 179118 sync +107ms pull: peers 1 holder=true
+2026-10-17T18:23:16.665Z 179118 sync +422ms pull: settled=true
+2026-10-17T18:23:16.666Z 179118 sync +423ms pull: view gaps 0
+2026-10-17T18:23:16.695Z 179118 sync +452ms prefetch: fetched 4 missing 0
+2026-10-17T18:23:16.734Z 179118 sync +491ms checkout: written 4 missing 0
+2026-10-17T18:23:17.190Z 179154 status +3ms start
+2026-10-17T18:23:28.086Z 179229 cat +3ms start
+2026-10-17T18:23:28.590Z 179265 restore +3ms start
+2026-10-17T18:23:29.198Z 179301 status +3ms start

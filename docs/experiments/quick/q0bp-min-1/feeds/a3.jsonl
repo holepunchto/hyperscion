@@ -1,0 +1,10 @@
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C732359","text":"@ C732359 \"Change request CR-1 (from pm)\" claimed by a2; they lead"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C732359","text":"@ C732359 \"Change request CR-1 (from pm)\" claimed by a3; a2 leads"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C732359","text":"@ C732359 \"Change request CR-1 (from pm)\" claimed by a3; a2 leads"}
+{"type":"release","n":7,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C732359","text":"@ C732359 \"Change request CR-1 (from pm)\" released by a3; a2 leads it"}
+{"type":"changeset","seq":3,"hash":"nsw4s4hk84cuxkdweup566xsiz795et8h53z1ijqyujbq3w5719o","author":"a3","time":1792261113568,"message":"notes: a3 reviews CR-1","files":["/NOTES.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"done","n":9,"proposal":null,"seq":4,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C732359","text":"@ C732359 \"Change request CR-1 (from pm)\" done by a2 in #4"}
+{"type":"changeset","seq":4,"hash":"bi4ksbkrnuxt7xz7oewc13ittfyid4wwomh9tajp6q3c8s4r3e7y","author":"a2","time":1792261119743,"message":"CR-1: price per flight minute (pricing.js, unit tests, CONTRACTS.md)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"review","n":11,"proposal":null,"seq":4,"actor":"a3","verdict":"approved","comment":null,"reviewers":[],"item":null,"text":"@ #4 approved by a3"}

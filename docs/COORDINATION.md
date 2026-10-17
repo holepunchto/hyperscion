@@ -36,6 +36,10 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 ## Limits of this evidence
 
 - One run per arm per scenario; outcomes are within the noise floor everywhere.
+- **Partitions (q0bp):** an agent cut off just after the change request arrived duplicated the
+  work in both arms: a claim that reaches nobody coordinates nothing, like a board line.
+  Claims now say so (`nobody heard this claim`, exit 2) instead of "you lead", so an agent
+  that reads it waits to claim again rather than building blind.
 - No LLM run ever undid a TASKS.md claim (the outages were short and feeds stayed up). The
   scripted flow F9 (test/flows.js) covers the partition case: two agents claim the same item,
   and put a claim line on the board, while they can't see each other; when they meet, the

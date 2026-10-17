@@ -1,0 +1,44 @@
+2026-10-17T18:13:43.661Z 172923 - +504ms checkout: written 0 missing 16
+2026-10-17T18:13:49.216Z 173153 fetch +4ms start
+2026-10-17T18:13:49.368Z 173153 fetch +155ms pull: peers 1 holder=true
+2026-10-17T18:13:49.699Z 173153 fetch +486ms pull: settled=true
+2026-10-17T18:13:49.700Z 173153 fetch +487ms pull: view gaps 0
+2026-10-17T18:13:49.706Z 173153 fetch +493ms prefetch: fetched 0 missing 0
+2026-10-17T18:13:50.159Z 173189 info +3ms start
+2026-10-17T18:14:15.839Z 173554 sync +4ms start
+2026-10-17T18:14:15.968Z 173554 sync +133ms pull: peers 2 holder=true
+2026-10-17T18:14:16.357Z 173554 sync +522ms pull: settled=true
+2026-10-17T18:14:16.358Z 173554 sync +523ms pull: view gaps 0
+2026-10-17T18:14:16.371Z 173554 sync +536ms prefetch: fetched 3 missing 0
+2026-10-17T18:14:16.382Z 173554 sync +547ms checkout: written 3 missing 0
+2026-10-17T18:14:20.529Z 173822 land +4ms start
+2026-10-17T18:14:20.682Z 173822 land +156ms pull: peers 3 holder=true
+2026-10-17T18:14:20.994Z 173822 land +468ms pull: settled=true
+2026-10-17T18:14:20.995Z 173822 land +469ms pull: view gaps 0
+2026-10-17T18:14:21.000Z 173822 land +474ms prefetch: fetched 0 missing 0
+2026-10-17T18:14:21.005Z 173822 land +479ms land op
+2026-10-17T18:14:21.028Z 173822 land +502ms land op: accepted #3
+2026-10-17T18:14:21.053Z 173822 land +527ms checkout: written 0 missing 0
+2026-10-17T18:14:21.109Z 173822 land +583ms push: held=true
+2026-10-17T18:14:46.608Z 174193 sync +3ms start
+2026-10-17T18:14:46.798Z 174193 sync +192ms pull: peers 3 holder=true
+2026-10-17T18:14:47.225Z 174193 sync +619ms pull: settled=true
+2026-10-17T18:14:47.226Z 174193 sync +620ms pull: view gaps 0
+2026-10-17T18:14:47.240Z 174193 sync +634ms prefetch: fetched 2 missing 0
+2026-10-17T18:14:47.264Z 174193 sync +658ms checkout: written 2 missing 0
+2026-10-17T18:14:56.095Z 174341 land +3ms start
+2026-10-17T18:14:56.252Z 174341 land +160ms pull: peers 3 holder=true
+2026-10-17T18:14:56.569Z 174341 land +477ms pull: settled=true
+2026-10-17T18:14:56.569Z 174341 land +477ms pull: view gaps 0
+2026-10-17T18:14:56.590Z 174341 land +498ms prefetch: fetched 0 missing 0
+2026-10-17T18:14:56.597Z 174341 land +505ms check round 0: synced to #5
+2026-10-17T18:14:56.600Z 174341 land +508ms checkout: written 0 missing 0
+2026-10-17T18:14:56.600Z 174341 land +508ms check round 0: materialized
+2026-10-17T18:14:56.922Z 174341 land +830ms check round 0: check ran
+2026-10-17T18:14:56.922Z 174341 land +830ms pull: peers 3 holder=true
+2026-10-17T18:14:57.234Z 174341 land +1142ms pull: settled=true
+2026-10-17T18:14:57.234Z 174341 land +1142ms pull: view gaps 0
+2026-10-17T18:14:57.234Z 174341 land +1142ms land op
+2026-10-17T18:14:57.257Z 174341 land +1165ms land op: accepted #6
+2026-10-17T18:14:57.262Z 174341 land +1170ms checkout: written 0 missing 0
+2026-10-17T18:14:57.314Z 174341 land +1222ms push: held=true

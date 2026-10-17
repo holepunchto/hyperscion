@@ -1,0 +1,5 @@
+{"t":"2026-10-17T18:13:53.072Z","do":"schedule","scenario":"q0bp","arm":"hs-plain","scale":1,"events":3}
+{"t":"2026-10-17T18:14:13.591Z","at":0.3,"do":"change-request","files":"change-request","minute":0.34,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""]}
+{"t":"2026-10-17T18:14:20.119Z","at":0.45,"do":"offline","agent":"a1","minute":0.45,"feedStopped":true}
+{"t":"2026-10-17T18:15:29.036Z","at":1.6,"do":"online","agent":"a1","minute":1.6}
+{"t":"2026-10-17T18:17:18.266Z","do":"stop","stopped":["hub","testnet"]}

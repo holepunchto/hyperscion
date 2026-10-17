@@ -233,12 +233,19 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     for (const a of [x, y]) await tm.as(a, ['sync'])
     await tm.stopHub()
     for (const a of [x, y]) {
-      await tm.as(a, ['claim', id2])
+      // nobody heard it: the verdict says so instead of a bare "you lead" (q0bp)
+      const alone = await tm.as(a, ['claim', id2])
+      t.is(alone.code, 2, alone.stdout)
+      t.ok(/nobody heard this claim/.test(alone.stderr), alone.stderr)
       fs.appendFileSync(path.join(tm.agents[a], 'NOTES.md'), `- [${a}] taking CR-2\n`)
       await tm.as(a, ['land', '-m', `${a} takes CR-2`, '--offline'])
     }
     await tm.startHub()
-    for (const a of [x, y]) await tm.as(a, ['push'])
+    // the land that lost the order is undone: push says so instead of timing out (q0bp)
+    for (const a of [x, y]) {
+      const pushed = await tm.as(a, ['push'])
+      t.absent(/push timed out/.test(pushed.stdout), pushed.stdout + pushed.stderr)
+    }
     for (const a of [x, y]) await tm.as(a, ['sync'])
     const verdicts = []
     for (const a of [x, y]) verdicts.push(await tm.as(a, ['claim', id2]))

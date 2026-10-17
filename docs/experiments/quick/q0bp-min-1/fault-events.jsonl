@@ -1,0 +1,5 @@
+{"t":"2026-10-17T18:17:49.546Z","do":"schedule","scenario":"q0bp","arm":"hs-min","scale":1,"events":3}
+{"t":"2026-10-17T18:18:10.922Z","at":0.3,"do":"change-request","files":"change-request","minute":0.37,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"C732359"}
+{"t":"2026-10-17T18:18:16.128Z","at":0.45,"do":"offline","agent":"a1","minute":0.45,"feedStopped":true}
+{"t":"2026-10-17T18:19:25.019Z","at":1.6,"do":"online","agent":"a1","minute":1.6}
+{"t":"2026-10-17T18:24:14.967Z","do":"stop","stopped":["hub","testnet"]}
