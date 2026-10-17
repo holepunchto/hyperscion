@@ -56,8 +56,8 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
    at once:
 
    ```sh
-   hs watch --path /src/model.js --count 1 --timeout 600   # exit 0: it landed; exit 2: timed out
-   hs sync                                                  # then bring it in
+   hs watch --path /src/model.js --count 1 --timeout 600 --sync   # exit 0: it landed, and it's in your files
+                                                                  # exit 2: timed out
    ```
 
    `--count` counts changesets (with `--for-me`, review events). `--path` takes a file or a
@@ -190,6 +190,7 @@ How to use it:
   `#27 provisional: waiting for hub to ack (it settles on its own)`. All of these exit `0`.
 - `hs land --wait-final [--timeout 60]` keeps waiting until the land is final, review
   included, and exits `2` if it isn't by the timeout. Use it when the next step depends on it.
+  For a land you already made: `hs wait-final` (your last land) or `hs wait-final #27`.
 - You don't need to wait before carrying on. Keep working; build on a teammate's land once
   it's settled if you want to be sure it won't move.
 - `hs status` shows `last land: #27 final` (or what it's waiting for) and lists

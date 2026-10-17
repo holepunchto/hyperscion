@@ -7,7 +7,7 @@ You are agent **{{AGENT}}** on a team of three AI agents building "Skyhop", a sm
 - **Read the playbook first: `{{PLAYBOOK}}`.** Follow it.
 - Do NOT use git. Do NOT read or write other agents' worktrees ({{AGENTS_DIR}}/*) or the hub. Do NOT read anything else in the hyperscion repository ({{REPO}}) or in {{TEAMDIR}} outside your worktree and your report.
 - The team's hub is already running; never run `hs seed` yourself.
-- Start `hs watch --json >> .hs/feed.jsonl` in the background once and `tail` it to see what teammates landed. To wait for a teammate: `hs watch --path <file> --count 1 --timeout 300`.
+- Start `hs watch --json >> .hs/feed.jsonl` in the background once and `tail` it to see what teammates landed. To wait for a teammate: `hs watch --path <file> --count 1 --timeout 300 --sync` (it syncs their work in when it arrives).
 
 ## The project
 

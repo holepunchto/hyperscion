@@ -289,6 +289,35 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
   // a2's file now merges a1's section in: its own line is what ann approved
   const l2 = await tm.as('a2', ['land'])
   t.ok(new RegExp(`landed ${id2} as #\\d+`).test(l2.stdout), l2.stdout + l2.stderr)
+  // and it says why (TO-FIVE #20)
+  t.ok(
+    new RegExp(`approval of ${id2} kept for /CONTRACTS.md: .*merged in \\(#\\d+\\)`).test(
+      l2.stdout
+    ),
+    l2.stdout
+  )
+
+  // wait for the last land to be final (#19), and wait for a teammate's file with --sync (#11)
+  const wf = await tm.as('a2', ['wait-final', '--timeout', '30'])
+  t.is(wf.code, 0, wf.stdout + wf.stderr)
+  t.ok(/#\d+ final/.test(wf.stdout), wf.stdout)
+  const waiting = tm.bgAs('a2', [
+    'watch',
+    '--path',
+    'src/x.js',
+    '--count',
+    '1',
+    '--new',
+    '--sync',
+    '--timeout',
+    '60'
+  ])
+  await new Promise((resolve) => setTimeout(resolve, 3000))
+  tm.write('a1', 'src/x.js', 'x\n')
+  await tm.as('a1', ['land', '-m', 'x'])
+  const { waitFor } = require('./helpers/team')
+  await waitFor(() => waiting.exited(), 60_000)
+  t.is(tm.read('a2', 'src/x.js'), 'x\n', waiting.output())
   t.is(
     tm.read('a2', 'CONTRACTS.md'),
     '# contracts\n\n## a1\nloadDay(file) -> Day\n\n## a2\nplan(day) -> Plan\n\n## end\n'
