@@ -1,0 +1,7 @@
+ALERT m0.4 pm sync 15s exit 2: no peers reachable
+EVENT m0.2 partition
+EVENT m0.63 change request landed (attempt 1)
+EVENT m5 heal
+EVENT report a1.md
+EVENT report a2.md
+EVENT report a3.md

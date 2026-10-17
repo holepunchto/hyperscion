@@ -1,0 +1,32 @@
+2026-10-17T20:17:38.560Z 283904 - +485ms checkout: written 0 missing 16
+2026-10-17T20:17:44.532Z 284167 fetch +3ms start
+2026-10-17T20:17:44.659Z 284167 fetch +129ms pull: peers 1 holder=true
+2026-10-17T20:17:44.967Z 284167 fetch +438ms pull: settled=true
+2026-10-17T20:17:44.969Z 284167 fetch +439ms pull: view gaps 0
+2026-10-17T20:17:44.975Z 284167 fetch +445ms prefetch: fetched 0 missing 0
+2026-10-17T20:17:45.590Z 284203 info +4ms start
+2026-10-17T20:18:27.620Z 285165 sync +4ms start
+2026-10-17T20:18:27.743Z 285165 sync +126ms pull: peers 1 holder=true
+2026-10-17T20:18:28.063Z 285165 sync +446ms pull: settled=true
+2026-10-17T20:18:28.063Z 285165 sync +446ms pull: view gaps 0
+2026-10-17T20:18:28.070Z 285165 sync +453ms prefetch: fetched 0 missing 0
+2026-10-17T20:18:28.076Z 285165 sync +460ms checkout: written 0 missing 0
+2026-10-17T20:18:28.703Z 285261 item +4ms start
+2026-10-17T20:18:30.110Z 285383 land +4ms start
+2026-10-17T20:18:30.283Z 285383 land +177ms pull: peers 1 holder=true
+2026-10-17T20:18:30.596Z 285383 land +490ms pull: settled=true
+2026-10-17T20:18:30.597Z 285383 land +491ms pull: view gaps 0
+2026-10-17T20:18:30.604Z 285383 land +498ms prefetch: fetched 0 missing 0
+2026-10-17T20:18:30.611Z 285383 land +505ms land op
+2026-10-17T20:18:30.646Z 285383 land +540ms land op: accepted #2
+2026-10-17T20:18:30.661Z 285383 land +555ms checkout: written 0 missing 0
+2026-10-17T20:18:30.715Z 285383 land +609ms push: held=true
+2026-10-17T20:18:31.744Z 285430 sync +4ms start
+2026-10-17T20:18:46.869Z 285430 sync +15129ms pull: no peers
+2026-10-17T20:18:46.875Z 285430 sync +15135ms checkout: written 0 missing 0
+2026-10-17T20:19:13.227Z 286807 sync +3ms start
+2026-10-17T20:19:13.366Z 286807 sync +142ms pull: peers 2 holder=false
+2026-10-17T20:19:13.679Z 286807 sync +455ms pull: settled=true
+2026-10-17T20:19:13.679Z 286807 sync +455ms pull: view gaps 0
+2026-10-17T20:19:13.682Z 286807 sync +458ms prefetch: fetched 0 missing 0
+2026-10-17T20:19:13.686Z 286807 sync +462ms checkout: written 0 missing 0

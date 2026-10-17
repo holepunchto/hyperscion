@@ -1,0 +1,15 @@
+{"type":"changeset","seq":2,"hash":"gtmagx5ggohimun7nkfbo6f4bf8nzit3yhunbtot1y16y5z6caay","author":"pm","time":1792268309068,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"changeset","seq":3,"hash":"bn8tmncki344w6iqytbjunr1fs7wscxpw3q6on43tom9incbbrxy","author":"a1","time":1792268359776,"message":"a1 takes CR-1 (pricing per flight minute)","files":["/TASKS.md"]}
+{"type":"changeset","seq":4,"hash":"6q57kadswgh3c8oij5eqpiw7ndho5m6bjxkiw7imkrzkcnig1hsy","author":"a2","time":1792268360796,"message":"a2 takes CR-1","files":["/TASKS.md"]}
+{"type":"changeset","seq":5,"hash":"1471wp333e7uhi84rohftbpi3aydazdy8ii9axtdiwwatmww5pyy","author":"a2","time":1792268368109,"message":"a2 yields CR-1 to a1 (claimed first in #3)","files":["/NOTES.md","/TASKS.md"]}
+{"type":"hub","state":"stalled","settled":2,"head":5,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":6,"hash":"ajzbeacadctzx1a6psc3wr6csc1ocqp18dhpx4kuh8jxjjbs3bgy","author":"a1","time":1792268391854,"message":"CR-1: price = 2 + 0.25/flight minute + 0.40/kg, express x1.5 (pricing.js, tests, CONTRACTS)","files":["/CONTRACTS.md","/NOTES.md","/TASKS.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"offline","at":"2026-10-17T20:19:55.374Z"}
+{"type":"online","at":"2026-10-17T20:20:03.762Z"}
+{"type":"changeset","seq":7,"hash":"egx8cwhwnwajgq9jd3rt95fro849tb87f948t5senm79fqo6suro","author":"a2","time":1792268417449,"message":"CR-1 review: edge tests for pricing (trip order, half-up rounding, undelivered) in test/pricing-edge.test.js","files":["/NOTES.md","/test/pricing-edge.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
+{"type":"settled","seq":7,"text":"@ settled through #7"}

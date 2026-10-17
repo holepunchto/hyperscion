@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "schema": [
     {
       "name": "head",
@@ -473,6 +473,12 @@
           "name": "proposal",
           "type": "uint",
           "version": 7
+        },
+        {
+          "name": "earlierLands",
+          "array": true,
+          "type": "@hs/head",
+          "version": 18
         }
       ]
     },

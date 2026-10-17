@@ -97,7 +97,14 @@ async function visitSiteB(agent, cwd) {
   const file = path.join(faults, agent + '.site')
   fs.writeFileSync(file, run.siteB)
   try {
-    const res = await tool(agent, ['sync'], cwd)
+    // site B's feeds may not be up yet (q0bs-min-3: the agents hadn't started them at 0.3, so
+    // the change request reached site B a minute late, by hand): retry until a peer answers
+    let res = null
+    for (let attempt = 0; attempt < 24; attempt++) {
+      res = await tool(agent, ['sync'], cwd)
+      if (!/no peers reachable/.test(res.out)) break
+      await sleep(5000)
+    }
     return res.out.trim().split('\n').slice(-2)
   } finally {
     fs.rmSync(file, { force: true })

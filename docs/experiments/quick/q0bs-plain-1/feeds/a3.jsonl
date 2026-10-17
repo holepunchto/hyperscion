@@ -1,0 +1,6 @@
+{"type":"changeset","seq":3,"hash":"xutghkre9gfwka1qd67nwyyhp4yd3jdh8ncy79e1o6qnbfa3t71y","author":"a3","time":1792268327089,"message":"a3 takes CR-1 (pricing per flight-minute)","files":["/TASKS.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"g48od8hkfyusqbkref9mqr51h5raox916hk3173nzta56o6fyydy","author":"a3","time":1792268355721,"message":"CR-1: pricing per flight-minute (2 + 0.25/min + 0.40/kg, express x1.5, half-up cents); tests; CONTRACTS","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"4i4nwpu63ismg6jokjkf4amg5r5goow1fyyatg6abxu16nonnk8y","author":"a3","time":1792268361019,"message":"a3 done CR-1 (#4)","files":["/TASKS.md"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}

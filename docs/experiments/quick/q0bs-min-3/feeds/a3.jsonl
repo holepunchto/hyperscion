@@ -1,0 +1,4 @@
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C48bf50","text":"@ C48bf50 \"Change request CR-1 (from pm)\" claimed by a3; they lead"}
+{"type":"done","n":5,"proposal":null,"seq":3,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C48bf50","text":"@ C48bf50 \"Change request CR-1 (from pm)\" done by a3 in #3"}
+{"type":"changeset","seq":3,"hash":"sd7a1emmqkhmh46suyyk4ewam3ssjado7u36cdhyrbqesw761aco","author":"a3","time":1792268346611,"message":"CR-1: pricing per flight minute (pricing.js, tests, CONTRACTS)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}

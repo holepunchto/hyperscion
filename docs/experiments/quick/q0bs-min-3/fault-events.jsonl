@@ -1,0 +1,6 @@
+{"t":"2026-10-17T20:18:09.763Z","do":"schedule","scenario":"q0bs","arm":"hs-min","scale":1,"events":3}
+{"t":"2026-10-17T20:18:21.058Z","at":0.2,"do":"partition","agents":["a1","a2"],"minute":0.2,"site":"b","moved":{"a1":{"feed":null},"a2":{"feed":null}}}
+{"t":"2026-10-17T20:18:46.902Z","at":0.3,"do":"change-request","files":"change-request","bothSites":true,"minute":0.63,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"C48bf50","siteB":["!! no peers reachable: showing local main #2. Retry `hs sync` shortly","open item C48bf50 \"Change request CR-1 (from pm)\": nobody on it"]}
+{"t":"2026-10-17T20:19:13.745Z","do":"visit-site-b","agent":"pm","manual":true,"out":"up to date with main #2 open item C48bf50 \"Change request CR-1 (from pm)\": nobody on it "}
+{"t":"2026-10-17T20:23:09.273Z","at":5,"do":"heal","agents":["a1","a2"],"minute":5,"site":"a","moved":{"a1":{"feed":289371},"a2":{"feed":289421}}}
+{"t":"2026-10-17T20:34:02.947Z","do":"stop","stopped":["hub","testnet"]}
