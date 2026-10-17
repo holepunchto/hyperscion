@@ -1,0 +1,6 @@
+{"type":"changeset","seq":2,"hash":"p59beihup1gcqgnt8d9m8tb67oy36ky3of6h4a9uz4ktm4ju168y","author":"pm","time":1792264965720,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" claimed by a3; they lead"}
+{"type":"done","n":5,"proposal":null,"seq":3,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" done by a3 in #3"}
+{"type":"changeset","seq":3,"hash":"pp6obepmjsfdigoch6mo41xy9e5bkfgrkif4ojzsh5yjfudoeo8y","author":"a3","time":1792265005897,"message":"CR-1: price per flight minute (2 + 0.25/min + 0.40/kg, express x1.5, half-up cents); CONTRACTS + unit tests","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}

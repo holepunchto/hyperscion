@@ -58,6 +58,14 @@ flow test (`npm run flows`) or a q0-style run shows the need.
   0; calls per code land 32 to 30).
 - Done: `hs claim <item> --if-free` withdraws a losing claim at once; `hs land --done` closes
   the item the land links itself to. Both in test/flows.js (F1, F10).
-- Not run: an hours-long, multi-site partitioned LLM run; the partition case is covered by
-  the scripted flow F9 until then.
-- A longer partitioned run (hours, sites, a lost claim) before revisiting the board question.
+- Multi-site: q0bs splits the team into two sites, each with peers (the hub on one side),
+  for 4.8 minutes. Claim leases last 20 minutes and renew while held, so the lead rule a
+  longer split exercises is the same one. Covered by test/flows.js F11 and LLM runs
+  q0bs-min-1/2.
+  - In q0bs-min-2, each side had its own lead (a2 on B at 0.52, a3 on A at 0.54), and each
+    built the change request. On heal the earlier claim led everywhere, which is the claims
+    mechanism working as designed.
+  - The run found a core bug that isn't about claims: in `init --hub` repos, a land the hub
+    made final can be reordered by the site that couldn't reach it (docs/FINALITY.md). The
+    board arm (q0bs-plain-1) waits for that fix: on this core it would measure the bug, not
+    the board.

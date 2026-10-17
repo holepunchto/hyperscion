@@ -1,0 +1,17 @@
+{"type":"item","n":2,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ item Ca9739b \"Change request CR-1 (from pm)\" by pm: `hs claim Ca9739b`"}
+{"type":"changeset","seq":2,"hash":"p59beihup1gcqgnt8d9m8tb67oy36ky3of6h4a9uz4ktm4ju168y","author":"pm","time":1792264965720,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" claimed by a2; they lead"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"offline","at":"2026-10-17T19:23:02.059Z"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"release","n":7,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" released by a1; a2 leads it"}
+{"type":"changeset","seq":3,"hash":"k578rsb7zoyrru68sayeao4scwgmcofjxsomqa9n6io5hea6fmzy","author":"a1","time":1792264989023,"message":"notes: a1 defers CR-1 to a2, offers pricing unit tests","files":["/NOTES.md"]}
+{"type":"online","at":"2026-10-17T19:23:15.970Z"}
+{"type":"done","n":8,"proposal":null,"seq":4,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Ca9739b","text":"@ Ca9739b \"Change request CR-1 (from pm)\" done by a2 in #4"}
+{"type":"changeset","seq":4,"hash":"op5ks156fpdj6d7o8fjc7esaaqeobfjnhtez7bhq36auf74a7dyo","author":"a2","time":1792265003632,"message":"CR-1: price per flight minute (2 + 0.25/min + 0.40/kg, express x1.5, half-up cents); unit tests; CONTRACTS.md","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"hub","state":"stalled","settled":2,"head":4,"hint":"keep working: lands still reach teammates and settle when the hub is back"}
+{"type":"changeset","seq":5,"hash":"qhk3knsxkp6q6iqt9mrbsjqfqtxh5y6uu1hze9coj3nxu58j6kao","author":"a2","time":1792265015515,"message":"notes: a2 -> a1 on test file name","files":["/NOTES.md"]}
+{"type":"review","n":9,"proposal":null,"seq":4,"actor":"a1","verdict":"approved","comment":"matches CR-1: minutes per drone speed, cumulative in flight order, half-up cents, total = sum of rounded; npm test passes","reviewers":[],"item":null,"text":"@ #4 approved by a1 :: matches CR-1: minutes per drone speed, cumulative in flight order, half-up cents, total = sum of rounded; npm test passes"}
+{"type":"review","n":10,"proposal":null,"seq":4,"actor":"a1","verdict":"approved","comment":"matches CR-1: minutes per drone speed, cumulative in flight order, half-up cents, total = sum of rounded; npm test passes","reviewers":[],"item":null,"text":"@ #4 approved by a1 :: matches CR-1: minutes per drone speed, cumulative in flight order, half-up cents, total = sum of rounded; npm test passes"}
+{"type":"settled","seq":5,"text":"@ settled through #5"}

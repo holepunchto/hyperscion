@@ -1,0 +1,5 @@
+{"t":"2026-10-17T19:22:24.372Z","do":"schedule","scenario":"q0bs","arm":"hs-min","scale":1,"events":3}
+{"t":"2026-10-17T19:22:36.028Z","at":0.2,"do":"partition","agents":["a1","a2"],"minute":0.2,"site":"b","moved":{"a1":{"feed":null},"a2":{"feed":null}}}
+{"t":"2026-10-17T19:22:47.326Z","at":0.3,"do":"change-request","files":"change-request","bothSites":true,"minute":0.39,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"Ca9739b","siteB":["up to date with main #2","open item Ca9739b \"Change request CR-1 (from pm)\": nobody on it"]}
+{"t":"2026-10-17T19:27:24.309Z","at":5,"do":"heal","agents":["a1","a2"],"minute":5.01,"site":"a","moved":{"a1":{"feed":246856},"a2":{"feed":246881}}}
+{"t":"2026-10-17T19:42:05.764Z","do":"stop","stopped":["hub","testnet"]}

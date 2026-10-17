@@ -3,6 +3,7 @@
 // reordered or replaced. A control tracks the stricter all-writers rule from the same records.
 //
 //   HS_SETTLE_SEED=<n> HS_SETTLE_ROUNDS=<n> brittle-bare test/settle-property.js
+//   HS_SETTLE_TOPOLOGY=hub   the hub added by a light owner, as `hs init --hub` builds it
 const test = require('brittle')
 const b4a = require('b4a')
 const c = require('compact-encoding')
@@ -18,8 +19,9 @@ const PathRecord = getEncoding('@hs/path')
 const SEED = Number(process.env.HS_SETTLE_SEED || 12)
 const ROUNDS = Number(process.env.HS_SETTLE_ROUNDS || 30)
 const HOT = ['/a.txt', '/b.txt', '/c.txt']
+const TOPOLOGY = process.env.HS_SETTLE_TOPOLOGY || 'genesis'
 
-test(`settled changesets are never reordered (seed ${SEED}, ${ROUNDS} rounds)`, async (t) => {
+test(`settled changesets are never reordered (${TOPOLOGY}, seed ${SEED}, ${ROUNDS} rounds)`, async (t) => {
   t.timeout(600_000)
   let state = SEED
   const rand = () => {
@@ -28,16 +30,23 @@ test(`settled changesets are never reordered (seed ${SEED}, ${ROUNDS} rounds)`, 
   }
   const pick = (list) => list[Math.floor(rand() * list.length)]
 
-  const repos = []
-  for (let i = 0; i < 4; i++) {
+  const open = async (opts) => {
     const store = new Corestore(await tmp(t))
-    const repo = new Repo(store, { key: i === 0 ? null : repos[0].key })
+    const repo = new Repo(store, opts)
     await repo.ready()
-    repos.push(repo)
     t.teardown(async () => {
       await repo.close()
       await store.close()
     })
+    return repo
+  }
+  // 'genesis': the hub is the heavy bootstrap writer (repos before milestone 7). 'hub': what
+  // `hs init --hub` builds since then, a light owner (weight 1) that adds the hub as indexer
+  const owner = TOPOLOGY === 'hub' ? await open({ bootstrapWeight: 1 }) : null
+  const repos = []
+  for (let i = 0; i < 4; i++) {
+    const key = owner ? owner.key : i === 0 ? null : repos[0].key
+    repos.push(await open({ key, ...(owner ? { bootstrapWeight: 1 } : {}) }))
   }
   const [hub, ...agents] = repos
 
@@ -73,7 +82,28 @@ test(`settled changesets are never reordered (seed ${SEED}, ${ROUNDS} rounds)`, 
   }
 
   allUp()
-  for (const a of agents) await hub.addWriter(a.writerKey, { indexer: false })
+  if (owner) {
+    // the owner admits the hub (as indexer) and the agents, then goes away
+    const ownerLinks = repos.map((r) => {
+      const s1 = owner.store.replicate(true)
+      const s2 = r.store.replicate(false)
+      s1.pipe(s2).pipe(s1)
+      return [s1, s2]
+    })
+    await owner.addWriter(hub.writerKey, { indexer: true })
+    for (const a of agents) await owner.addWriter(a.writerKey, { indexer: false })
+    for (let i = 0; i < 60 && !repos.every((r) => r.writable); i++) {
+      await owner.update()
+      await pump(1)
+    }
+    await pump(10)
+    for (const [s1, s2] of ownerLinks) {
+      s1.destroy()
+      s2.destroy()
+    }
+  } else {
+    for (const a of agents) await hub.addWriter(a.writerKey, { indexer: false })
+  }
   await pump(30)
   t.ok(
     agents.every((a) => a.writable),
