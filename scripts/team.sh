@@ -46,6 +46,7 @@ wrapper() {
 #!/bin/sh
 # hs for $1; every call is traced to $DIR/trace.jsonl
 export USER=$1 HS_AGENT=$1 HS_TRACE=$DIR/trace.jsonl
+$(case "$1" in a[0-9]*) [ -n "$AGENT_SURFACE" ] && echo "export HS_SURFACE=$AGENT_SURFACE" ;; esac)
 # debug logs the agent never sees: mirror steps (feeds) and land/sync phase timings
 export HS_DEBUG_MIRROR=$DIR/debug/mirror-$1.log HS_DEBUG_LAND=$DIR/debug/land-$1.log
 ${HS_BOOTSTRAP:+export HS_BOOTSTRAP=$HS_BOOTSTRAP}

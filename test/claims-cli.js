@@ -184,21 +184,22 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   const after = await tm.as('ann', ['inbox'])
   t.ok(/nothing waiting on you/.test(after.stdout), after.stdout)
 
-  // without the item, the protected path is refused; --under lands a piece and keeps it open
+  // a land that names no item links itself to the approved item covering its paths (TO-FIVE
+  // #6), as a piece (`under`): the item stays open
   tm.write('a1', 'src/api/v1.js', '// v1\n')
-  const refused = await tm.as('a1', ['land', '-m', 'api v1'])
-  t.ok(/need.* approval/.test(refused.stdout + refused.stderr), refused.stdout + refused.stderr)
+  const linked = await tm.as('a1', ['land', '-m', 'api v1'])
   t.ok(
-    new RegExp(`hs land --item ${id}\` \\(or --under ${id}\\): ${id} is approved`).test(
-      refused.stdout + refused.stderr
-    ),
-    'the hint names the approved item'
+    new RegExp(`linked to ${id} "rename the api"`).test(linked.stdout),
+    linked.stdout + linked.stderr
   )
-  const piece = await tm.as('a1', ['land', '-m', 'api v1', '--under', id])
+  t.ok(/landed #\d+/.test(linked.stdout), linked.stdout)
+  // --under does the same by hand
+  tm.write('a1', 'src/api/v1b.js', '// v1b\n')
+  const piece = await tm.as('a1', ['land', '-m', 'api v1b', '--under', id])
   t.ok(/landed #\d+/.test(piece.stdout), piece.stdout + piece.stderr)
   const open = await tm.as('a1', ['claims'])
   t.ok(new RegExp(`${id} "rename the api"`).test(open.stdout), open.stdout)
-  t.absent(/\[done/.test(open.stdout), 'still open after --under')
+  t.absent(/\[done/.test(open.stdout), 'still open after pieces')
 
   // the plan is approved: its author lands into the protected paths it names
   tm.write('a1', 'src/api/v2.js', '// v2\n')

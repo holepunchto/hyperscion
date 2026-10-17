@@ -76,6 +76,25 @@ Use it before a full round. There are two tiers.
      approves what `hs inbox` and `hs proposals` show after 10 s, but holds the CR item for
      90 s. Her decisions go to `<teamdir>/approvals.jsonl`, and `alerts.js` prints them
      along with refused lands.
+   - **Coordination only, `q0` (about 3 min, the retrospective's experiment):** a finished,
+     green planner and one change request with no owner named, no swarm, no outage. The arm
+     is the second argument to `setup.sh`:
+     - `hs`: the full surface and docs/AGENTS.md;
+     - `hs-min`: agents get only change control plus `claims`/`claim` (`HS_SURFACE=minimal`,
+       docs/AGENTS-min.md);
+     - `hs-plain`: no hs coordination; a `TASKS.md` board instead (`HS_SURFACE=plain`,
+       docs/AGENTS-plain.md).
+
+     pm and people keep the full surface. The arm playbooks are built from docs/AGENTS.md by
+     `node scripts/experiment/playbooks.js` (rerun it after editing AGENTS.md). Score with
+     the coordination metrics in metrics.json (`coordination_calls`, `wait_teammate_s`,
+     `first_land_min`, `round_trips_per_land`) and `duplicate_implementations` against
+     `fallback_computations`.
+
+   - **Before any LLM run, the scripted tiers:** `npm run flows` (test/flows.js runs the real
+     CLI through claim, split, approve, merge, waits and re-land flows, about 100 s, and
+     writes flows.json; test/coordination-props.js holds the pure properties). A flow change
+     that breaks these never reaches an LLM run.
    - **Cut runs short:** `node scripts/experiment/alerts.js <teamdir> --follow` prints one
      line per problem (push timeouts, unfetchable content, stale-copy refusals, stalls,
      lands or syncs over 30 s) and when the change request lands. Stop the agents as soon as

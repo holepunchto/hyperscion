@@ -23,7 +23,7 @@ existed).
 | 3 | **Swarm noise out of my feed and output** (renumbered lines, `/swarm/` changesets) | q2s-claims-4 a3 | 2 | Partly: `quiet` paths in `.hsattributes`; renumbered lines for quiet paths still show | Yes, small |
 | 4 | **Land a piece of an item without closing it** | q2s-claims-3 a2 | 1 | Fixed `bf4ee17` (`land --under`) | Done |
 | 5 | **Close a parent when its parts are done** | q2s-claims-2 a2 | 1 | Fixed (parts-done feed line plus `claim --done`) | Done |
-| 6 | **Link a land to the open part it implements** (touches its paths, or quotes its id) | q2s-claims-3 a3 | 1 | Open | Yes: `land` suggests `--item`/`--under` when the changes fall in an open item's paths |
+| 6 | **Link a land to the open part it implements** (touches its paths, or quotes its id) | q2s-claims-3 a3 | 1 | Fixed: a land naming no item links itself (as `under`) to the one open item whose paths it touches, or that you hold a claim on: "linked to C…" | Yes: `land` suggests `--item`/`--under` when the changes fall in an open item's paths |
 | 7 | **One step to create and claim a part, or take my part** | q2s-claims-2 a3 | 2 | Open | Yes, small (`item part --claim`) |
 | 8 | **`status` never stalls** | q2s-claims-1 a2 | 1 | Reopened by q2h-1 and folded into #12 | See #12 |
 | 9 | **Section-aware merge for CONTRACTS.md** | q2-hs-7 a1 | 2 | Open | Maybe: a markdown-sections merge driver; medium |
@@ -43,7 +43,7 @@ existed).
 | 23 | **Say when a change request gives me no part** (`CR-1: no part for a1`), so an agent with none knows it is done | q2h-7 a1 | 1 | Open | Yes, small: the CR item can name its parts' owners |
 | 24 | **Don't silently reset an approved proposal on a split**: land the approved revision first, propose only the new lines | q2h-7 a2 | 1 | Fixed: a split past an approved proposal lands the approved revision first, then proposes only the new lines; a re-proposal of an approved one warns | Yes, small-medium: split the protected change against the approved text |
 | 25 | **A failed `--check` names the incoming changesets it read** and shows the end of the output | q2h-7 a3 | 1 | Fixed: a failed --check leads with the lines that say what failed, drops stack frames, and names the teammates' changesets it read | Yes, small |
-| 26 | **Warn before `land --item` closes a whole multi-part item** after one piece (suggest `--under`) | q2-hs-7 a3 | 1 | Open | Yes, small: the item has open parts or a title wider than the land |
+| 26 | **Warn before `land --item` closes a whole multi-part item** after one piece (suggest `--under`) | q2-hs-7 a3 | 1 | Fixed by #6: auto-linked lands attach as `under`, so a piece never closes the item | Yes, small: the item has open parts or a title wider than the land |
 
 ## Runs
 

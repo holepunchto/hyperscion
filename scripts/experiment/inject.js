@@ -147,6 +147,13 @@ const actions = {
       }
       const notes = path.join(cwd, 'NOTES.md')
       if (!fs.readFileSync(notes, 'utf8').includes(line.trim())) fs.appendFileSync(notes, line)
+      // q0's plain arm: no hs coordination, the change request goes on the task board
+      const tasksLine = path.join(src, 'TASKS.line')
+      const tasks = path.join(cwd, 'TASKS.md')
+      if (run.arm === 'hs-plain' && fs.existsSync(tasksLine) && fs.existsSync(tasks)) {
+        const t = fs.readFileSync(tasksLine, 'utf8')
+        if (!fs.readFileSync(tasks, 'utf8').includes(t.trim())) fs.appendFileSync(tasks, t)
+      }
       // q2h: the change request lands with a review policy (contract changes need a person)
       if (hs && scenario.changeRequestPolicy) {
         fs.copyFileSync(
@@ -160,7 +167,7 @@ const actions = {
         if (/landed #\d+/.test(res.out)) {
           // claims (docs/CLAIMS.md): the change request is also an item agents can claim
           let item = null
-          if (scenario.claims) {
+          if (scenario.claims && run.arm !== 'hs-plain') {
             const lead = scenario.changeRequestLead ? ['--lead', scenario.changeRequestLead] : []
             const kind = scenario.changeRequestKind || 'implement'
             const paths = (scenario.changeRequestPaths || []).flatMap((p) => ['--paths', p])
