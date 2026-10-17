@@ -1,0 +1,9 @@
+2026-10-17T16:27:15.275Z 53235 land +5ms start
+2026-10-17T16:27:15.474Z 53235 land +203ms pull: peers 1 holder=true
+2026-10-17T16:27:15.791Z 53235 land +520ms pull: settled=true
+2026-10-17T16:27:15.791Z 53235 land +520ms pull: view gaps 0
+2026-10-17T16:27:15.795Z 53235 land +524ms prefetch: fetched 0 missing 0
+2026-10-17T16:27:15.801Z 53235 land +530ms land op
+2026-10-17T16:27:15.829Z 53235 land +558ms land op: accepted #1
+2026-10-17T16:27:15.834Z 53235 land +563ms checkout: written 0 missing 0
+2026-10-17T16:27:15.887Z 53235 land +616ms push: held=true

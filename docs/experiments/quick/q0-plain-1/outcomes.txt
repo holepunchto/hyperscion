@@ -1,0 +1,24 @@
+{"id":"#1","minute":-0.2,"author":"owner","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#2","minute":0.5,"author":"pm","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#3","minute":0.6,"author":"a1","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#4","minute":0.6,"author":"a3","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#5","minute":0.8,"author":"a1","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#6","minute":1,"author":"a2","green":true,"acceptance":0.926,"perMinute":false,"duplicates":0,"fallbacks":0}
+{"id":"#7","minute":1.1,"author":"a3","green":true,"acceptance":1,"perMinute":true,"duplicates":1,"fallbacks":0}
+{
+  "main_states": 6,
+  "main_green_pct": 100,
+  "main_regressions": 0,
+  "main_longest_red_min": 0,
+  "final_green": true,
+  "acceptance_final_pct": 100,
+  "acceptance_50_at_min": 0.5,
+  "acceptance_80_at_min": 0.5,
+  "acceptance_100_at_min": 1.1,
+  "final_state_min": 1.1,
+  "duplicate_implementations": 1,
+  "duplicate_implementations_max": 1,
+  "fallback_computations": 0,
+  "change_request_at_min": 0.5,
+  "change_request_done_after_min": 0.6
+}

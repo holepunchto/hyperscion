@@ -1,0 +1,12 @@
+{"type":"changeset","seq":2,"hash":"dmkt7zmhq57bgdr19hgzncf4nmgztjky5xgzzdir3mteasgrxcko","author":"pm","time":1792254482111,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"changeset","seq":3,"hash":"xpkz5y1rxnge3j9zyyxokse6zn9prsnfiuf3cs5w4bukh4fno7to","author":"a1","time":1792254486454,"message":"a1: unit tests for geo and model","files":["/test/geo.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"8dswuhh77bbjbdn5kxdcxpw15hbgspkyxk1ocrdq9zruz8irmwoy","author":"a3","time":1792254488035,"message":"a3 takes CR-1 (pricing.js)","files":["/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"4k7xdaox4d9gkjyzu8qegsa3hf371hch14dy1pjju5pijxq9761y","author":"a1","time":1792254497261,"message":"a1: note, leaving CR-1 to a3","files":["/NOTES.md"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"changeset","seq":6,"hash":"8cag6ypr5dhhdcjj86mib9ymhjze17bm3tc97xf7msueodmxopqo","author":"a2","time":1792254509715,"message":"a2: scheduler unit tests (no behaviour change; CR-1 is a3's)","files":["/NOTES.md","/test/scheduler.test.js"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
+{"type":"changeset","seq":7,"hash":"jtb1fsebquwcy7az3ghttrineuepd43can6ynhdn53khzj1xqfuy","author":"a3","time":1792254515592,"message":"CR-1: price = 2 + 0.25/flight-minute + 0.40/kg, express x1.5, half-up cents; tests; CONTRACTS updated","files":["/CONTRACTS.md","/TASKS.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":7,"text":"@ settled through #7"}

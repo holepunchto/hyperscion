@@ -1,0 +1,76 @@
+# hs usage: 32 calls since 2026-10-17T16:25:01.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 13 | 4 | 0 | 1 | 3 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 0.5m |
+| a2 | 10 | 4 | 0 | 1 | 4 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.9m |
+| a3 | 9 | 3 | 0 | 2 | 3 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 1.0m |
+
+totals: lands 4 (accepted 4), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 441/441, claims 793/875, land 2401/2401, claim 2400/2400, watch 5468/46429, show 120/120
+a2: sync 511/511, claims 871/1093, watch 2499/52053, land 2463/2463
+a3: sync 521/521, watch 7535/49730, claims 1143/1143, claim 2345/2345, land 1850/1850
+
+## command mix
+a1: sync=1 claims=4 land=2 claim=2 watch=3 show=1
+a2: sync=1 claims=4 watch=4 land=1
+a3: sync=2 watch=3 claims=1 claim=2 land=1
+
+## land timeline
+  0.5m a1 landed #3                                               geo: unit tests for distanceKm/travelMinutes
+  0.9m a1 landed #4                                               notes: a1 defers CR-1 to a3
+  0.9m a2 landed #5                                               scheduler: unit tests (no behaviour change); NOTES: a2 leaves CR-1 to 
+  1.0m a3 landed #6                                               CR-1: pricing per flight-minute (2.00 + 0.25/min + 0.40/kg, express x1
+
+## metrics (also in metrics.json)
+calls: 32
+minutes: 1.3
+lands: 4
+accepted: 4
+calls_per_accepted_land: 8
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 4
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 2401
+land_ms_p90: 2463
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.3
+vcs_min_total: 0.4
+vcs_share_pct: 16.8
+watch_calls: 10
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 13
+coordination_share: 0.5
+wait_scenario_s: 10
+wait_teammate_s: 7
+wait_settle_s: 0
+first_land_min: 0.9
+round_trips_per_land: 4.8
+round_trips_per_land_p90: 6
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4.33
+land_state_trust_mean: 5
+minutes_lost_to_hs_total: 0
+confusing_messages_total: 2
+review_usefulness_mean: null
+to_five: ["a1 (4): `hs watch --item C31ca6b --sync`: block until a land linked to the item (or its --done) arrives and sync it, so non-leads can wait on the work itself rather than guessing a --path","a2 (4): hs claims (and the feed) should show linked lands under an item, e.g. 'C31ca6b lead a3 — landed #6 (linked), not marked done', so teammates can tell a CR is on main without reading messages","a3 (4): hs claim <item> should push a follow-up to every claimant when another claim arrives (e.g. feed line '@ C31ca6b: a1 claimed after you; you lead') and hs claims should list all claimants in order."]

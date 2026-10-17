@@ -1,0 +1,76 @@
+# hs usage: 29 calls since 2026-10-17T16:22:21.000Z
+
+| agent | calls | observe | pull | sync | watch | lands (accepted) | auto-rebased | real conflicts | flips | stalls | unavailable | stale refusals | first land |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a1 | 10 | 3 | 0 | 1 | 3 | 2 (2) | 0 | 0 | 0 | 0 | 0 | 0 | 0.6m |
+| a2 | 10 | 5 | 0 | 1 | 4 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 0.9m |
+| a3 | 9 | 4 | 0 | 1 | 3 | 1 (1) | 0 | 0 | 0 | 0 | 0 | 0 | 1.0m |
+
+totals: lands 4 (accepted 4), auto-rebased 0, real conflicts 0, flip banners 0, stalls 0, unavailable 0, stale refusals 0, push timeouts 0, unresolved 0
+
+## latency p50/p90 (ms)
+a1: sync 512/512, claims 821/882, land 1655/1655, watch 8530/57040
+a2: sync 480/480, claims 788/931, watch 3912/46949, land 1613/1613, status 138/138
+a3: sync 439/439, claims 801/801, watch 1499/45078, claim 2394/2394, land 1973/1973, status 113/113
+
+## command mix
+a1: sync=1 claims=4 land=2 watch=3
+a2: sync=1 claims=3 watch=4 land=1 status=1
+a3: sync=1 claims=2 watch=3 claim=1 land=1 status=1
+
+## land timeline
+  0.6m a1 landed #3                                               geo/model: unit tests for distanceKm, travelMinutes, loadDay
+  0.9m a1 landed #4                                               NOTES: a1 defers CR-1 to a3, offers review
+  0.9m a2 landed #5                                               scheduler: unit tests (express first, unassigned reasons); a2 defers C
+  1.0m a3 landed #6                                               CR-1: pricing per flight minute (src/pricing.js, unit tests, CONTRACTS
+
+## metrics (also in metrics.json)
+calls: 29
+minutes: 1.3
+lands: 4
+accepted: 4
+calls_per_accepted_land: 7.25
+auto_rebased: 0
+real_conflicts: 0
+flips: 0
+stalls: 0
+unavailable: 0
+push_timeouts: 0
+land_ended_final: 4
+land_ended_settled: 0
+land_ended_provisional: 0
+land_ms_p50: 1655
+land_ms_p90: 1973
+tool: "hs"
+polling_calls: 0
+push_rejected: 0
+not_landed: 0
+wait_min_total: 0.3
+vcs_min_total: 0.3
+vcs_share_pct: 11.7
+watch_calls: 10
+proposals: 0
+reviews_given: 0
+shows_sent: 0
+needs_review_rejections: 0
+exit_errors: 0
+exit_warnings: 0
+help_calls: 0
+unknown_flag_or_command: 0
+old_habits: 0
+coordination_calls: 10
+coordination_share: 0.43
+wait_scenario_s: 5
+wait_teammate_s: 10
+wait_settle_s: 0
+first_land_min: 0.9
+round_trips_per_land: 4.5
+round_trips_per_land_p90: 6
+usefulness_vs_git: [4,4,4]
+would_choose_hs: "3/3"
+output_clarity_mean: 4.33
+land_state_trust_mean: 5
+minutes_lost_to_hs_total: 0
+confusing_messages_total: 2
+review_usefulness_mean: null
+to_five: ["a1 (4): `hs watch --item <id> --claimed` (or have `hs claims --wait`) that blocks until the item has a lead and prints who it is, so deciding whether to defer needs no polling.","a2 (4): Make `hs watch --path X --count 1 --sync` print the item and its lead when the matched changeset carries one (e.g. 'item Cc91ec1, lead a3'), and drop the 'run hs sync' hint when --sync already synced","a3 (4): hs watch --path X --sync: when the change is already on main, just say 'already landed (#2), synced' and drop the 'run hs sync' hint; plus show the item text in `hs claims` so ownership is clear without reading the file"]

@@ -1,0 +1,13 @@
+{"type":"changeset","seq":2,"hash":"k6ifid1is6axwpnzooqfzrrprr6jtf4d4kb8edq6zuok33fwzroy","author":"pm","time":1792254173399,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"item","n":3,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"Cc91ec1","text":"@ item Cc91ec1 \"Change request CR-1 (from pm)\" by pm: `hs claim Cc91ec1`"}
+{"type":"changeset","seq":3,"hash":"9kqh8s31759m7b751z93opog3sfc3nyd8h1rdxh4e7gnwfie5zgy","author":"a1","time":1792254177852,"message":"geo/model: unit tests for distanceKm, travelMinutes, loadDay","files":["/test/geo.test.js"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cc91ec1","text":"@ Cc91ec1 \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"changeset","seq":4,"hash":"br7n91w6f1bm5qu6ewc36wr1z3e8bi9otiynzfi8b5f5g8bokz3o","author":"a1","time":1792254196050,"message":"NOTES: a1 defers CR-1 to a3, offers review","files":["/NOTES.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"ep5myorzi8jz1c6tzc81w81hx1epcmb5zmghbgd7gg6y3ommb76y","author":"a2","time":1792254198786,"message":"scheduler: unit tests (express first, unassigned reasons); a2 defers CR-1 to a3","files":["/NOTES.md","/test/scheduler.test.js"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"done","n":8,"proposal":null,"seq":6,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cc91ec1","text":"@ Cc91ec1 \"Change request CR-1 (from pm)\" done by a3 in #6"}
+{"type":"changeset","seq":6,"hash":"eapzddkt7kgifjgntt8q974bj7rqnm6nf5huw6zr9gq9ukf8ktpy","author":"a3","time":1792254205052,"message":"CR-1: pricing per flight minute (src/pricing.js, unit tests, CONTRACTS.md)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}

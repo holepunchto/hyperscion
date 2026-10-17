@@ -1,0 +1,15 @@
+{"type":"changeset","seq":2,"hash":"pn4oni98xqbonrto7ik8bxkax3a37nxaczb7koq7tuapu9p14obo","author":"pm","time":1792254333079,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"changeset","seq":3,"hash":"bhoi5zmuutr7ufrrg8idc6wf56bcrmxagndjkq61yszcqf71ugry","author":"a1","time":1792254334591,"message":"geo: unit tests for distanceKm/travelMinutes","files":["/test/geo.test.js"]}
+{"type":"item","n":3,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"C31ca6b","text":"@ item C31ca6b \"Change request CR-1 (from pm)\" by pm: `hs claim C31ca6b`"}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C31ca6b","text":"@ C31ca6b \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C31ca6b","text":"@ C31ca6b \"Change request CR-1 (from pm)\" claimed by a1"}
+{"type":"release","n":7,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C31ca6b","text":"@ C31ca6b \"Change request CR-1 (from pm)\" released by a1: open again"}
+{"type":"changeset","seq":4,"hash":"9ejap5msmisxq1hjcez64mwsbg6wywxeb1dxmzwazk3zxp8okgoo","author":"a1","time":1792254356925,"message":"notes: a1 defers CR-1 to a3","files":["/NOTES.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"aabdnh7m6fh4og1ujodkdpqex3nsu7ysxhpiagc4k57bi59u5k6y","author":"a2","time":1792254358384,"message":"scheduler: unit tests (no behaviour change); NOTES: a2 leaves CR-1 to a3","files":["/NOTES.md","/test/scheduler.test.js"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"changeset","seq":6,"hash":"hkxrmxq6h4fe9dds84jc1iu9a65j93fnifj9ynhwoxt85rey8uto","author":"a3","time":1792254362749,"message":"CR-1: pricing per flight-minute (2.00 + 0.25/min + 0.40/kg, express x1.5, half-up cents); unit tests; CONTRACTS updated","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
+{"type":"done","n":11,"proposal":null,"seq":6,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C31ca6b","text":"@ C31ca6b \"Change request CR-1 (from pm)\" done by a3 in #6"}
