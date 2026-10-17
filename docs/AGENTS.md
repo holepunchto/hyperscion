@@ -104,10 +104,14 @@ hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claim
 hs claim --new "cache the distance matrix"     # something that isn't an item yet
 ```
 
-- **You lead** (the earliest claim): build it, and land with `--item C1a2b3c` so it closes.
+- **Claim the whole item before working on any of it.** Don't split off your own piece of an
+  item nobody leads yet: claim it, then split it.
+- **You lead** (the earliest claim): build it, and land with `--item C1a2b3c` so it closes. To
+  share the work, split it (`hs item part C1a2b3c "the scheduler side"`). Teammates see the
+  parts in their feed, and your `hs claim` shows who holds each one.
 - **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too.
-  Take an open part (`hs item part C1a2b3c "the scheduler side"`, then claim that), review
-  their land when it comes, or share it (`hs claim C1a2b3c --with a2`).
+  Take an open part they split off, ask them for a piece, share it
+  (`hs claim C1a2b3c --with a2`), or review their land when it comes.
 - **A claim never blocks anyone,** and nobody's claim stops you landing. A land into
   someone's claimed paths just prints a `note:`.
 - **Claims expire** after 20 min without activity; your `land` and `sync` keep yours alive.

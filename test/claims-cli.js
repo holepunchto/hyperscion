@@ -33,7 +33,40 @@ test('claims: a race has one lead, the board shows it, a land completes the item
     new RegExp(`${lead} leads ${id} \\(claimed [0-9.]+ s before you\\)`).test(loser.stdout),
     loser.stdout
   )
-  t.ok(/instead: take an open part/.test(loser.stdout), 'and what to do instead')
+  t.ok(
+    new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
+    loser.stdout
+  )
+
+  // parts are the lead's to hand out (q2s-claims-1)
+  const notMine = await tm.as(other, ['item', 'part', id, 'flight minutes helper'])
+  t.not(notMine.code, 0)
+  t.ok(
+    new RegExp(`${lead} leads ${id}, so the parts are ${lead}'s to hand out`).test(notMine.stderr),
+    notMine.stderr
+  )
+  const part = await tm.as(lead, ['item', 'part', id, 'flight minutes per stop (scheduler)'])
+  t.is(part.code, 0, part.stderr)
+  const partId = part.stdout.match(/item (C[0-9a-f]{6})/)[1]
+  const again = await tm.as(lead, ['claim', id]) // the lead's verdict lists its parts
+  t.ok(
+    new RegExp(`part ${partId} "flight minutes per stop \\(scheduler\\)": nobody yet`).test(
+      again.stdout
+    ),
+    again.stdout
+  )
+  t.ok(/you lead/.test(again.stdout), 'renewing keeps the lead')
+
+  // an unclaimed item can't be split by just anyone; a look-alike --new gets a warning
+  const fresh = await tm.as(lead, ['item', 'new', 'cache the distance matrix'])
+  const freshId = fresh.stdout.match(/item (C[0-9a-f]{6})/)[1]
+  const early = await tm.as(other, ['item', 'part', freshId, 'half of it'])
+  t.ok(new RegExp(`nobody leads ${freshId} yet: claim it first`).test(early.stderr), early.stderr)
+  const lookalike = await tm.as(other, ['claim', '--new', 'distance matrix cache for geo'])
+  t.ok(
+    new RegExp(`looks like ${freshId} "cache the distance matrix"`).test(lookalike.stderr),
+    lookalike.stderr
+  )
 
   const board = await tm.as(other, ['claims'])
   t.ok(new RegExp(`lead ${lead}`).test(board.stdout), board.stdout)
@@ -55,9 +88,15 @@ test('claims: a race has one lead, the board shows it, a land completes the item
   t.ok(new RegExp(`completes ${id}`).test(done.stdout), done.stdout + done.stderr)
   const after = await tm.as(other, ['claims', '--all'])
   t.ok(new RegExp(`${id} .*\\[done #\\d+\\]`).test(after.stdout), after.stdout)
-  t.ok(/no open items/.test((await tm.as(other, ['claims'])).stdout), 'nothing open')
+  const open = (await tm.as(other, ['claims'])).stdout
+  t.absent(new RegExp(`^${id} `, 'm').test(open), 'the completed item is no longer open: ' + open)
 
   // 3 live claims at most; release frees one
+  for (const x of (await tm.as('a1', ['claims'])).stdout.matchAll(
+    /(C[0-9a-f]{6}) "[^"]*"[^\n]*\n\s+lead a1/g
+  )) {
+    await tm.as('a1', ['claim', x[1], '--release'])
+  }
   for (const n of [1, 2, 3]) {
     t.is((await tm.as('a1', ['claim', '--new', `task ${n}`])).code, 0)
   }
