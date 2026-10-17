@@ -1,0 +1,33 @@
+2026-10-17T17:43:30.564Z 141237 - +714ms checkout: written 0 missing 16
+2026-10-17T17:43:36.155Z 141435 fetch +4ms start
+2026-10-17T17:43:36.301Z 141435 fetch +150ms pull: peers 1 holder=true
+2026-10-17T17:43:36.641Z 141435 fetch +490ms pull: settled=true
+2026-10-17T17:43:36.644Z 141435 fetch +493ms pull: view gaps 0
+2026-10-17T17:43:36.648Z 141435 fetch +497ms prefetch: fetched 0 missing 0
+2026-10-17T17:43:37.263Z 141471 info +4ms start
+2026-10-17T17:44:04.464Z 141835 sync +4ms start
+2026-10-17T17:44:04.589Z 141835 sync +128ms pull: peers 1 holder=true
+2026-10-17T17:44:04.907Z 141835 sync +446ms pull: settled=true
+2026-10-17T17:44:04.907Z 141835 sync +446ms pull: view gaps 0
+2026-10-17T17:44:04.914Z 141835 sync +453ms prefetch: fetched 0 missing 0
+2026-10-17T17:44:04.922Z 141835 sync +461ms checkout: written 0 missing 0
+2026-10-17T17:44:14.520Z 142125 sync +5605ms start
+2026-10-17T17:44:14.592Z 142125 sync +5676ms pull: peers 4 holder=true
+2026-10-17T17:44:15.107Z 142125 sync +6191ms pull: settled=true
+2026-10-17T17:44:15.108Z 142125 sync +6192ms pull: view gaps 0
+2026-10-17T17:44:15.117Z 142125 sync +6201ms prefetch: fetched 2 missing 0
+2026-10-17T17:44:15.125Z 142125 sync +6209ms checkout: written 2 missing 0
+2026-10-17T17:44:15.832Z 142374 claims +4ms start
+2026-10-17T17:44:20.276Z 142543 claim +4ms start
+2026-10-17T17:44:27.782Z 142695 claim +4ms start
+2026-10-17T17:44:45.321Z 142769 sync +16031ms start
+2026-10-17T17:44:45.412Z 142769 sync +16122ms pull: peers 4 holder=true
+2026-10-17T17:44:45.877Z 142769 sync +16587ms pull: settled=true
+2026-10-17T17:44:45.878Z 142769 sync +16588ms pull: view gaps 0
+2026-10-17T17:44:45.891Z 142769 sync +16601ms prefetch: fetched 4 missing 0
+2026-10-17T17:44:45.902Z 142769 sync +16612ms checkout: written 4 missing 0
+2026-10-17T17:44:49.575Z 142984 show +4ms start
+2026-10-17T17:44:54.531Z 143291 review +4ms start
+2026-10-17T17:44:54.671Z 143291 review +144ms pull: peers 4 holder=true
+2026-10-17T17:44:55.066Z 143291 review +539ms pull: settled=true
+2026-10-17T17:44:55.067Z 143291 review +540ms pull: view gaps 0

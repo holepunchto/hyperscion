@@ -1,0 +1,33 @@
+2026-10-17T17:43:29.387Z 141196 - +543ms checkout: written 0 missing 16
+2026-10-17T17:43:34.337Z 141362 fetch +4ms start
+2026-10-17T17:43:34.484Z 141362 fetch +151ms pull: peers 1 holder=true
+2026-10-17T17:43:34.828Z 141362 fetch +495ms pull: settled=true
+2026-10-17T17:43:34.829Z 141362 fetch +496ms pull: view gaps 0
+2026-10-17T17:43:34.834Z 141362 fetch +501ms prefetch: fetched 0 missing 0
+2026-10-17T17:43:35.447Z 141398 info +4ms start
+2026-10-17T17:44:05.193Z 141962 sync +5ms start
+2026-10-17T17:44:05.347Z 141962 sync +158ms pull: peers 3 holder=true
+2026-10-17T17:44:05.661Z 141962 sync +472ms pull: settled=true
+2026-10-17T17:44:05.661Z 141962 sync +472ms pull: view gaps 0
+2026-10-17T17:44:05.665Z 141962 sync +476ms prefetch: fetched 0 missing 0
+2026-10-17T17:44:05.672Z 141962 sync +483ms checkout: written 0 missing 0
+2026-10-17T17:44:14.529Z 142162 sync +4761ms start
+2026-10-17T17:44:14.600Z 142162 sync +4831ms pull: peers 4 holder=true
+2026-10-17T17:44:15.115Z 142162 sync +5346ms pull: settled=true
+2026-10-17T17:44:15.116Z 142162 sync +5347ms pull: view gaps 0
+2026-10-17T17:44:15.129Z 142162 sync +5360ms prefetch: fetched 2 missing 0
+2026-10-17T17:44:15.159Z 142162 sync +5390ms checkout: written 2 missing 0
+2026-10-17T17:44:15.698Z 142400 claims +3ms start
+2026-10-17T17:44:20.054Z 142517 claim +3ms start
+2026-10-17T17:44:26.434Z 142658 claim +4ms start
+2026-10-17T17:44:45.322Z 142720 sync +17398ms start
+2026-10-17T17:44:45.414Z 142720 sync +17490ms pull: peers 4 holder=true
+2026-10-17T17:44:45.876Z 142720 sync +17952ms pull: settled=true
+2026-10-17T17:44:45.877Z 142720 sync +17953ms pull: view gaps 0
+2026-10-17T17:44:45.893Z 142720 sync +17969ms prefetch: fetched 4 missing 0
+2026-10-17T17:44:45.905Z 142720 sync +17981ms checkout: written 4 missing 0
+2026-10-17T17:44:53.754Z 143249 review +2ms start
+2026-10-17T17:44:53.857Z 143249 review +105ms pull: peers 4 holder=true
+2026-10-17T17:44:54.228Z 143249 review +476ms pull: settled=true
+2026-10-17T17:44:54.229Z 143249 review +477ms pull: view gaps 0
+2026-10-17T17:44:54.911Z 143316 log +5ms start

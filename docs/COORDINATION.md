@@ -49,6 +49,10 @@ flow test (`npm run flows`) or a q0-style run shows the need.
   `sync` lists the open items and their leads. The q0b minimal-arm rerun (q0b-min-2) halved
   coordination calls (18 to 10) and brought calls per code land from 37 to 32, against 24
   for a task board, with the same outcome.
-- Next round trip to cut: recording "I'm reviewing" against an item or a land without a
-  NOTES.md land (asked twice in q0b-min-2).
+- Done: the minimal surface keeps `hs review #n`, and the playbook points non-leads at it.
+  q0b-min-3: reviews moved from NOTES.md lands into review records (coordination lands 3 to
+  0; calls per code land 32 to 30).
+- Small asks left: a losing claim releasing itself, and `land --done` closing the item.
+- Not run: an hours-long, multi-site partitioned LLM run; the partition case is covered by
+  the scripted flow F9 until then.
 - A longer partitioned run (hours, sites, a lost claim) before revisiting the board question.
