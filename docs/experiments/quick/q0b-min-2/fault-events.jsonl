@@ -1,0 +1,3 @@
+{"t":"2026-10-17T17:35:46.914Z","do":"schedule","scenario":"q0b","arm":"hs-min","scale":1,"events":1}
+{"t":"2026-10-17T17:36:20.167Z","at":0.5,"do":"change-request","files":"change-request","minute":0.57,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"C8992b5"}
+{"t":"2026-10-17T17:38:05.258Z","do":"stop","stopped":["hub","testnet"]}

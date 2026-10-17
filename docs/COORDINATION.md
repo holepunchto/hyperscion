@@ -46,5 +46,9 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 ## Next
 
 - Done: `hs claim` exits 2 when someone else leads; the feed's claim line names who leads;
-  `sync` lists the open items and their leads. Measured by a q0b minimal-arm rerun.
+  `sync` lists the open items and their leads. The q0b minimal-arm rerun (q0b-min-2) halved
+  coordination calls (18 to 10) and brought calls per code land from 37 to 32, against 24
+  for a task board, with the same outcome.
+- Next round trip to cut: recording "I'm reviewing" against an item or a land without a
+  NOTES.md land (asked twice in q0b-min-2).
 - A longer partitioned run (hours, sites, a lost claim) before revisiting the board question.

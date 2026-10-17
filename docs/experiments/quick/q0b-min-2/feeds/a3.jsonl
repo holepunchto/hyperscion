@@ -1,0 +1,16 @@
+{"type":"item","n":2,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ item C8992b5 \"Change request CR-1 (from pm)\" by pm: `hs claim C8992b5`"}
+{"type":"changeset","seq":2,"hash":"ymdwxjr55j3ydbfe9fjtiraefigbucdn39qqpxjoqktkbuyg81yy","author":"pm","time":1792258579593,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ C8992b5 \"Change request CR-1 (from pm)\" claimed by a2; they lead"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ C8992b5 \"Change request CR-1 (from pm)\" claimed by a3; a2 leads"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ C8992b5 \"Change request CR-1 (from pm)\" claimed by a1; a2 leads"}
+{"type":"release","n":7,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ C8992b5 \"Change request CR-1 (from pm)\" released by a3; a2 leads it"}
+{"type":"changeset","seq":3,"hash":"wdsywe5j4kj6jqkhnm1onmof4dazdggxfyxpghneeoi6xsuy9xdy","author":"a3","time":1792258595067,"message":"NOTES: a3 defers CR-1 to a2, will review","files":["/NOTES.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"z11wyi3j5yuh6w6n5bkohfopz9pjwa4apwgpmy454opweyepf8jo","author":"a1","time":1792258597402,"message":"NOTES: a1 offers CR-1 unit tests after a2's land","files":["/NOTES.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"8c419k7gkt86hhsbhiwcdijuwmsg18pbpd4rikotgu96gru3t5ey","author":"a2","time":1792258611909,"message":"CR-1: price per flight minute (pricing.js, unit tests, CONTRACTS.md)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"done","n":11,"proposal":null,"seq":5,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C8992b5","text":"@ C8992b5 \"Change request CR-1 (from pm)\" done by a2 in #5"}
+{"type":"changeset","seq":6,"hash":"tmjnixore3qen3yzusripwg8bsjfphwfhinifno5fkod7b3pqohy","author":"a3","time":1792258627437,"message":"NOTES: a3 review of #5 CR-1, LGTM","files":["/NOTES.md"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
