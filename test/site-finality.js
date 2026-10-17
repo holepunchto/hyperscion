@@ -59,8 +59,10 @@ test('site split: every undone land comes back, not only the last', async (t) =>
   t.ok(/final/.test(a.stdout), a.stdout)
   for (const f of feeds) await f.stop()
   tm.heal(['a1', 'a2'])
+  const syncs = []
   await waitFor(async () => {
-    await tm.as('a1', ['sync'])
+    const r = await tm.as('a1', ['sync'])
+    syncs.push(r.stdout + r.stderr)
     return tm.read('a1', 'c.txt') !== null
   }, 60_000)
   // both lands are back in a1's files: merged where they can be (a.txt), in conflict where
@@ -70,9 +72,56 @@ test('site split: every undone land comes back, not only the last', async (t) =>
     /<<<<<<<[\s\S]*the code/.test(tm.read('a1', 'code.txt') || ''),
     'the one before it, in conflict'
   )
+  // and it says who landed those files first, offering to keep theirs (q0bs: a duplicate)
+  const said = syncs.join('\n')
+  t.ok(/conflicts with #\d+ a3 in \/code\.txt/.test(said), said)
+  t.ok(/hs restore \/code\.txt/.test(said), 'offers keeping theirs')
   const merged = tm.read('a1', 'a.txt') || ''
   t.ok(
     /site a edit/.test(merged) && /site b edit/.test(merged),
     'a.txt merges both edits: ' + merged
   )
+})
+
+// Restoring my undone land replays my changes only, not a teammate's provisional land I synced
+// after mine (q0bs-min-3: a2's sync showed a1's undone code as a2's own, and offered to land it)
+test("site split: restoring my land doesn't replay a teammate's land as mine", async (t) => {
+  t.timeout(240_000)
+  const tm = await team(t, { agents: ['a1', 'a2', 'a3'], files: { 'a.txt': 'a\n' } })
+  for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
+  await tm.split(['a1', 'a2'])
+  const feeds = ['a1', 'a2'].map((a) => tm.bgAs(a, ['watch', '--json']))
+  await sleep(3000)
+  tm.write('a2', 'notes.txt', 'a2 notes\n')
+  await tm.as('a2', ['land', '-m', 'a2 notes'])
+  tm.write('a1', 'code.txt', 'a1 code\n')
+  await tm.as('a1', ['land', '-m', 'a1 code'])
+  await waitFor(async () => {
+    await tm.as('a2', ['sync'])
+    return tm.read('a2', 'code.txt') !== null
+  }, 30_000)
+  tm.write('a3', 'code.txt', 'a3 code\n')
+  t.ok(/final/.test((await tm.as('a3', ['land', '-m', 'a3 code'])).stdout))
+  for (const f of feeds) await f.stop()
+  tm.heal(['a1', 'a2'])
+  await waitFor(async () => {
+    await tm.as('a2', ['sync'])
+    return tm.read('a2', 'notes.txt') !== null && /a3 code/.test(tm.read('a2', 'code.txt') || '')
+  }, 60_000).catch(() => {})
+  const synced = await tm.as('a2', ['sync'])
+  t.is(
+    tm.read('a2', 'code.txt'),
+    'a3 code\n',
+    "a2's files take main's code.txt, not a1's undone one"
+  )
+  t.absent(
+    /code\.txt/.test(synced.stdout + synced.stderr),
+    "code.txt isn't a2's change: " + synced.stdout
+  )
+  await waitFor(async () => {
+    await tm.as('a3', ['sync'])
+    return tm.read('a3', 'notes.txt') !== null
+  }, 30_000).catch(() => {})
+  t.is(tm.read('a3', 'notes.txt'), 'a2 notes\n', "a2's own land is back on main")
+  t.is(tm.read('a3', 'code.txt'), 'a3 code\n', 'and a3 keeps its code')
 })
