@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 16,
   "schema": [
     {
       "name": "head",
@@ -136,6 +136,18 @@
           "array": true,
           "type": "fixed32",
           "version": 14
+        },
+        {
+          "name": "texts",
+          "array": true,
+          "type": "@hs/text",
+          "version": 15
+        },
+        {
+          "name": "mains",
+          "array": true,
+          "type": "@hs/text",
+          "version": 16
         }
       ]
     },
@@ -546,6 +558,18 @@
           "name": "blobsLength",
           "type": "uint",
           "version": 10
+        },
+        {
+          "name": "texts",
+          "array": true,
+          "type": "@hs/text",
+          "version": 15
+        },
+        {
+          "name": "mains",
+          "array": true,
+          "type": "@hs/text",
+          "version": 16
         }
       ]
     },
@@ -714,6 +738,12 @@
           "name": "policy",
           "type": "string",
           "version": 7
+        },
+        {
+          "name": "hunks",
+          "array": true,
+          "type": "@hs/hunk",
+          "version": 15
         }
       ]
     },
@@ -1032,6 +1062,64 @@
           "name": "approvals",
           "type": "uint",
           "version": 13
+        }
+      ]
+    },
+    {
+      "name": "text",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "version": 15
+        }
+      ]
+    },
+    {
+      "name": "hunk",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "added",
+          "array": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "removed",
+          "array": true,
+          "type": "string",
+          "version": 15
+        }
+      ]
+    },
+    {
+      "name": "protected-text",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "text",
+          "type": "string",
+          "version": 15
         }
       ]
     }

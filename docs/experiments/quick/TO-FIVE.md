@@ -33,9 +33,9 @@ existed).
 | 13 | **Teammates' presence and work in progress on a path** (`a2 online, editing /src/scheduler.js, last seen 10 s ago`) in `watch --path` and `claims` | q2h-1 a3 | 1 | Open | Partly: liveness from claims' heartbeats and the signal channel exists; uncommitted edits would need a new signal |
 | 14 | **Split a land: unprotected files land, protected ones become a proposal** to the required reviewers in one step | q2h-3 a1, a2, a3 | 4 | Fixed `c8cc9a0` (`land --split`); every agent used it in q2h-4 | Done; follow-ups #16-#18 |
 | 15 | **An "approved" line only when the current revision counts it** | q2h-2 a3 | 1 | Fixed: the history line no longer prints a count | Done |
-| 16 | **Split by default** when the only blocker is a protected path, and check the policy before running `--check` | q2h-4 a1 | 1 | Open | Yes, small: the policy check is local and cheap |
-| 17 | **An approval pins my hunks, not the whole file**: a clean merge of teammates' approved sections into the same protected file shouldn't reset it; otherwise re-propose and let `--wait-final` wait | q2h-4 a2 | 1 | Open | Yes, medium: approve the proposal's diff against its base, and accept a land whose diff from the merged base is the same |
-| 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Open, a bug: --split stood down whenever items were named | Yes, small |
+| 16 | **Split by default** when the only blocker is a protected path, and check the policy before running `--check` | q2h-4 a1 | 1 | Fixed `08c009e`: split is the default, decided after the pull and before `--check` | Yes, small: the policy check is local and cheap |
+| 17 | **An approval pins my hunks, not the whole file**: a clean merge of teammates' approved sections into the same protected file shouldn't reset it; otherwise re-propose and let `--wait-final` wait | q2h-4 a2 | 1 | Fixed (schema v15): protected files travel inline; approvals bind to the added and removed lines | Yes, medium: approve the proposal's diff against its base, and accept a land whose diff from the merged base is the same |
+| 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Fixed `08c009e`: covered paths land under the item, the rest is split off, the item stays open | Yes, small |
 
 ## Runs
 

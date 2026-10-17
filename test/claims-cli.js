@@ -257,3 +257,59 @@ test('claims phase 2: a person approves a gated item from hs inbox, and its auth
   t.ok(/landed (P\d+ as )?#\d+/.test(fin.stdout), fin.stdout + fin.stderr)
   t.ok(new RegExp(`completes ${id2}`).test(fin.stdout), fin.stdout)
 })
+
+test('approvals bind to my lines: a teammate approved section merging in keeps mine approved (TO-FIVE #17)', async (t) => {
+  t.timeout(240_000)
+  const path = require('bare-path')
+  const tm = await team(t, {
+    agents: ['a1', 'a2', 'ann'],
+    files: { 'CONTRACTS.md': '# contracts\n\n## a1\n\n## a2\n\n## end\n' }
+  })
+  const owner = path.join(tm.dir, 'owner')
+  const annKey = (await tm.as('ann', ['info'])).stdout.match(/^writer\s+(\S+)/m)[1]
+  await tm.hs(owner, ['add-writer', annKey, '--as', 'ann', '--human'], 'owner')
+  await tm.hs(owner, ['sync'], 'owner')
+  fs.writeFileSync(path.join(owner, '.hsreview'), '/CONTRACTS.md approvals=1 reviewers=@humans\n')
+  await tm.hs(owner, ['land', '-m', 'policy'], 'owner')
+  await tm.as('a1', ['sync'])
+  await tm.as('a2', ['sync'])
+
+  tm.write('a1', 'CONTRACTS.md', '# contracts\n\n## a1\nloadDay(file) -> Day\n\n## a2\n\n## end\n')
+  tm.write('a2', 'CONTRACTS.md', '# contracts\n\n## a1\n\n## a2\nplan(day) -> Plan\n\n## end\n')
+  const p1 = await tm.as('a1', ['propose', '-m', 'a1 section'])
+  const p2 = await tm.as('a2', ['propose', '-m', 'a2 section'])
+  const id1 = p1.stdout.match(/proposed (P\d+)/)[1]
+  const id2 = p2.stdout.match(/proposed (P\d+)/)[1]
+  t.ok(/asked ann/.test(p2.stdout), p2.stdout)
+  await tm.as('ann', ['review', id1, 'approve'])
+  await tm.as('ann', ['review', id2, 'approve'])
+
+  const l1 = await tm.as('a1', ['land'])
+  t.ok(new RegExp(`landed ${id1} as #\\d+`).test(l1.stdout), l1.stdout + l1.stderr)
+  // a2's file now merges a1's section in: its own line is what ann approved
+  const l2 = await tm.as('a2', ['land'])
+  t.ok(new RegExp(`landed ${id2} as #\\d+`).test(l2.stdout), l2.stdout + l2.stderr)
+  t.is(
+    tm.read('a2', 'CONTRACTS.md'),
+    '# contracts\n\n## a1\nloadDay(file) -> Day\n\n## a2\nplan(day) -> Plan\n\n## end\n'
+  )
+
+  // a line ann never saw is still caught
+  tm.write(
+    'a1',
+    'CONTRACTS.md',
+    '# contracts\n\n## a1\nloadDay(file) -> Day\nextra\n\n## a2\n\n## end\n'
+  )
+  await tm.as('a1', ['sync'])
+  const p3 = await tm.as('a1', ['propose', '-m', 'a1 extra'])
+  const id3 = p3.stdout.match(/proposed (P\d+)/)[1]
+  await tm.as('ann', ['review', id3, 'approve'])
+  tm.write(
+    'a1',
+    'CONTRACTS.md',
+    '# contracts\n\n## a1\nloadDay(file) -> Day\nextra\nsneaky\n\n## a2\nplan(day) -> Plan\n\n## end\n'
+  )
+  const l3 = await tm.as('a1', ['land'])
+  t.absent(/landed P/.test(l3.stdout), l3.stdout)
+  t.ok(/content changed since/.test(l3.stdout + l3.stderr), l3.stdout + l3.stderr)
+})

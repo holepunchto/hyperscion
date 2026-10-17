@@ -277,6 +277,17 @@ hs land --under C1a2b3c                       # a piece of it; the item stays op
 - **A refused land names the way through:** your pending item for those paths and its
   approval state, or `hs propose` to whoever the rule names (`@humans` expanded). `propose`
   adds those reviewers by default too.
+- **Approvals of protected files bind to the author's lines** (TO-FIVE #17; q2h-4: a2's
+  section needed three approval rounds because a1's and a3's approved sections landed in the
+  same file first). Lands and proposals carry the text of the protected files they change
+  inline, verified against the entry hash, as `/.hsreview`'s own text is. They also carry
+  main's text of those files, which apply keeps when it doesn't know it yet. A proposal
+  records the lines it adds and removes against main. A later land through that proposal is
+  accepted when its added and removed lines against main as it is then are the same
+  multisets. Teammates' sections can merge in around them, but no unapproved line enters and
+  no unapproved line goes. Line order isn't checked: reordering approved lines would pass,
+  which is fine for a review gate. Without known text (over 256 KB, or an older client),
+  approvals bind to exact content as before.
 - **Parts don't inherit the kind** (not built yet). A part of a contract item needs nothing
   of its own, and lands into protected paths go through the lead with `--under`, or
   through a proposal.

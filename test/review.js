@@ -123,7 +123,7 @@ test("an approval survives merging teammates' changes into the proposal on the w
   t.ok(/content changed since P\d+ was reviewed/.test(again.outcome.reason))
 })
 
-test('.hsreview-protected paths keep approvals pinned to the exact content', async (t) => {
+test('.hsreview-protected paths: approvals bind to the approved lines (TO-FIVE #17)', async (t) => {
   const { a, b, settle } = await team(t)
   const wa = await a.workspace('wa')
   await wa.commit([
@@ -149,8 +149,21 @@ test('.hsreview-protected paths keep approvals pinned to the exact content', asy
   t.is((await wa2.land()).outcome.status, 'accepted')
   await settle()
 
+  // b's land merges a's approved change in: b still adds and removes exactly what was approved
   const res = await wb.land({ rebase: 1 })
-  t.is(res.outcome.status, 'needs-review', 'merged content of a protected path needs review')
+  t.is(res.outcome.status, 'accepted', 'a teammate approved lines merging in keep it approved')
+  await settle()
+
+  // a line nobody approved still needs review
+  const wb2 = await b.workspace('wb2')
+  await wb2.commit([put('/contract.md', 'ONE\nTWO\nTHREE\n')])
+  const id2 = (await wb2.propose({ reviewers: ['a1'] })).outcome.proposal
+  await settle()
+  await a.review({ proposal: id2, verdict: 1, hash: (await a.proposal(id2)).hash })
+  await settle()
+  await wb2.commit([put('/contract.md', 'ONE\nTWO\nTHREE\nfour\n')])
+  const sneaky = await wb2.land()
+  t.is(sneaky.outcome.status, 'needs-review', 'an unapproved line needs review')
 })
 
 test('Show: a land can ask teammates to review it afterwards', async (t) => {
