@@ -65,7 +65,11 @@ flow test (`npm run flows`) or a q0-style run shows the need.
   - In q0bs-min-2, each side had its own lead (a2 on B at 0.52, a3 on A at 0.54), and each
     built the change request. On heal the earlier claim led everywhere, which is the claims
     mechanism working as designed.
-  - The run found a core bug that isn't about claims: in `init --hub` repos, a land the hub
-    made final can be reordered by the site that couldn't reach it (docs/FINALITY.md). The
-    board arm (q0bs-plain-1) waits for that fix: on this core it would measure the bug, not
-    the board.
+  - That run found a core bug that isn't about claims: in `init --hub` repos a land the hub
+    made final could be reordered by the site that couldn't reach it. Fixed (docs/FINALITY.md).
+  - On the fixed core, claims (q0bs-min-3) and board (q0bs-plain-1) ended the same: built
+    on both sides, finality held, 3,3,4 and 1/3 choose in both. Neither mechanism can
+    coordinate sites that can't hear each other; the low ratings were about the heal (an
+    earlier undone land lost, advice to re-land a duplicate), both fixed.
+  - Decision unchanged: keep claims. A split is no argument either way; races (q0, q0b, q0bo)
+    are where claims beat the board, and the board's agents asked for claims each time.
