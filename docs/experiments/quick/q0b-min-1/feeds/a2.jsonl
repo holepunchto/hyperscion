@@ -1,0 +1,16 @@
+{"type":"changeset","seq":2,"hash":"gjddxj7pzscqt1194uhkyb4xxuzbcmbxct67xu8s59drhs6y7uzy","author":"pm","time":1792255039308,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"item","n":3,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"C565eae","text":"@ item C565eae \"Change request CR-1 (from pm)\" by pm: `hs claim C565eae`"}
+{"type":"item","n":4,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C9d5272","text":"@ item C9d5272 \"CR-1: per flight-minute pricing\" by a1: `hs claim C9d5272`"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C9d5272","text":"@ C9d5272 \"CR-1: per flight-minute pricing\" claimed by a1"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C565eae","text":"@ C565eae \"Change request CR-1 (from pm)\" claimed by a2"}
+{"type":"claim","n":7,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C565eae","text":"@ C565eae \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"release","n":8,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"C9d5272","text":"@ C9d5272 \"CR-1: per flight-minute pricing\" released by a1: open again"}
+{"type":"release","n":9,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"C565eae","text":"@ C565eae \"Change request CR-1 (from pm)\" released by a3: open again"}
+{"type":"changeset","seq":3,"hash":"1wg15755fz44xhtdg71tkkwdc7fr3nnhjqy5kumc5f134fy7ad8y","author":"a3","time":1792255056440,"message":"notes: a3 defers CR-1 to a2 (lead of C565eae)","files":["/NOTES.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"qc8kjzrjj1kw1jfwhjw679sknfecy8o7qomgkyfjntupgwtc5too","author":"a1","time":1792255058087,"message":"notes: a1 defers CR-1 to a2 (lead of C565eae)","files":["/NOTES.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"yfj9181wq7puw6df4ba987e86h839yf54w8b1pxiawimpamoxj7o","author":"a2","time":1792255065979,"message":"CR-1: pricing per flight minute (pricing.js, unit test, CONTRACTS.md)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"done","n":13,"proposal":null,"seq":5,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"C565eae","text":"@ C565eae \"Change request CR-1 (from pm)\" done by a2 in #5"}

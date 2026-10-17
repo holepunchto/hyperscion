@@ -1,0 +1,3 @@
+{"t":"2026-10-17T16:31:09.219Z","do":"schedule","scenario":"q0b","arm":"hs","scale":1,"events":1}
+{"t":"2026-10-17T16:31:43.220Z","at":0.5,"do":"change-request","files":"change-request","minute":0.57,"attempt":1,"out":["landed #2","pushed: a holder has the changes","#2 final",""],"item":"Cdbdc71"}
+{"t":"2026-10-17T16:33:07.653Z","do":"stop","stopped":["hub","testnet"]}

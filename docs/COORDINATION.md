@@ -22,6 +22,10 @@ one?
 - **Claims under stress (q2s-claims, q2h, q2-hs-7):** duplicates fell from 3 to 2 (and 1 in
   q2h-1), the change request's lead held, and signals reached teammates within seconds while
   the hub was down, where a landed file moves at land speed and can be undone.
+- **q0b round 1 (no owners, a real race):** all three arms still built it once. Claims settled
+  a 0.2 s race at once; on the task board all three claims landed as "final" and two agents
+  needed extra lands to withdraw, and all three asked for an atomic first-wins `hs claim`.
+  The board did it in 3.4 calls per land against claims' 9-10.
 - **q0 round 1 (easy day, no outage, obvious owner):** all three arms built the change once,
   equally fast; the task board did it with 0 coordination calls and 40% fewer calls per land.
   The scenario created no contention, so it can't separate the arms on duplication.
@@ -30,6 +34,9 @@ one?
 
 - The minimal surface (B) cost the same as the full one (A) and lost nothing. Agents don't
   reach for the extra features; the surface can shrink without harm.
+- Agents without claims ask for them: the primitive is right; its cost is what to fix. Cut
+  the round trips (claims checks before starting, release/look-alike confusions) rather than
+  the mechanism.
 - On an easy day a task board is cheaper than claims. Claims have to earn their round trips
   where files can't: ownership in doubt, outages, many writers.
 - Next: q0 with genuinely unclear ownership, and a task-board arm under q2s's outage and

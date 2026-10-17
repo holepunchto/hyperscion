@@ -1,0 +1,15 @@
+{"type":"changeset","seq":2,"hash":"83nr43qkcnq6d6uupwkbs7mm1duw8dm6sd976tqnxg85d996yz4o","author":"pm","time":1792254701273,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"item","n":3,"proposal":null,"seq":null,"actor":"pm","verdict":null,"comment":null,"reviewers":[],"item":"Cdbdc71","text":"@ item Cdbdc71 \"Change request CR-1 (from pm)\" by pm: `hs claim Cdbdc71`"}
+{"type":"claim","n":4,"proposal":null,"seq":null,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cdbdc71","text":"@ Cdbdc71 \"Change request CR-1 (from pm)\" claimed by a3"}
+{"type":"claim","n":5,"proposal":null,"seq":null,"actor":"a1","verdict":null,"comment":null,"reviewers":[],"item":"Cdbdc71","text":"@ Cdbdc71 \"Change request CR-1 (from pm)\" claimed by a1"}
+{"type":"claim","n":6,"proposal":null,"seq":null,"actor":"a2","verdict":null,"comment":null,"reviewers":[],"item":"Cdbdc71","text":"@ Cdbdc71 \"Change request CR-1 (from pm)\" claimed by a2"}
+{"type":"changeset","seq":3,"hash":"7959fwa9owwqt94zwmapn5sq7od6y66icanmciq4yxyhdjqra1fo","author":"a1","time":1792254715072,"message":"notes: a1 defers CR-1 to a3, will review","files":["/NOTES.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"6nwsspchagz1jug8b7m1ctkbip46kmf6esrires81y3a6ey8yy5y","author":"a2","time":1792254717615,"message":"notes: a2 standing by to review a3's CR-1 land","files":["/NOTES.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"done","n":9,"proposal":null,"seq":5,"actor":"a3","verdict":null,"comment":null,"reviewers":[],"item":"Cdbdc71","text":"@ Cdbdc71 \"Change request CR-1 (from pm)\" done by a3 in #5"}
+{"type":"changeset","seq":5,"hash":"a1zn5zijmzibfetru5jdxoto9yeoeeuhspmes6pg7ge7mktiz1bo","author":"a3","time":1792254736519,"message":"CR-1: price per flight minute (pricing.js, CONTRACTS.md, unit tests)","files":["/CONTRACTS.md","/NOTES.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"review","n":11,"proposal":null,"seq":5,"actor":"a1","verdict":"approved","comment":"formula, flight-order cumulative minutes, express, half-up cents all match CR-1; npm test passes on #5","reviewers":[],"item":null,"text":"@ #5 approved by a1 :: formula, flight-order cumulative minutes, express, half-up cents all match CR-1; npm test passes on #5"}
+{"type":"review","n":12,"proposal":null,"seq":5,"actor":"a2","verdict":"commented","comment":"a2: reviewed pricing.js; formula, cumulative flight minutes in trip order, half-up cents match CR-1. npm test passes on #5.","reviewers":[],"item":null,"text":"@ #5 commented by a2 :: a2: reviewed pricing.js; formula, cumulative flight minutes in trip order, half-up cents match CR-1. npm test passes on #5."}

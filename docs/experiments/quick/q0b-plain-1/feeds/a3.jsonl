@@ -1,0 +1,16 @@
+{"type":"changeset","seq":2,"hash":"dn3tzz6kz5ipwnrsy7ttc73j7g5fcfq9pidcy4guyr73qd5ypzjy","author":"pm","time":1792254858340,"message":"CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)","files":["/CHANGE-REQUEST.md","/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":2,"text":"@ settled through #2"}
+{"type":"changeset","seq":3,"hash":"75cskoj6ddth87s473ncehhnsqfwz8ghiuzepqcsod9oj9ugrrio","author":"a2","time":1792254863630,"message":"a2 takes CR-1","files":["/TASKS.md"]}
+{"type":"settled","seq":3,"text":"@ settled through #3"}
+{"type":"changeset","seq":4,"hash":"id14wukk66aao6bhghxatii3nhoaikzc5i1g3gz73s1y78m5fi4y","author":"a3","time":1792254864631,"message":"a3 takes CR-1","files":["/TASKS.md"]}
+{"type":"settled","seq":4,"text":"@ settled through #4"}
+{"type":"changeset","seq":5,"hash":"m9cx3zj34pmpsaxirjgwmw71b6487b7qogpgw6it5zn96up8uipo","author":"a1","time":1792254865622,"message":"a1 takes CR-1","files":["/TASKS.md"]}
+{"type":"settled","seq":5,"text":"@ settled through #5"}
+{"type":"changeset","seq":6,"hash":"cok3ib6ks8nz8u6et6hnnm8qa8j7zezybfter9f8srt7nmxqpffo","author":"a3","time":1792254873166,"message":"a3 yields CR-1 to a2","files":["/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":6,"text":"@ settled through #6"}
+{"type":"changeset","seq":7,"hash":"g7ni9o6a3fnjudzat599yjnh3jhusj383tqndfhzsmyzfagu8t3o","author":"a1","time":1792254874155,"message":"a1 withdraws CR-1 claim: a2 was first (#3)","files":["/NOTES.md","/TASKS.md"]}
+{"type":"settled","seq":7,"text":"@ settled through #7"}
+{"type":"changeset","seq":8,"hash":"rg6dtrqp14kkzzko874nr94ajcm6ra8zu4mj94m1tmq5fyjft5co","author":"a2","time":1792254880591,"message":"a2 building CR-1 (claimed first, #3); a1/a3 please review rather than duplicate","files":["/NOTES.md"]}
+{"type":"settled","seq":8,"text":"@ settled through #8"}
+{"type":"changeset","seq":9,"hash":"wwtyz5mx1ki8ce16qzo14kqtx7u7xa7ftzxndidrk9hm5x9wdtxo","author":"a2","time":1792254898073,"message":"CR-1: pricing per flight minute (2.00 + 0.25/flight-min + 0.40/kg, express x1.5, half-up cents) + unit tests + CONTRACTS.md","files":["/CONTRACTS.md","/README.md","/TASKS.md","/src/pricing.js","/test/pricing.test.js"]}
+{"type":"settled","seq":9,"text":"@ settled through #9"}
