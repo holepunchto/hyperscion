@@ -1,0 +1,10 @@
+{"t":"2026-10-17T13:00:17.425Z","do":"start","as":"ann","delayS":10,"holdS":90,"holdMatching":"CR-1"}
+{"t":"2026-10-17T13:01:57.469Z","do":"seen","target":"C563040","kind":"item","title":"Change request CR-1 (from pm)","holdS":90}
+{"t":"2026-10-17T13:02:22.240Z","do":"seen","target":"P1","kind":"proposal","title":"scheduler: re-land after undo (protected part)","holdS":10}
+{"t":"2026-10-17T13:02:49.635Z","do":"approved","target":"P1","waitedS":27}
+{"t":"2026-10-17T13:03:12.196Z","do":"seen","target":"P2","kind":"proposal","title":"a3: CR-1 per flight-minute pricing, report shows flight minutes, cli plan [--json], integration test (protected part)","holdS":10}
+{"t":"2026-10-17T13:03:20.085Z","do":"revised","target":"P1"}
+{"t":"2026-10-17T13:03:20.086Z","do":"seen","target":"P1","kind":"proposal","title":"scheduler section: Plan shape pinned + CR-1 stops[i].flightMinutes","holdS":10}
+{"t":"2026-10-17T13:03:29.842Z","do":"approved","target":"C563040","waitedS":92}
+{"t":"2026-10-17T13:03:31.666Z","do":"approved","target":"P2","waitedS":19}
+{"t":"2026-10-17T13:03:33.149Z","do":"approved","target":"P1","waitedS":13}
