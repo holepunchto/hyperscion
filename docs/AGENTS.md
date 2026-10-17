@@ -89,7 +89,8 @@ work in parallel. It assumes a team set up with `scripts/team.sh`, which gives y
      ahead, `log` and `status` say so.
    - `hs cat /src/geo.js` — the latest landed version of a file, without touching your worktree.
 5. **When you see `!! your last land was undone by a concurrent land`** (or a `reorg` naming
-   your land), run `hs sync && hs land`. Your changes were kept.
+   your land), run `hs sync`: it brings your changes back and lands them again (`#51 re-landed
+as #N`). A `land` that finds its own land undone does this by itself.
    `your land #11 is now #14` is different: nothing was undone. A land made offline (or one
    that lost a race) was given a later number when peers met.
 
@@ -224,7 +225,7 @@ again.
 | `incoming from teammates (n): ...`                                                 | what your sync or land brought into your files, oldest first              | skim; `hs show <n>` for details                                                                             |
 | `!! not landed: check failed (exit n) on main #m + your changes`                   | your `--check` failed on the merged tree                                  | your files now include main: fix, then `hs land --check ...` again                                          |
 | `real conflicts in X (#n author)`                                                  | overlapping edits that couldn't be merged                                 | fix markers in X (talk to that author if unsure), `hs land`                                                 |
-| `!! your last land was undone ...`                                                 | lost a race                                                               | `hs sync && hs land`                                                                                        |
+| `!! your last land was undone ...`                                                 | lost a race                                                               | `hs sync` (it lands it again)                                                                               |
 | `stale  path (behind main ...)` in `status`                                        | main has a newer version that couldn't be fetched                         | `hs sync` once a holder is online. Stale files are never landed, so you can't revert a teammate by accident |
 | `modified (stale base)`                                                            | you edited a stale file                                                   | `hs sync`, or `hs restore <path>` to drop your edit                                                         |
 | `changed on main but also edited here, left as is`                                 | hs won't overwrite your edits                                             | keep yours: `hs commit && hs sync`; take main's: `hs restore <path>`                                        |

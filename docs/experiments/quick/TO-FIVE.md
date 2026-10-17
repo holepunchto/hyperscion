@@ -18,7 +18,7 @@ existed).
 
 | # | Ask | Last stated | Times | Status | Achievable? |
 | - | --- | ----------- | ----- | ------ | ----------- |
-| 1 | **A provisional land that gets undone must say so where I'll see it.** Land exits non-zero or says "NOT on main for anyone else" when the push times out; the feed says `your land #N undone` at once, not at the next sync | q2h-6 a3 | 7 | Open, the longest-standing ask: `4dceff1` says it at once, but re-landing is still manual | Yes: on an undo, `land` (or the next online command) syncs and lands again with the same `--check`, reporting "#51 re-landed as #N"
+| 1 | **A provisional land that gets undone must say so where I'll see it.** Land exits non-zero or says "NOT on main for anyone else" when the push times out; the feed says `your land #N undone` at once, not at the next sync | q2h-6 a3 | 7 | Fixed: `land` re-lands an undo it finds; `sync` (and `watch --sync`) re-lands one found later, with the same message and --check: "#51 re-landed as #N" | Yes: on an undo, `land` (or the next online command) syncs and lands again with the same `--check`, reporting "#51 re-landed as #N"
 | 2 | **The change request's named owner gets the lead** | q2s-claims-4 a3 | 3 | Fixed `4dceff1`; confirmed in q2h-1 (a3 led the CR, no race) | Done |
 | 3 | **Swarm noise out of my feed and output** (renumbered lines, `/swarm/` changesets) | q2s-claims-4 a3 | 2 | Partly: `quiet` paths in `.hsattributes`; renumbered lines for quiet paths still show | Yes, small |
 | 4 | **Land a piece of an item without closing it** | q2s-claims-3 a2 | 1 | Fixed `bf4ee17` (`land --under`) | Done |
@@ -38,8 +38,8 @@ existed).
 | 18 | **`land --item C --split`**: land the free files under the item, propose the protected ones, close the item when the proposal lands | q2h-4 a3 | 1 | Fixed `08c009e`: covered paths land under the item, the rest is split off, the item stays open | Yes, small |
 | 19 | **Block until my last land is final** (`hs wait-final`), with the hub's stall and recovery shown | q2h-5 a1 | 1 | Fixed: `hs wait-final [#n]`; the provisional line points to it | Yes, small: a `wait-final` alias and a mention on the provisional line |
 | 20 | **Say why an approval still counts after a merge** (`approval kept: merged lines from #105`) | q2h-5 a3 | 1 | Fixed: land says "approval of P kept for <file>: your lines are the ones approved; teammates' changes merged in (#n)" | Yes, small: land knows when the line check carried it |
-| 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Open | Yes, small |
-| 22 | **An open proposal covers only the protected paths**: other files always land, and the proposal is updated to just the protected ones | q2h-6 a2 | 1 | Open: a code-only land was refused twice while P1 was open | Yes, small: attach the proposal only when the land carries protected changes; split otherwise |
+| 21 | **`watch --path` returns at once when the file is already in your files** (changed at or before your synced base) | q2h-6 a1 | 1 | Fixed: a one-change wait from your base returns "already in your files" (--new waits for a newer change) | Yes, small |
+| 22 | **An open proposal covers only the protected paths**: other files always land, and the proposal is updated to just the protected ones | q2h-6 a2 | 1 | Fixed: a proposal made for protected files stays out of lands that touch none; extra files land and the protected ones stay with it | Yes, small: attach the proposal only when the land carries protected changes; split otherwise |
 
 ## Runs
 

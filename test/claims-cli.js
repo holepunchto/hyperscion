@@ -39,13 +39,19 @@ test('claims: a race has one lead, the board shows it, a land completes the item
     loser.stdout
   )
 
-  // parts are the lead's to hand out (q2s-claims-1)
+  // parts are the lead's to hand out (q2s-claims-1); the item's author (a1) may split it too
   const notMine = await tm.as(other, ['item', 'part', id, 'flight minutes helper'])
-  t.not(notMine.code, 0)
-  t.ok(
-    new RegExp(`${lead} leads ${id}, so the parts are ${lead}'s to hand out`).test(notMine.stderr),
-    notMine.stderr
-  )
+  if (other === 'a1') {
+    t.is(notMine.code, 0, 'the author can split its own item: ' + notMine.stderr)
+  } else {
+    t.not(notMine.code, 0)
+    t.ok(
+      new RegExp(`${lead} leads ${id}, so the parts are ${lead}'s to hand out`).test(
+        notMine.stderr
+      ),
+      notMine.stderr
+    )
+  }
   const part = await tm.as(lead, ['item', 'part', id, 'flight minutes per stop (scheduler)'])
   t.is(part.code, 0, part.stderr)
   const partId = part.stdout.match(/item (C[0-9a-f]{6})/)[1]
@@ -318,6 +324,7 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
   const { waitFor } = require('./helpers/team')
   await waitFor(() => waiting.exited(), 60_000)
   t.is(tm.read('a2', 'src/x.js'), 'x\n', waiting.output())
+
   t.is(
     tm.read('a2', 'CONTRACTS.md'),
     '# contracts\n\n## a1\nloadDay(file) -> Day\n\n## a2\nplan(day) -> Plan\n\n## end\n'
@@ -341,4 +348,28 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
   const l3 = await tm.as('a1', ['land'])
   t.absent(/landed P/.test(l3.stdout), l3.stdout)
   t.ok(/content changed since/.test(l3.stdout + l3.stderr), l3.stdout + l3.stderr)
+  // a wait for a file you already have returns at once (#21)
+  const here = await tm.as('a2', ['watch', '--path', 'src/x.js', '--count', '1', '--timeout', '30'])
+  t.is(here.code, 0, here.stdout + here.stderr)
+  t.ok(/already in your files: #\d+ a1 \/src\/x\.js/.test(here.stdout), here.stdout)
+
+  // an open proposal doesn't hold back other files (#22)
+  tm.write(
+    'a2',
+    'CONTRACTS.md',
+    tm.read('a2', 'CONTRACTS.md').replace('plan(day) -> Plan', 'plan(day) -> Plan\nplan.trips[]')
+  )
+  const p4 = await tm.as('a2', ['propose', '-m', 'trips'])
+  const id4 = p4.stdout.match(/proposed (P\d+)/)[1]
+  tm.write('a2', 'src/y.js', 'y\n')
+  const other = await tm.as('a2', ['land', '-m', 'y'])
+  t.ok(/landed #\d+/.test(other.stdout), other.stdout + other.stderr)
+  t.ok(
+    new RegExp(`${id4} holds /CONTRACTS.md, waiting for review`).test(other.stdout),
+    other.stdout
+  )
+  t.ok(
+    tm.read('a2', 'CONTRACTS.md').includes('plan.trips[]'),
+    'the proposed edit is still in the worktree'
+  )
 })
