@@ -41,7 +41,7 @@
     "bare-runtime": "^1.34.1",
     "bare-storage": "^1.1.0",
     "bare-subprocess": "^6.2.2",
-    "bare-tui-paparam": "^0.1.0",
+    "bare-tui-paparam": "^0.2.0",
     "blind-peer": "^3.16.0",
     "blind-peering": "^2.10.1",
     "brittle": "^3.19.0",

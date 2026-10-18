@@ -95,3 +95,43 @@ test('menu: a picked file in the worktree becomes a repo path', (t) => {
   )
   t.alike(menu.toRepoPaths(['land', '-m', 'cat'], root), ['land', '-m', 'cat'])
 })
+
+// the menu is sectioned like `hs --help` (lib/help.js GROUPS): same titles, same order,
+// nothing left in bare-tui-paparam's trailing "Other"
+test('menu: grouped like hs --help', (t) => {
+  const { GROUPS } = require('../lib/help')
+  const cli = createCli()
+  const app = buildMenuApp(cli, { toolName: 'hs', groups: menu.groups(cli) })
+  app.update({ type: 'resize', width: 100, height: 60 })
+  const titles = app.menu.groups.map((g) => g.title)
+  t.alike(
+    titles,
+    GROUPS.map((g) => g.title),
+    'the help groups, in order'
+  )
+  t.absent(titles.includes('Other'), 'every command is in a group')
+  t.ok(
+    app.menu.groups.every((g) => g.help),
+    'each group has help for F1 on its header'
+  )
+
+  // choosing a command inside a group still opens its form
+  app.menu._select(app.menu.rows.findIndex((r) => r.type === 'item' && r.item.label === 'land'))
+  app.update(enter())
+  t.is(app.state, 'forming')
+  t.is(app._pending.item.label, 'land')
+})
+
+test('menu: a surface drops the groups it has no commands for', (t) => {
+  const { env } = require('bare-process')
+  const was = env.HS_SURFACE
+  env.HS_SURFACE = 'plain'
+  try {
+    const titles = menu.groups(createCli()).map((g) => g.title)
+    t.absent(titles.includes('Decide who builds what'), 'no claims on the task-board surface')
+    t.ok(titles.includes('Your work'))
+  } finally {
+    if (was === undefined) delete env.HS_SURFACE
+    else env.HS_SURFACE = was
+  }
+})
