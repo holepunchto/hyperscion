@@ -83,6 +83,11 @@ hs land -m "my change"                 # pulls, rebases if main moved, pushes, w
 
 ## Commands
 
+To explore them, run `hs --menu`: pick a command from a filterable list, fill a form built from
+its flags (F1 explains the focused field; space on an empty path field opens a file or folder
+picker), and it runs as the typed command would, printed so you learn it. `hs land --menu` opens one command's form directly; `hs <command> --help` has the
+same descriptions and examples.
+
 Every command that talks to peers does so by default; `--offline` opts out. A land is
 **provisional** until the hub acks it, then **settled** (it can't be reordered), then **final**
 (settled and accepted by review). `land` waits up to 10 s for the hub, so it usually ends with

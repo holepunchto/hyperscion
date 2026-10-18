@@ -1,12 +1,17 @@
-# Working in a team with hyperscion: the agent playbook (minimal surface)
+# Working in a team with hyperscion: the agent playbook
 
 This is how an agent (or a human) works on a shared repo with `hs` alongside teammates who
-work in parallel. It assumes a team set up with `scripts/team.sh`, which gives you:
+work in parallel. You need:
 
-- a worktree;
-- an `hs` command;
-- write access;
-- an always-on **holder** that keeps everyone's landed work available.
+- **a worktree with write access.** `hs clone <invite> <dir> --as <you> --admit <admit-dir>`
+  gets both, when the hub admits writers (`hs seed --admit <admit-dir>`). Otherwise the team
+  owner runs `hs add-writer` with the writer key `hs info` prints in your clone.
+- **a hub:** the always-on **holder** that keeps everyone's landed work available and makes
+  lands final. The team owner creates it with the repo (`hs init --hub <dir>`) and keeps
+  `hs seed` running there.
+
+`hs status` in your worktree says where you stand; `hs doctor` checks that you can reach the
+hub.
 
 ## The model in five lines
 
@@ -107,7 +112,7 @@ hs claim --new "cache the distance matrix"     # something that isn't an item ye
 - **You lead** (the earliest claim): build it and land as usual. A land links itself to the
   item you're on (`linked to C1a2b3c`). Close it with the land that finishes it: `hs land --done` (or `hs claim C1a2b3c --done`).
 - **Someone else leads:** don't build it too (`hs claim C1a2b3c --if-free` withdraws your claim at once). Ask them for a piece in NOTES.md, or review
-  their land when it comes: `hs review #27 approve` (or `changes -m "..."`), no NOTES.md land
+  their land when it comes: `hs review 27 approve` (or `changes -m "..."`), no NOTES.md land
   needed.
 - A claim never blocks anyone. Claims expire after 20 min without activity; `land` and `sync`
   keep yours alive. `hs claim C1a2b3c --release` when you stop.
@@ -134,7 +139,7 @@ How to use it:
   `#27 provisional: waiting for hub to ack (it settles on its own)`. All of these exit `0`.
 - `hs land --wait-final [--timeout 60]` keeps waiting until the land is final, review
   included, and exits `2` if it isn't by the timeout. Use it when the next step depends on it.
-  For a land you already made: `hs wait-final` (your last land) or `hs wait-final #27`.
+  For a land you already made: `hs wait-final` (your last land) or `hs wait-final 27`.
 - You don't need to wait before carrying on. Keep working; build on a teammate's land once
   it's settled if you want to be sure it won't move.
 - `hs status` shows `last land: #27 final` (or what it's waiting for) and lists

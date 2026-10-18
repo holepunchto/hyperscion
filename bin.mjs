@@ -3,6 +3,7 @@ import path from 'bare-path'
 import fs from 'bare-fs'
 import { isWindows } from 'which-runtime'
 import createCli from './lib/cli.js'
+import menu from './lib/menu.js'
 
 const isDev = path.basename(Bare.argv[0]) === (isWindows ? 'bare.exe' : 'bare')
 const argv = Bare.argv.slice(isDev ? 2 : 1)
@@ -31,7 +32,13 @@ Bare.on('beforeExit', () => {
 })
 
 try {
-  const program = cli.parse(argv)
+  // `hs --menu` (or `hs <cmd> --menu`): pick and fill a command in a form, then run it as typed
+  let args = argv
+  if (menu.isMenu(argv)) {
+    args = await menu.pick(cli, argv)
+    if (args) console.log('$ hs ' + args.map(quote).join(' '))
+  }
+  const program = args ? cli.parse(args) : null
   if (program && program.running) await program.running
 } catch (err) {
   // paparam hands command errors back as their stack text; users get the message only
@@ -97,4 +104,11 @@ function clearBusy() {
       dir = up
     }
   } catch {}
+}
+
+// a token as you would type it in a shell (shown after `hs --menu`, so people learn the command)
+function quote(token) {
+  return /^[\w@%+=:,./#-]+$/.test(token) && !token.startsWith('#')
+    ? token
+    : `'${token.replace(/'/g, "'\\''")}'`
 }

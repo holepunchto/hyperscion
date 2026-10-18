@@ -35,7 +35,8 @@ control; never use git.
 
 ## Review
 
-- `hs review '#12' approve -m "<what you checked>"`. Quote `#12`: shells read # as a comment.
+- `hs review 12 approve -m "<what you checked>"`. Name changesets by their number (12):
+  shells read a word starting with # as a comment, so `#12` would vanish.
 
 ## When hs says your land was undone
 
@@ -45,5 +46,5 @@ control; never use git.
 
 ## Look around
 
-- `hs status`, `hs diff`, `hs log`, `hs show '#12'`, `hs claims`, `hs doctor`.
+- `hs status`, `hs diff`, `hs log`, `hs show 12`, `hs claims`, `hs doctor`.
 - The full playbook: `hs agents --full`.

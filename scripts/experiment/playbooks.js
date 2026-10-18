@@ -21,7 +21,8 @@ const messages = section('## What the messages')
   .join('\n')
 
 for (const [arm, title] of [
-  ['min', 'minimal surface'],
+  // no suffix: this one is what `hs agents --full` prints to anyone
+  ['min', null],
   ['plain', 'task-board arm']
 ]) {
   const coordination = fs.readFileSync(
@@ -29,7 +30,7 @@ for (const [arm, title] of [
     'utf8'
   )
   const out = [
-    head.replace(/^(# .*)$/m, `$1 (${title})`),
+    title ? head.replace(/^(# .*)$/m, `$1 (${title})`) : head,
     section('## The model'),
     section('## The loop'),
     coordination.trimEnd() + '\n\n',
