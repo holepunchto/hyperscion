@@ -7,11 +7,11 @@ const { run } = require('./helpers/team')
 const env = (surface) => ({ ...require('bare-process').env, HS_SURFACE: surface })
 const commands = async (surface) => {
   const r = await run(os.cwd(), ['--help'], env(surface))
-  const list = r.stdout.split('Commands:')[1] || ''
-  return list
+  // `hs --help` lists commands by group, each indented four spaces under its group
+  return r.stdout
     .split('\n')
+    .filter((l) => /^ {4}\S/.test(l))
     .map((l) => l.trim().split(/\s+/)[0])
-    .filter(Boolean)
 }
 
 test('surface: full, minimal and plain', async (t) => {

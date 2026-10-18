@@ -70,3 +70,49 @@ test('help: suggested commands use bare changeset numbers', (t) => {
     t.alike(bad, [], f)
   }
 })
+
+// `hs --help` lists commands by group: every visible command in exactly one, none twice, and
+// every group named and described (the shape bare-tui-paparam's menu groups take)
+test('help: every command is in exactly one group', (t) => {
+  const { GROUPS, commandAt } = require('../lib/help')
+  const cli = createCli()
+  const leaves = []
+  walk(cli, [], (cmd, path) => {
+    if (!path.length || cmd.hidden) return
+    if (cmd._definedCommands.size === 0 || cmd._definedArgs.length) leaves.push(path.join(' '))
+  })
+  const grouped = GROUPS.flatMap((g) => g.commands)
+  t.alike(
+    leaves.filter((p) => !grouped.includes(p)),
+    [],
+    'no command left out'
+  )
+  t.alike(
+    grouped.filter((p, i) => grouped.indexOf(p) !== i),
+    [],
+    'none listed twice'
+  )
+  t.alike(
+    grouped.filter((p) => !commandAt(cli, p)),
+    [],
+    'groups name real commands'
+  )
+  for (const g of GROUPS) t.ok(g.title && g.description && g.help, g.title)
+  const help = cli.help()
+  const at = GROUPS.map((g) => help.indexOf('\n' + g.title + '\n'))
+  t.ok(
+    at.every((i, n) => i > 0 && (n === 0 || i > at[n - 1])),
+    'hs --help shows the groups in order'
+  )
+  t.ok(/^hs \[flags\] \[command\]/.test(help), 'usage keeps [command]')
+})
+
+test('help: hs with no command prints the grouped help and exits 1, as git does', async (t) => {
+  const { run } = require('./helpers/team')
+  const tmp = require('test-tmp')
+  const { env } = require('bare-process')
+  const r = await run(await tmp(t), [], { ...env, HS_SURFACE: '' })
+  t.is(r.code, 1, 'no command is a usage mistake')
+  t.ok(/\nYour work\n/.test(r.stdout) && /\nSet up a team\n/.test(r.stdout), 'the groups')
+  t.is((await run(await tmp(t), ['--help'], { ...env, HS_SURFACE: '' })).code, 0, '--help exits 0')
+})
