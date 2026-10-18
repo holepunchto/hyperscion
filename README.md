@@ -22,12 +22,31 @@ system can get without a server:
 - **Data stays available without a server.** Mirror peers (`hs seed`) or blind peers
   that hold encrypted blocks they cannot read.
 
-
 > [!NOTE]
-> This an experimental library. A version 1.0.0 release will signal stability. Until that point be very careful about data/file loss. 
+> This an experimental library. A version 1.0.0 release will signal stability. Until that point be very careful about data/file loss.
 
 This is a milestone-1 prototype. **[docs/DESIGN.md](docs/DESIGN.md)** has the architecture, the
 Scion mapping, the measured results (including where git still wins) and the open problems.
+
+## Install
+
+With npm:
+
+```sh
+npm init hs
+```
+
+That's `npm init`, not `npm install`: npm runs the `create-hs` package, which fetches the `hs`
+binary peer-to-peer with [pear-install](https://www.npmjs.com/package/pear-install) (what
+`pear install` uses) and puts it in `~/.local/bin/hs` on macOS and Linux, or
+`%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hs` skips the question. The npm
+package is only the installer (a few kB, no dependencies); the binary comes from peers.
+
+Or with the [Pear CLI](https://install.pears.com):
+
+```sh
+pear install <the hs pear:// link>
+```
 
 ## Quick start
 
