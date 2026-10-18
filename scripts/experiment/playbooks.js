@@ -2,7 +2,7 @@
 // coordinate: the same model, loop, land states, shared files, messages and tips, with the
 // claims/review sections replaced by one coordination section per arm
 // (scripts/experiment/playbook-sections/<arm>.md).
-//   node scripts/experiment/playbooks.js     writes docs/AGENTS-min.md and docs/AGENTS-plain.md
+//   node scripts/experiment/playbooks.js     writes docs/AGENTS-min.md, docs/AGENTS-plain.md and lib/agents-doc.js
 const fs = require('fs')
 const path = require('path')
 
@@ -40,3 +40,6 @@ for (const [arm, title] of [
   ].join('')
   fs.writeFileSync(path.join(ROOT, 'docs', `AGENTS-${arm}.md`), out)
 }
+
+// `hs agents --full` bundles these playbooks: keep the binary's copy current
+fs.writeFileSync(path.join(ROOT, 'lib', 'agents-doc.js'), require('../agents-doc')())

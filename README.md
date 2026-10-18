@@ -45,7 +45,10 @@ hs ws switch default && hs sync
 ```
 
 For teams, and AI agents in particular, read **[docs/AGENTS.md](docs/AGENTS.md)**. It's the
-playbook: watch instead of poll, sync, land small, learn from teammates' diffs. To set up a
+playbook: watch instead of poll, sync, land small, learn from teammates' diffs. The binary
+carries the agent instructions too: `hs agents` prints a short brief (docs/BRIEF.md),
+`hs agents --full` the playbook, and `hs agents --write` saves the brief as `AGENTS.md` in the
+worktree, where agent tools read it. To set up a
 team with one command (an always-on holder plus N writable worktrees):
 
 ```sh
