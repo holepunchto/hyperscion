@@ -22,6 +22,10 @@ system can get without a server:
 - **Data stays available without a server.** Mirror peers (`hs seed`) or blind peers
   that hold encrypted blocks they cannot read.
 
+
+> [!NOTE]
+> This an experimental library. A version 1.0.0 release will signal stability. Until that point be very careful about data/file loss. 
+
 This is a milestone-1 prototype. **[docs/DESIGN.md](docs/DESIGN.md)** has the architecture, the
 Scion mapping, the measured results (including where git still wins) and the open problems.
 
