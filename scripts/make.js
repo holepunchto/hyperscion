@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 'use strict'
-const pkg = require('../package.json')
 const fs = require('fs/promises')
 const os = require('os')
 const path = require('path')
@@ -27,7 +26,8 @@ if (!supported.has(host)) {
 
 const isWindows = os.platform() === 'win32'
 const out = path.join('.', 'out', 'make')
-const appName = pkg.productName || pkg.name
+// the binary is `hs`, the command people type (bare-build would name it after the package)
+const appName = 'hs'
 const bin = host.startsWith('win32-') ? appName + '.exe' : appName
 const cleanup = []
 
@@ -81,7 +81,7 @@ async function make() {
 
   const build = spawn(
     'bare-build',
-    ['--standalone', ...signFlags, '--host', host, '--out', out, 'bin.mjs'],
+    ['--standalone', ...signFlags, '--name', appName, '--host', host, '--out', out, 'bin.mjs'],
     {
       cwd: root,
       stdio: 'inherit',

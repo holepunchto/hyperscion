@@ -136,7 +136,8 @@ npm run test:e2e -- [dir] [--encrypt]   # two worktrees over the public DHT (nee
 bare bench/commit.js 10000 100000
 bare bench/land.js 4 200 50 3
 bare bench/sparse.js 50000 100 1024
-npm run make:linux-x64       # standalone binary: out/linux-x64/hyperscion
+npm run make                 # standalone binary for this machine: out/make/hs
+npm run make:linux-x64       # or for a given host: out/linux-x64/hs
 ```
 
 Tests come in three tiers, by how much network they need:
