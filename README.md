@@ -81,6 +81,12 @@ hs land -m "my change"                 # pulls, rebases if main moved, pushes, w
 
 `hs init --encrypt` encrypts all repo data at rest. The invite then carries the key.
 
+**Ignoring files.** hs honors your `.gitignore` files, so `node_modules/` and build output never
+land. An optional `.hsignore` (same syntax, in the same places) applies after them: add patterns
+git tracks but hs shouldn't, or share what git ignores with `!dist/`. Unlike `.npmignore`, it
+never replaces `.gitignore`. Only untracked files are ignored, as in git, and
+`hs status --ignored` lists what's skipped and any tracked files a rule matches.
+
 ## Commands
 
 To explore them, run `hs --menu`: pick a command from a filterable list, fill a form built from

@@ -23,6 +23,7 @@ control; never use git.
 ## Land small and tested
 
 - `hs land -m "<what and why>" --check "npm test"` rebases and retries for you.
+- Untracked files your `.gitignore` or `.hsignore` match never land (`hs status --ignored`).
 - If the land finishes the item you lead, add `--done`.
 - A land is provisional, then settled, then final. `hs wait-final` waits for final and
   says whether the hub is reachable. If it isn't, keep working: your land settles by

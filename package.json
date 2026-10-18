@@ -48,6 +48,7 @@
     "hyperdht": "^6.34.1",
     "hyperdrive": "file:./vendor/hyperdrive",
     "hyperswarm": "^4.17.0",
+    "ignore": "^7.0.12",
     "localdrive": "^2.2.1",
     "mirror-drive": "^1.14.2",
     "node-diff3": "^3.2.1",

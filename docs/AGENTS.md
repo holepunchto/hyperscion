@@ -238,6 +238,9 @@ and what to do next).
 
 - `land` commits your working copy first, even if the land is then rejected. `hs diff` shows
   exactly what `land` will send, as a patch (`--stat` for just the paths).
+- Untracked files that `.gitignore` or `.hsignore` rules match never show up or land (git's
+  syntax; `.hsignore` applies after `.gitignore`, so `!dist/` shares what git ignores).
+  `hs status --ignored` lists them, and the files already tracked that a rule matches.
 - Every command that needs peers goes online by itself; `--offline` opts out. The old
   `land -o` still works but isn't needed.
 - Online commands (`sync`, `fetch`, `land`) spend about 2–3 s finding peers. Local commands
