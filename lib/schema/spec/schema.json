@@ -1,0 +1,354 @@
+{
+  "version": 4,
+  "schema": [
+    {
+      "name": "head",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "length",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "base",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "entry",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "value",
+          "type": "buffer",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "land",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "entries",
+          "array": true,
+          "type": "@hs/entry",
+          "version": 1
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 3
+        }
+      ]
+    },
+    {
+      "name": "add-writer",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "indexer",
+          "type": "bool",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "op",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "type",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "land",
+          "type": "@hs/land",
+          "version": 1
+        },
+        {
+          "name": "addWriter",
+          "type": "@hs/add-writer",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "meta",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "changeset",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 6,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "writer",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "node",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "paths",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 3
+        }
+      ]
+    },
+    {
+      "name": "outcome",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "status",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "seq",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "conflicts",
+          "array": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "path",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 5,
+      "fields": [
+        {
+          "name": "name",
+          "required": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "tree",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "fork",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "landed",
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "head",
+          "type": "@hs/head",
+          "version": 2
+        },
+        {
+          "name": "landNode",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandHead",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandFork",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandBase",
+          "type": "@hs/base",
+          "version": 4
+        }
+      ]
+    }
+  ]
+}
