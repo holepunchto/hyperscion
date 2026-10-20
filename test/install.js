@@ -1,4 +1,4 @@
-// `npm init hs` runs install.js (the bin of create-hs): it asks before installing, and refuses
+// `npm init hyperscion` runs install.js (the bin of create-hyperscion): it asks before installing, and refuses
 // while package.json's upgrade link is still the placeholder (no release to fetch yet)
 const test = require('brittle')
 const path = require('bare-path')
@@ -23,10 +23,14 @@ function node(input, extraEnv = {}) {
   })
 }
 
-test('install: the package is create-hs, installing the hs binary', (t) => {
-  t.is(pkg.name, 'create-hs', '`npm init hs` runs create-hs')
+test('install: the package is create-hyperscion, installing the hs binary', (t) => {
+  t.is(pkg.name, 'create-hyperscion', '`npm init hyperscion` runs create-hyperscion')
   t.is(pkg.productName, 'hs')
-  t.is(pkg.bin['create-hs'], 'install.js', 'the installer is not named hs, so it never shadows hs')
+  t.is(
+    pkg.bin['create-hyperscion'],
+    'install.js',
+    'the installer is not named hs, so it never shadows hs'
+  )
   t.alike(pkg.files, ['install.js', 'README.md', 'LICENSE'], 'only the installer ships')
   t.absent(pkg.dependencies, 'no runtime dependencies: npm init downloads only the installer')
 })

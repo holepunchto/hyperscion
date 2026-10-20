@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// `npm init hs` runs this (npm runs the bin of create-hs): it fetches the hs binary
-// peer-to-peer with pear-install, the library behind `pear install`, into ~/.local/bin (or
-// %LOCALAPPDATA%\Programs on Windows). `npm init -y hs` skips the question.
+// `npm init hyperscion` runs this (npm runs the bin of create-hyperscion): it fetches the
+// hs binary peer-to-peer with pear-install, the library behind `pear install`, into
+// ~/.local/bin (or %LOCALAPPDATA%\Programs on Windows). `npm init -y hyperscion` skips the
+// question. The package is named for the project; the binary it installs is hs.
 const fs = require('fs')
 const { spawn } = require('child_process')
 const { productName, upgrade } = require('./package.json')

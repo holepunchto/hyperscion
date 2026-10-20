@@ -33,14 +33,14 @@ Scion mapping, the measured results (including where git still wins) and the ope
 With npm:
 
 ```sh
-npm init hs
+npm init hyperscion
 ```
 
-That's `npm init`, not `npm install`: npm runs the `create-hs` package, which fetches the `hs`
-binary peer-to-peer with [pear-install](https://www.npmjs.com/package/pear-install) (what
-`pear install` uses) and puts it in `~/.local/bin/hs` on macOS and Linux, or
-`%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hs` skips the question. The npm
-package is only the installer (a few kB, no dependencies); the binary comes from peers.
+That's `npm init`, not `npm install`: npm runs the `create-hyperscion` package, which fetches
+the `hs` binary peer-to-peer with [pear-install](https://www.npmjs.com/package/pear-install)
+(what `pear install` uses) and puts it in `~/.local/bin/hs` on macOS and Linux, or
+`%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hyperscion` skips the question.
+The npm package is only the installer (a few kB, no dependencies); the binary comes from peers.
 
 Or with the [Pear CLI](https://install.pears.com):
 

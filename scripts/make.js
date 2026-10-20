@@ -27,7 +27,7 @@ if (!supported.has(host)) {
 const isWindows = os.platform() === 'win32'
 const out = path.join('.', 'out', 'make')
 // the binary is `hs` (package.json productName), the command people type; the package is
-// create-hs, the npm init installer
+// create-hyperscion, the npm init installer
 const appName = require('../package.json').productName
 const bin = host.startsWith('win32-') ? appName + '.exe' : appName
 const cleanup = []

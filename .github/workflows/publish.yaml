@@ -7,7 +7,7 @@ permissions:
   id-token: write
   contents: write
 jobs:
-  # publishes create-hs, so `npm init hs` fetches the hs binary peer-to-peer (install.js)
+  # publishes create-hyperscion, so `npm init hyperscion` fetches the hs binary peer-to-peer (install.js)
   publish:
     runs-on: ubuntu-latest
     environment:
