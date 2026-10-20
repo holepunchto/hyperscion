@@ -159,7 +159,9 @@ const { outcome } = await ws.land({ message: 'fix', rebase: 3 })
 ## Development
 
 ```sh
-npm test                     # everything below except the public-DHT e2e, ~40 s, no internet
+npm test                     # quick tier: in-process tests, about 25 s, no internet
+npm run test:integration     # the real hs binary as many processes on local testnets, 4-7 min
+npm run test:all             # both; scripts/test.js runs files in parallel (--jobs n)
 npm run lint
 npm run test:e2e -- [dir] [--encrypt]   # two worktrees over the public DHT (needs internet)
 bare bench/commit.js 10000 100000
@@ -169,7 +171,10 @@ npm run make                 # standalone binary for this machine: out/make/hs
 npm run make:linux-x64       # or for a given host: out/linux-x64/hs
 ```
 
-Tests come in three tiers, by how much network they need:
+`npm test` runs the quick tier and `npm run test:integration` the files `scripts/test.js` lists
+as integration (each starts a hub, agents and feeds as separate processes). A new test file is
+quick unless it's added to that list. Separately, tests come in three tiers by how much network
+they need:
 
 | tier             | what                                                                                                          | network                                                |
 | ---------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |

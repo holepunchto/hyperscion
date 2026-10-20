@@ -15,7 +15,9 @@
   "upgrade": "pear://<YOUR_KEY_HERE>",
   "scripts": {
     "format": "prettier . --write",
-    "test": "brittle-bare --timeout 300000 test/*.js",
+    "test": "node scripts/test.js quick",
+    "test:integration": "node scripts/test.js integration",
+    "test:all": "node scripts/test.js all",
     "test:e2e": "scripts/e2e.sh",
     "probes": "brittle-bare --timeout 600000 test/flows.js test/metrics.js test/outage.js test/fixes.js test/review.js",
     "flows": "brittle-bare --timeout 600000 test/flows.js test/metrics.js test/coordination-props.js",
