@@ -1,0 +1,42 @@
+{
+  "name": "Q0bsl: coordination with no owners, across a long two-site split",
+  "about": "q0bs with the split held for 25 minutes, longer than a claim lease (20 minutes): claims made in the first minute must stay live through the split (feeds renew them) and the earliest claim must lead when the sites meet; lands made final on the hub side must stay final.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work, then possibly a long wait for it to be final).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other. Your network may split for a while (some teammates reachable, others and the hub not); keep going.\n",
+  "roles": {
+    "a1": "**You work on the whole codebase; there are no module owners.**",
+    "a2": "**You work on the whole codebase; there are no module owners.**",
+    "a3": "**You work on the whole codebase; there are no module owners.**"
+  },
+  "schedule": [
+    {
+      "at": 0.2,
+      "do": "partition",
+      "agents": ["a1", "a2"]
+    },
+    {
+      "at": 0.3,
+      "do": "change-request",
+      "files": "change-request",
+      "bothSites": true
+    },
+    {
+      "at": 25,
+      "do": "heal",
+      "agents": ["a1", "a2"]
+    }
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main, final (the hub has it: `hs wait-final`, or no provisional line in `hs status`) and `npm test` passes there, or at minute 30 (`date` against when you started), whichever comes first. If your side cannot reach the hub, keep your feed running and check back every few minutes (`hs status`); do not wait for teammates to finish.",
+  "sites": true
+}
