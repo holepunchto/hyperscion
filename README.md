@@ -169,7 +169,12 @@ bare bench/land.js 4 200 50 3
 bare bench/sparse.js 50000 100 1024
 npm run make                 # standalone binary for this machine: out/make/hs
 npm run make:linux-x64       # or for a given host: out/linux-x64/hs
+npm run build                # pear deployment folder from out/<host>/hs: out/pear
+pear stage <upgrade link> out/pear
 ```
+
+`npm run build` stages a copy of package.json with `bin` set to `hs`: `pear install` fetches
+one binary per `bin` key, and the real `bin` is the npm init installer.
 
 `npm test` runs the quick tier and `npm run test:integration` the files `scripts/test.js` lists
 as integration (each starts a hub, agents and feeds as separate processes). A new test file is
