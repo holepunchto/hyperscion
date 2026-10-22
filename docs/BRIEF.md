@@ -5,26 +5,28 @@ control; never use git.
 
 ## Start
 
-- `hs sync` brings main into your files and lists open work items and who leads them.
+- `hs sync` brings main into your files and lists open tasks and who leads them.
 - Keep a feed running in the background and read it instead of polling:
   `hs watch --json >> .hs/feed.jsonl &`, then `tail -n 20 .hs/feed.jsonl`.
   Stop only your own feed with `hs watch --stop` (never pkill).
 
 ## Decide who builds what before you build
 
-- `hs claim <item>`: exit 0 and "you lead" means build it. Exit 2 means a teammate
+- `hs task` lists the tasks and who leads each.
+- `hs task start <task>`: exit 0 and "you lead" means build it. Exit 2 means a teammate
   leads: don't build it too. Help or review instead.
-- `hs claim <item> --if-free` claims it only if nobody leads it, and withdraws at once
+- `hs task start <task> --if-free` starts it only if nobody leads it, and steps away at once
   otherwise.
-- Work nobody filed: `hs claim --new "<title>"`.
-- "nobody heard this claim" means you are offline: claim again once you're back,
+- Work nobody filed: `hs task start --new "<title>"`.
+- "nobody heard you start it" means you are offline: start it again once you're back,
   before building.
+- `hs task stop <task>` when you step away from it.
 
 ## Land small and tested
 
 - `hs land -m "<what and why>" --check "npm test"` rebases and retries for you.
 - Untracked files your `.gitignore` or `.hsignore` match never land (`hs status --ignored`).
-- If the land finishes the item you lead, add `--done`.
+- If the land finishes the task you lead, add `--done`.
 - A land is provisional, then settled, then final. `hs wait-final` waits for final and
   says whether the hub is reachable. If it isn't, keep working: your land settles by
   itself later.
@@ -47,5 +49,5 @@ control; never use git.
 
 ## Look around
 
-- `hs status`, `hs diff`, `hs log`, `hs show 12`, `hs claims`, `hs doctor`.
+- `hs status`, `hs diff`, `hs log`, `hs show 12`, `hs task`, `hs doctor`.
 - The full playbook: `hs agents --full`.

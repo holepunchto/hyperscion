@@ -12,7 +12,7 @@ const enter = () =>
 
 test('menu: lists every visible command, not the internal ones', (t) => {
   const labels = runnableCommands(introspect(createCli()).catalog).map((c) => c.label)
-  for (const c of ['land', 'sync', 'claim', 'watch', 'agents', 'ws new', 'init', 'seed']) {
+  for (const c of ['land', 'sync', 'task start', 'watch', 'agents', 'ws new', 'init', 'seed']) {
     t.ok(labels.includes(c), c)
   }
   t.absent(labels.includes('keepalive'), 'keepalive is the feed’s, not a person’s')
@@ -74,7 +74,7 @@ test('menu: path fields open the file or folder picker', (t) => {
   t.is(picker('seed', 'admit'), 'dir', 'seed --admit')
   t.is(picker('export', 'dir'), 'dir', 'export <dir>')
   t.is(picker('import-git', 'gitdir'), 'dir', 'import-git <gitdir> is a folder')
-  t.is(picker('item', 'from'), 'file', 'item --from')
+  t.is(picker('task new', 'from'), 'file', 'task new --from')
   t.is(picker('cat', 'path'), 'file', 'cat <path>')
   t.is(picker('log', 'path'), 'file', 'log [path]')
   t.is(picker('ls', 'prefix'), 'dir', 'ls [prefix]')

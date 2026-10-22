@@ -18,7 +18,7 @@ const ROOT = path.join(__dirname, '..')
 const INTEGRATION = [
   'test/site-finality.js',
   'test/flows.js',
-  'test/claims-cli.js',
+  'test/tasks-cli.js',
   'test/outage.js',
   'test/incoming.js',
   'test/cli.js',

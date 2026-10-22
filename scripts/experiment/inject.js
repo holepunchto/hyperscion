@@ -222,7 +222,7 @@ const actions = {
       }
       let res
       if (hs) {
-        // claims (docs/CLAIMS.md): the change request is also an item agents can claim. Made
+        // claims (docs/TASKS.md): the change request is also an item agents can claim. Made
         // before the land, so it is on the board when agents see the file (q0b-min: made after,
         // it lagged by seconds and an agent created a duplicate); after the land only when the
         // land brings the policy the item's approvals depend on (q2h)
@@ -273,10 +273,10 @@ async function crItem(cwd) {
   const paths = (scenario.changeRequestPaths || []).flatMap((p) => ['--paths', p])
   const made = await tool(
     'pm',
-    ['item', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', kind, ...paths, ...lead],
+    ['task', 'new', '--from', 'CHANGE-REQUEST.md', '--kind', kind, ...paths, ...lead],
     cwd
   )
-  return (made.out.match(/item (C[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
+  return (made.out.match(/task (T[0-9a-f]{6})/) || [])[1] || made.out.slice(-200)
 }
 
 async function stop() {

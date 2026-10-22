@@ -99,32 +99,34 @@ as #N`). A `land` that finds its own land undone does this by itself.
    `your land #11 is now #14` is different: nothing was undone. A land made offline (or one
    that lost a race) was given a later number when peers met.
 
-## Claims: say what you're about to build
+## Tasks: say what you're about to build
 
 Duplicate work is the costliest mistake in a team. Before you start something new:
 
 ```sh
-hs claims                      # open items and who is on them (a change request is an item)
-hs claim C1a2b3c               # say you're on it; waits ~1.5 s for anyone claiming at once
-hs claim --new "cache the distance matrix"     # something that isn't an item yet
+hs task                        # open tasks and who is on each (a change request is a task)
+hs task start T1a2b3c          # say you're building it; waits ~1.5 s for anyone starting it too
+hs task start --new "cache the distance matrix"   # something that isn't a task yet
 ```
 
-- **You lead** (the earliest claim, or the lead the item names): build it and land as usual. A
-  land links itself to the item you lead (`linked to C1a2b3c`). Close it with the land that
-  finishes it: `hs land --done` (or `hs claim C1a2b3c --done`).
-- **Someone else leads** (`a2 leads C1a2b3c (claimed 0.4 s before you)`): don't build it too
-  (`hs claim C1a2b3c --if-free` withdraws your claim at once). Ask them for a piece in NOTES.md, or review their land when it comes:
-  `hs review 27 approve` (or `changes -m "..."`), no NOTES.md land needed.
-- **A claim never blocks anyone,** and works while the hub is down (claims travel between
-  peers). Claims expire after 20 min without activity; `land` and `sync` keep yours alive.
-  `hs claim C1a2b3c --release` when you stop.
+- **You lead** (you started it first, or the task names you as lead): build it and land as
+  usual. A land links itself to the task you lead (`linked to T1a2b3c`). Close it with the land
+  that finishes it: `hs land --done` (or `hs task done T1a2b3c`).
+- **Someone else leads** (`a2 leads T1a2b3c (started 0.4 s before you)`): don't build it too
+  (`hs task start T1a2b3c --if-free` steps away again at once). Ask them for a piece in
+  NOTES.md, or review their land when it comes: `hs review 27 approve` (or
+  `changes -m "..."`), no NOTES.md land needed.
+- **Starting a task never blocks anyone,** and works while the hub is down (it travels between
+  peers). It lapses after 20 min without activity; `land`, `sync` and a running feed keep it
+  alive. `hs task stop T1a2b3c` when you step away.
 - **Some files need approval** (`/.hsreview`): `hs land` lands your other files now and proposes
   the protected ones to their reviewers (`split:` in its output); land again once the proposal
-  is approved. If an item needs a person's approval (`needs 1 approval` in `hs claims`), start
+  is approved. If a task needs a person's approval (`needs 1 approval` in `hs task`), start
   anyway: only your land into the protected paths waits.
 
-Splitting an item into parts, sharing it (`--with`), taking over a stale claim and the
-approval commands for people are in docs/CLAIMS.md; you rarely need them.
+Splitting a task into subtasks (`hs task split`), sharing it (`--with`), taking over from a
+teammate gone quiet (`--take`) and the approval commands for people are in docs/TASKS.md; you
+rarely need them.
 
 ## Ship, Show or Ask
 

@@ -69,7 +69,7 @@ Use it before a full round. There are two tiers.
    - **Short LLM run, `q2s` (about 6 minutes):** q2 with the outage from minute 1 to 2.5,
      the change request at 1.5, and agents told to stop once their module and their part of
      the change request are on main. Run `swarm-load.js --minutes 7` alongside.
-   - **A person in the loop, `q2h` (claims phase 2, docs/CLAIMS.md):** q2s where the
+   - **A person in the loop, `q2h` (claims phase 2, docs/TASKS.md):** q2s where the
      change request lands with a `/.hsreview` that makes `CONTRACTS.md` changes need
      approval from ann, a human writer that `setup.sh` marks with `add-writer --human`. The
      CR is a contract item (a3 leads). `inject.js` starts `approver.js`, a scripted ann who
@@ -80,7 +80,7 @@ Use it before a full round. There are two tiers.
      green planner and one change request with no owner named, no swarm, no outage. The arm
      is the second argument to `setup.sh`:
      - `hs`: the full surface and docs/AGENTS.md;
-     - `hs-min`: agents get only change control plus `claims`/`claim` (`HS_SURFACE=minimal`,
+     - `hs-min`: agents get only change control plus `task`, `task start`, `stop` and `done` (`HS_SURFACE=minimal`,
        docs/AGENTS-min.md);
      - `hs-plain`: no hs coordination; a `TASKS.md` board instead (`HS_SURFACE=plain`,
        docs/AGENTS-plain.md).

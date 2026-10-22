@@ -34,7 +34,7 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
   await ownerHs(['sync'])
   fs.writeFileSync(
     path.join(owner, '.hsreview'),
-    '/CONTRACTS.md approvals=1 reviewers=@humans\nitem kind=contract approvals=1 reviewers=@humans\n'
+    '/CONTRACTS.md approvals=1 reviewers=@humans\ntask kind=contract approvals=1 reviewers=@humans\n'
   )
   await ownerHs(['land', '-m', 'policy'])
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
@@ -70,20 +70,20 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
   let lead = null
   await flow('F1 claim race', async () => {
     const made = await ownerHs([
-      'item',
+      'task',
       'new',
       'CR-1: price per flight minute',
       '--paths',
       'src/pricing.js'
     ])
-    id = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
-    const res = await Promise.all(['a1', 'a2', 'a3'].map((a) => tm.as(a, ['claim', id])))
+    id = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
+    const res = await Promise.all(['a1', 'a2', 'a3'].map((a) => tm.as(a, ['task', 'start', id])))
     const leads = res.filter((r) => /you lead/.test(r.stdout))
     t.is(leads.length, 1, res.map((r) => r.stdout).join('\n---\n'))
     lead = ['a1', 'a2', 'a3'][res.indexOf(leads[0])]
     // a loser with --if-free takes its claim back at once
     const loser = ['a1', 'a2', 'a3'].find((a) => a !== lead)
-    const back = await tm.as(loser, ['claim', id, '--if-free'])
+    const back = await tm.as(loser, ['task', 'start', id, '--if-free'])
     t.is(back.code, 2, back.stdout)
     t.ok(new RegExp(`withdrawn: ${lead} leads ${id}`).test(back.stdout), back.stdout)
   })
@@ -91,12 +91,12 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
 
   // F2: only the lead splits the item; a teammate can share it
   await flow('F2 parts', async () => {
-    const part = await tm.as(lead, ['item', 'part', id, 'flight minutes per stop'])
-    t.ok(/item C[0-9a-f]{6}/.test(part.stdout), part.stdout + part.stderr)
-    const refused = await tm.as(others[0], ['item', 'part', id, 'my own piece'])
+    const part = await tm.as(lead, ['task', 'split', id, 'flight minutes per stop'])
+    t.ok(/task T[0-9a-f]{6}/.test(part.stdout), part.stdout + part.stderr)
+    const refused = await tm.as(others[0], ['task', 'split', id, 'my own piece'])
     t.not(refused.code, 0)
     t.ok(new RegExp(`${lead} leads ${id}`).test(refused.stderr), refused.stderr)
-    const shared = await tm.as(others[1], ['claim', id, '--with', lead])
+    const shared = await tm.as(others[1], ['task', 'start', id, '--with', lead])
     t.is(shared.code, 0, shared.stderr)
   })
 
@@ -228,15 +228,15 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
   await flow('F9 partition: claim vs board', async () => {
     const [x, y] = others
     for (const a of [x, y]) await tm.as(a, ['sync'])
-    const made = await ownerHs(['item', 'new', 'CR-2: cache distances'])
-    const id2 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    const made = await ownerHs(['task', 'new', 'CR-2: cache distances'])
+    const id2 = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
     for (const a of [x, y]) await tm.as(a, ['sync'])
     await tm.stopHub()
     for (const a of [x, y]) {
       // nobody heard it: the verdict says so instead of a bare "you lead" (q0bp)
-      const alone = await tm.as(a, ['claim', id2])
+      const alone = await tm.as(a, ['task', 'start', id2])
       t.is(alone.code, 2, alone.stdout)
-      t.ok(/nobody heard this claim/.test(alone.stderr), alone.stderr)
+      t.ok(/nobody heard you start it/.test(alone.stderr), alone.stderr)
       fs.appendFileSync(path.join(tm.agents[a], 'NOTES.md'), `- [${a}] taking CR-2\n`)
       await tm.as(a, ['land', '-m', `${a} takes CR-2`, '--offline'])
     }
@@ -251,7 +251,7 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     }
     for (const a of [x, y]) await tm.as(a, ['sync'])
     const verdicts = []
-    for (const a of [x, y]) verdicts.push(await tm.as(a, ['claim', id2]))
+    for (const a of [x, y]) verdicts.push(await tm.as(a, ['task', 'start', id2]))
     const leads = verdicts.filter((v) => /you lead/.test(v.stdout))
     t.is(leads.length, 1, 'the claim converges: ' + verdicts.map((v) => v.stdout).join(' | '))
     t.alike(
@@ -261,7 +261,7 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     )
     // the lead closes it, so later flows start from a clean board
     const winner = [x, y][verdicts.indexOf(leads[0])]
-    await tm.as(winner, ['claim', id2, '--done'])
+    await tm.as(winner, ['task', 'done', id2])
     await tm.as(x, ['sync'])
     const board = tm.read(x, 'NOTES.md')
     t.ok(
@@ -274,10 +274,10 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
   await flow('F10 land --done', async () => {
     const [x] = others
     await tm.as(x, ['sync'])
-    const made = await ownerHs(['item', 'new', 'CR-3: log every plan'])
-    const id3 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    const made = await ownerHs(['task', 'new', 'CR-3: log every plan'])
+    const id3 = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
     await tm.as(x, ['sync'])
-    const claimed = await tm.as(x, ['claim', id3])
+    const claimed = await tm.as(x, ['task', 'start', id3])
     t.ok(/you lead/.test(claimed.stdout), claimed.stdout)
     tm.write(x, 'src/log.js', '// log\n')
     const landed = await tm.as(x, ['land', '-m', 'log plans', '--done'])
@@ -290,18 +290,18 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
   // leads everywhere and the later side is told to stand down (q0bs)
   await flow('F11 site split: two leads, then one', async () => {
     const [x, y, z] = ['a1', 'a2', 'a3']
-    const made = await ownerHs(['item', 'new', 'CR-4: cache flight minutes'])
-    const id4 = made.stdout.match(/item (C[0-9a-f]{6})/)[1]
+    const made = await ownerHs(['task', 'new', 'CR-4: cache flight minutes'])
+    const id4 = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
     for (const a of [x, y, z]) await tm.as(a, ['sync'])
     await tm.split([x, y])
     const feeds = [x, y].map((a) => tm.bgAs(a, ['watch', '--json']))
     await new Promise((resolve) => setTimeout(resolve, 3000))
-    const bx = await tm.as(x, ['claim', id4])
+    const bx = await tm.as(x, ['task', 'start', id4])
     t.is(bx.code, 0, 'heard on site B: ' + bx.stdout + bx.stderr)
     t.absent(/nobody heard/.test(bx.stderr), 'a peer on its side heard it')
-    const by = await tm.as(y, ['claim', id4, '--if-free'])
+    const by = await tm.as(y, ['task', 'start', id4, '--if-free'])
     t.is(by.code, 2, 'site B agrees x leads: ' + by.stdout + by.stderr)
-    const az = await tm.as(z, ['claim', id4])
+    const az = await tm.as(z, ['task', 'start', id4])
     t.ok(/you lead/.test(az.stdout), 'site A has its own lead: ' + az.stdout + az.stderr)
     tm.write(z, 'src/cache.js', '// z cache\n')
     await tm.as(z, ['land', '-m', 'z cache'])
@@ -313,12 +313,12 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
       zs = await tm.as(z, ['sync'])
       return new RegExp(`${id4}.*${x} leads`).test(zs.stdout)
     }, 60_000).catch(() => {})
-    t.ok(new RegExp(`${x} leads; you claimed it too, later`).test(zs.stdout), zs.stdout)
-    const again = await tm.as(z, ['claim', id4])
+    t.ok(new RegExp(`${x} leads; you started it too, later`).test(zs.stdout), zs.stdout)
+    const again = await tm.as(z, ['task', 'start', id4])
     t.is(again.code, 2, 'z knows it lost: ' + again.stdout + again.stderr)
-    const xs = await tm.as(x, ['claims'])
+    const xs = await tm.as(x, ['task'])
     t.ok(/lead a1/.test(xs.stdout), 'x leads on its side too: ' + xs.stdout)
-    await tm.as(x, ['claim', id4, '--done'])
+    await tm.as(x, ['task', 'done', id4])
   })
 
   fs.writeFileSync(path.join(tm.dir, 'flows.json'), JSON.stringify(results, null, 2) + '\n')

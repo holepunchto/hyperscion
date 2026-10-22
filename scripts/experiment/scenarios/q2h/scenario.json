@@ -1,6 +1,6 @@
 {
   "name": "Q2 short with a person in the loop",
-  "about": "q2s plus phase 2 of claims (docs/CLAIMS.md): the change request lands with a /.hsreview saying CONTRACTS.md changes need approval from ann, a human writer, and the CR is a contract item (paths CONTRACTS.md and src/pricing.js, a3 leads). A scripted ann approves from hs inbox and hs proposals after 10 s, but holds the CR item for 90 s. Gate: approvals arrive, nobody is blocked longer than the wait, acceptance within q2s-claims-4 plus the hold.",
+  "about": "q2s plus phase 2 of claims (docs/TASKS.md): the change request lands with a /.hsreview saying CONTRACTS.md changes need approval from ann, a human writer, and the CR is a contract item (paths CONTRACTS.md and src/pricing.js, a3 leads). A scripted ann approves from hs inbox and hs proposals after 10 s, but holds the CR item for 90 s. Gate: approvals arrive, nobody is blocked longer than the wait, acceptance within q2s-claims-4 plus the hold.",
   "agents": 3,
   "localDht": true,
   "template": "quick",

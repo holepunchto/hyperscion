@@ -74,7 +74,7 @@ else
   "$ROOT/scripts/team.sh" "$DIR" "$N" --skeleton "$DIR/skeleton" --extra "$EXTRA"
 fi
 
-# people in the loop (docs/CLAIMS.md, phase 2): only the owner can mark a writer human, and it
+# people in the loop (docs/TASKS.md, phase 2): only the owner can mark a writer human, and it
 # has to be on main before anyone creates an item that needs a person's approval
 HUMANS=$(node -p "(require('$SC/scenario.json').humans || []).join(' ')")
 if [ "$ARM" != git ]; then

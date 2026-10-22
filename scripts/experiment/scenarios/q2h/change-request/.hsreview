@@ -1,3 +1,3 @@
-# From CR-1 on, contract changes need a person (ann) to say yes (docs/CLAIMS.md, phase 2)
+# From CR-1 on, contract changes need a person (ann) to say yes (docs/TASKS.md, phase 2)
 /CONTRACTS.md approvals=1 reviewers=@humans
-item kind=contract approvals=1 reviewers=@humans
+task kind=contract approvals=1 reviewers=@humans

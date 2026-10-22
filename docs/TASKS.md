@@ -1,4 +1,12 @@
-# Claims: saying what you're about to do (proposal, milestone 8)
+# Tasks: saying who builds what (milestone 8)
+
+**Names.** This doc was written as "claims"; the commands are now `hs task` (the board),
+`task new` (was `item new`; `--idea` was `suggest`), `task split` (was `item part`),
+`task start` (was `claim`), `task stop` (was `claim --release`), `task done` (was
+`claim --done`) and `task drop`, with `land --task` (was `--task`) and ids like `T1a2b3c` (were
+`T1a2b3c`). Under the hood, starting a task is still a signed _claim_ record, and the
+experiment logs use the old command names. Below, an "item" is a task and "claiming" one is
+starting it.
 
 Status: **proposal**, nothing built. It supersedes the brainstorm in DESIGN.md §14 and keeps
 its data and its stance (never block, topic first, a TTL, concurrent claims are all kept).
@@ -8,7 +16,7 @@ its data and its stance (never block, topic first, a TTL, concurrent claims are 
 Duplicated work is now the biggest waste we measure. Every q1, q2 and q2s run had 2–4 agents
 build the change request's flight-minutes code in parallel; q2-hs-6, otherwise clean, still
 scored `duplicate_implementations: 3`. "Let me claim this first" is the most-wanted feature,
-and agents asked for `hs claim CR-1`.
+and agents asked for `hs task start CR-1`.
 
 What the runs say about the problem (DESIGN.md §14):
 
@@ -45,25 +53,25 @@ reference an item close it, and review ops approve it when policy asks for a hum
 
 ## Items
 
-An item is the anchor. A claim says "I'm on item C7", not "I'm working on flight minutes";
+An item is the anchor. A claim says "I'm on item T7", not "I'm working on flight minutes";
 free text is how an item is described, not how it's matched.
 
 - **Where items come from:**
   - **A change request is an item** from the moment it lands: pm's `CHANGE-REQUEST.md` becomes
-    `hs item new --from CHANGE-REQUEST.md`, or the land flag `--item`.
-  - **Anyone can suggest one:** `hs suggest "cache the distance matrix" [--paths p] [--kind k]`
+    `hs task new --from CHANGE-REQUEST.md`, or the land flag `--task`.
+  - **Anyone can suggest one:** `hs task new --idea "cache the distance matrix" [--paths p] [--kind k]`
     (an idea, a follow-up, a bug). That's the "idea suggestion" flow.
-  - **Parts:** `hs item part C7 "flight minutes per stop (scheduler)"`. Splitting a change
+  - **Parts:** `hs task split T7 "flight minutes per stop (scheduler)"`. Splitting a change
     request is how a lead hands out work, and a part is just another item with a parent.
 - **Lifecycle:** suggested → (approved, if policy asks) → open → claimed → done | dropped.
   - An open item is just an item with no claimant.
-  - **Done** is a land or proposal that references it: `hs land --item C7`, or `C7` in the
+  - **Done** is a land or proposal that references it: `hs land --task T7`, or `T7` in the
     message. The item closes as soon as that land is _accepted_ (provisional), not when it
     is final. Final needs the hub, and an item left open through a stall would show "a2 is
     still on it" for the length of any outage. If the land later flips (DESIGN.md §11), the
     item reopens, using the same detection that restores a flipped land.
 - **Ids are content hashes:** the hash of the creator's key, the time and the title, shown
-  short (`C7f3`) as changesets' and proposals' hashes already are. A part hashes its parent
+  short (`T7f3`) as changesets' and proposals' hashes already are. A part hashes its parent
   and its title. An item can then be named, signalled and claimed before its record is
   ordered, which matters most with the hub down: a counter from `apply` couldn't be named
   until the item op settles.
@@ -72,17 +80,17 @@ free text is how an item is described, not how it's matched.
   (a file or changeset it came from), and `needs` (approvals, from policy).
 
 Matching by text survives only as a hint. When an agent claims a fresh item whose title looks
-like an existing one (shared words, shared paths), `hs claim` says so, but never decides.
+like an existing one (shared words, shared paths), `hs task start` says so, but never decides.
 
 ### Learned in the first gate runs (q2s-claims-1, -2)
 
 - **A suggested lead:** a change request that says "a3 leads" made agents argue with hs when
-  a2 claimed first (q2s-claims-2, -4). `hs item new --lead a3` names one: the first claim leads
+  a2 claimed first (q2s-claims-2, -4). `hs task new --lead a3` names one: the first claim leads
   until a3 claims, then a3 does.
 
 - **Parts are the lead's to hand out.** In the first run two agents split their own parts
   off an unclaimed change request, and a third then claimed it and built the same thing. Now:
-  - `hs item part` works only for the item's lead, a co-lead or its author;
+  - `hs task split` works only for the item's lead, a co-lead or its author;
   - the lead's verdict lists the parts and who holds them;
   - a non-lead is told "don't build it too" and pointed at the lead.
 
@@ -92,7 +100,7 @@ like an existing one (shared words, shared paths), `hs claim` says so, but never
   is one the lead names.
 - **Closing a parent:** when the last part lands, the feed says so (`parts-done`). The parent
   may still have work of its own, so it doesn't close by itself: its lead runs
-  `hs claim <id> --done`, which the item's author or a claimant may record.
+  `hs task done <id>`, which the item's author or a claimant may record.
 
 ## Two layers
 
@@ -124,13 +132,13 @@ like an existing one (shared words, shared paths), `hs claim` says so, but never
   hop limit). Commands send and listen but don't relay. That's the star in normal times and
   the feed mesh during an outage, the same shape as replication.
 - **Snapshot on connect:** when the channel opens, each side sends its current live set. A
-  short-lived command (`hs claim`, `hs status`) therefore sees the whole live board within
+  short-lived command (`hs task start`, `hs status`) therefore sees the whole live board within
   one round trip, without having been online before.
 - **Presence and TTL:** a claim lives for its TTL (default 20 min).
   - **Renewal:** the claimant's feed renews it every minute while it runs, and any `land`,
     `sync` or `claim` by the claimant renews it too.
   - **No feed:** an agent without a feed (pm in q2) goes stale on the TTL alone.
-  - **Stale is visible, not silent:** `C7: a2, stale 6 min — hs claim take C7`.
+  - **Stale is visible, not silent:** `T7: a2, stale 6 min — hs task start T7`. --take
 
 ### The record
 
@@ -151,17 +159,17 @@ among valid claims on the item, then the smaller writer key.
 
 - **What's guaranteed:** the rule depends only on the claims' content and the item's. So a lead
   can only be displaced by a claim with an earlier signed time, or by the lead the item names
-  (`hs item new --lead a3`) claiming it. Never by a reorg or by the order in which claims arrive.
+  (`hs task new --lead a3`) claiming it. Never by a reorg or by the order in which claims arrive.
   which claims arrive.
   - **The signal view can be incomplete:** at 1.5 s it may not have heard every claim, so
-    its verdict is provisional. `hs claims` always shows the current lead.
+    its verdict is provisional. `hs task` always shows the current lead.
   - **The record view is complete eventually:** a straggler reading records sees every
     claim and computes the same lead the signal view converges on.
-- **The race at time zero:** `hs claim` waits about 1.5 s after sending, collecting
+- **The race at time zero:** `hs task start` waits about 1.5 s after sending, collecting
   competing signals, and then says:
-  - `you lead C7` or
-  - `a2 leads C7 (claimed 0.4 s before you)`, followed by what to do instead: the open parts
-    of C7, review a2's work when it lands (`hs watch --path`), or claim with `--with a2` to
+  - `you lead T7` or
+  - `a2 leads T7 (claimed 0.4 s before you)`, followed by what to do instead: the open parts
+    of T7, review a2's work when it lands (`hs watch --path`), or claim with `--with a2` to
     share it. Shared claimants are co-leads, and the item shows both.
 - **Never a lock:** the second claimant may still work on it. The verdict is advice, and the
   margin is shown, so agents and humans can judge.
@@ -175,9 +183,9 @@ among valid claims on the item, then the smaller writer key.
 - **Nothing about claims blocks anyone:** no command refuses to run because of a claim.
 - **The notes:**
   - **When you land into paths someone else's live claim lists:**
-    `note: /src/pricing.js is in a3's claim C7 (2 min, active)`.
+    `note: /src/pricing.js is in a3's claim T7 (2 min, active)`.
   - **When `sync` brings in a land closing an item you hold:**
-    `C7 done by a3 (#82); your claim is closed`.
+    `T7 done by a3 (#82); your claim is closed`.
 - **The only things that refuse a land are the ones that do today:** `/.hsreview` rules and
   conflicts. Phase 2 lets an approved claim _satisfy_ `/.hsreview`. That relaxes a block; it
   never adds one.
@@ -211,8 +219,8 @@ rules next to its path rules:
 ```
 # /.hsreview
 /src/billing/**          approvals=1 reviewers=@humans
-item kind=contract       approvals=1 reviewers=@humans
-item kind=idea           approvals=1 reviewers=ryan
+task kind=contract       approvals=1 reviewers=@humans
+task kind=idea           approvals=1 reviewers=ryan
 ```
 
 **What an approval is:** a review op with a new target, `TARGET_ITEM`. Approvals stay
@@ -263,11 +271,11 @@ The sketch above, with these choices made while building it:
 
 ```sh
 hs add-writer <key> --as ann --human          # team owner only
-hs suggest "cache the distance matrix"        # an item of kind idea
+hs task new --idea "cache the distance matrix"        # an item of kind idea
 hs inbox [--json] [--approve-all]             # items you can approve, then proposals naming you
-hs review C1a2b3c approve|changes|comment     # an item review
-hs land --item C1a2b3c                        # closes it; protected paths ride its approval
-hs land --under C1a2b3c                       # a piece of it; the item stays open
+hs review T1a2b3c approve|changes|comment     # an item review
+hs land --task T1a2b3c                        # closes it; protected paths ride its approval
+hs land --under T1a2b3c                       # a piece of it; the item stays open
 ```
 
 - **Records are pushed before the command exits.** `item new`, `suggest` and `claim` wait
@@ -291,30 +299,30 @@ hs land --under C1a2b3c                       # a piece of it; the item stays op
 - **Parts don't inherit the kind** (not built yet). A part of a contract item needs nothing
   of its own, and lands into protected paths go through the lead with `--under`, or
   through a proposal.
-- **The feed and `hs claims`:** `hs claims` prints `needs 1 approval (0/1, from ann)` on a
+- **The feed and `hs task`:** `hs task` prints `needs 1 approval (0/1, from ann)` on a
   gated item. The feed has `item-request` (for its reviewers), `item-review` and
   `item-approved` (for the item's author and lead).
 
 ## Commands (sketch)
 
 ```sh
-hs item new "CR-1: price per flight minute" --from CHANGE-REQUEST.md   # pm, or --item on land
-hs item part C7 "flight minutes per stop (scheduler)"
-hs suggest "cache the distance matrix" --paths src/geo.js --kind idea
-hs claim C7.2 [--with a2] [--note "doing the scheduler side"]          # waits ~1.5 s, prints the lead
-hs claims                                                               # the live board
-hs claim done|release|take C7.2
-hs land --item C7.2 -m "..."                                            # closes on final
-hs review C7 approve        # humans, or reviewers named by policy
+hs task new "CR-1: price per flight minute" --from CHANGE-REQUEST.md   # pm, or --task on land
+hs task split T7 "flight minutes per stop (scheduler)"
+hs task new --idea "cache the distance matrix" --paths src/geo.js --kind idea
+hs task start T7.2 [--with a2] [--note "doing the scheduler side"]          # waits ~1.5 s, prints the lead
+hs task                                                               # the live board
+hs task done|stop T7.2   # and hs task start T7.2 --take
+hs land --task T7.2 -m "..."                                            # closes on final
+hs review T7 approve        # humans, or reviewers named by policy
 hs inbox                    # what waits for you (humans)
 ```
 
 **Where claims show up:**
 
-- **Feed:** `{"type":"claim","item":"C7","by":"a2","lead":true,...}` and `{"type":"stale",...}`.
+- **Feed:** `{"type":"start","task":"T7","by":"a2","lead":true,...}` and `{"type":"stale",...}`.
 - **`status`:** your claims, and live claims near your edits.
 - **`sync` and `land`:** the notes above.
-- **`AGENTS.md`:** one rule, "before you start something new, `hs claim` it; if someone
+- **`AGENTS.md`:** one rule, "before you start something new, `hs task start` it; if someone
   leads, take a part or review".
 
 ## Fit with what exists
@@ -337,7 +345,7 @@ hs inbox                    # what waits for you (humans)
 - **Records only (an op, no signal):** simpler, and ops already replicate in milliseconds
   when the hub is up. But heartbeats would bloat history, a command would need to have been
   online to know the live board, and presence ("is a2 still on it?") has no natural home.
-  The signal layer is small; it's the snapshot-on-connect that makes `hs claim` instant.
+  The signal layer is small; it's the snapshot-on-connect that makes `hs task start` instant.
 - **Signals only (no record):** fast, but stragglers, late clones and humans reading
   tomorrow see nothing, and closing items needs history.
 - **Locks:** svn-style blocking. It solves a problem we barely have (same-file work merges
@@ -352,10 +360,10 @@ hs inbox                    # what waits for you (humans)
 
 - the signal channel, with signing, relays and snapshot-on-connect;
 - `OP_ITEM` with `new`, `part`, `claim`, `release`, `take` and `done`;
-- the CLI: `hs claim`, `claims`, and `item new`/`part`;
+- the CLI: `hs task start`, `task`, and `task new`/`split`;
 - the lead verdict with its settling window;
 - the TTL and heartbeats from feeds;
-- the feed line, the land note, closing on `land --item`;
+- the feed line, the land note, closing on `land --task`;
 - the 3-claim limit;
 - the scenario change: the injector creates the change request as an item. The brief still
   says only that a change request appears, so the one thing the gate changes is that it is
@@ -372,7 +380,7 @@ hs inbox                    # what waits for you (humans)
 
 - `human` writers;
 - `item` rules in `/.hsreview` and `TARGET_ITEM` reviews;
-- `hs suggest` with approval;
+- `hs task new --idea` with approval;
 - `hs inbox` with batched approvals;
 - standing grants;
 - "approve the plan" (an approved claim satisfies `/.hsreview` on its paths).

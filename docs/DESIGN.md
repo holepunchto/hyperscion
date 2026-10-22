@@ -911,7 +911,7 @@ were invisible, and a stand-in that started during the outage saw an empty main.
 
 ## 14. Open design: work-in-progress intents (not built)
 
-**Superseded by [CLAIMS.md](CLAIMS.md)** (milestone 8 proposal): items, claims as signed
+**Superseded by [TASKS.md](TASKS.md)** (milestone 8 proposal): items, claims as signed
 signals over the swarm plus records in main, a content-determined lead, and humans in the
 loop through review and standing grants. The data and reasoning below still stand.
 

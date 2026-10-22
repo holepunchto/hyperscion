@@ -343,7 +343,7 @@ test('a mirror holds a fresh land within seconds while older changesets are unre
   t.ok(ms !== null && ms < 6000, `held within seconds (${ms} ms)`)
 })
 
-// claims (docs/CLAIMS.md): a claim signal reaches a teammate through the hub in well under a
+// claims (docs/TASKS.md): a claim signal reaches a teammate through the hub in well under a
 // second, and a command that connects later gets it in the snapshot
 test('claim signals: relayed by the hub, and in the snapshot for a late command', async (t) => {
   const claims = require('../lib/claims')

@@ -1,4 +1,4 @@
-// A scripted person in the loop (q2h, docs/CLAIMS.md phase 2): polls `hs inbox` and
+// A scripted person in the loop (q2h, docs/TASKS.md phase 2): polls `hs inbox` and
 // `hs proposals` as the scenario's human writer and approves what waits, after a short human
 // delay, holding items whose title matches `holdMatching` for `holdS` seconds instead.
 //
@@ -51,7 +51,7 @@ const done = new Set()
 function notice(target, title, kind) {
   if (seen.has(target) || done.has(target)) return
   // the hold is for items (the change request), not proposals that mention it
-  const waitS = kind === 'item' && hold && hold.test(title) ? cfg.holdS : cfg.delayS
+  const waitS = kind === 'task' && hold && hold.test(title) ? cfg.holdS : cfg.delayS
   seen.set(target, { at: Date.now(), title, waitS })
   log({ do: 'seen', target, kind, title, holdS: waitS })
 }
@@ -65,7 +65,7 @@ async function tick() {
     } catch {
       continue
     }
-    if (e.type === 'item') notice(e.item, e.title || '', 'item')
+    if (e.type === 'task') notice(e.task, e.title || '', 'task')
   }
   // every open proposal, not only those naming us: a person would look at what's blocked
   const props = await hs(['proposals', '--offline'])

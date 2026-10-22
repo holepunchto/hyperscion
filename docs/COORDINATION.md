@@ -7,11 +7,13 @@ docs/experiments/quick/RUNLOG.md (q0, q0b, q0bo, q2s-plain).
 
 ## Decision
 
-**Keep the claims mechanism; shrink its surface.** Agents are taught one primitive: `hs claims`,
-`hs claim <item>` (an atomic, first-wins claim with a verdict, settled by signals even while
-the hub is down), `--release`, `--done`, and lands that link themselves to the item they lead.
-Items, parts, co-leads, `--with`, `--take`, `--note` and the people-facing approval commands
-stay in hs but leave the agent playbook (docs/CLAIMS.md documents them). No new flags until a
+**Keep the claims mechanism; shrink its surface.** Agents are taught one primitive, now named
+for tasks (docs/TASKS.md): `hs task` (the board), `hs task start <task>` (an atomic, first-wins
+start with a verdict, settled by signals even while the hub is down), `task stop`, `task done`,
+and lands that link themselves to the task they lead. Filing and splitting tasks, co-leads,
+`--with`, `--take`, `--note` and the people-facing approval commands stay in hs but leave the
+agent playbook (docs/TASKS.md documents them). The runs below used the earlier names: `hs
+claims`, `hs claim`, `--release`, `--done`, `hs item`. No new flags until a
 flow test (`npm run flows`) or a q0-style run shows the need.
 
 ## Evidence
@@ -49,15 +51,15 @@ flow test (`npm run flows`) or a q0-style run shows the need.
 
 ## Next
 
-- Done: `hs claim` exits 2 when someone else leads; the feed's claim line names who leads;
-  `sync` lists the open items and their leads. The q0b minimal-arm rerun (q0b-min-2) halved
+- Done: `hs claim` (now `hs task start`) exits 2 when someone else leads; the feed's line names
+  who leads; `sync` lists the open tasks and their leads. The q0b minimal-arm rerun (q0b-min-2) halved
   coordination calls (18 to 10) and brought calls per code land from 37 to 32, against 24
   for a task board, with the same outcome.
 - Done: the minimal surface keeps `hs review #n`, and the playbook points non-leads at it.
   q0b-min-3: reviews moved from NOTES.md lands into review records (coordination lands 3 to
   0; calls per code land 32 to 30).
-- Done: `hs claim <item> --if-free` withdraws a losing claim at once; `hs land --done` closes
-  the item the land links itself to. Both in test/flows.js (F1, F10).
+- Done: `--if-free` (now `hs task start <task> --if-free`) withdraws a losing start at once;
+  `hs land --done` closes the task the land links itself to. Both in test/flows.js (F1, F10).
 - Multi-site: q0bs splits the team into two sites, each with peers (the hub on one side),
   for 4.8 minutes. Covered by test/flows.js F11 and LLM runs q0bs-min-1/2/3 and
   q0bs-plain-1.

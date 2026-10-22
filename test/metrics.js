@@ -16,7 +16,7 @@ const rec = (agent, t, argv, out = [], ms = 1000) => ({
 test('metrics: calls are change control, coordination, waits, the feed or help', (t) => {
   t.is(m.classify(rec('a1', 0, ['land', '-m', 'x'])), 'base')
   t.is(m.classify(rec('a1', 0, ['status'])), 'base')
-  t.is(m.classify(rec('a1', 0, ['claims'])), 'coordination')
+  t.is(m.classify(rec('a1', 0, ['task'])), 'coordination')
   t.is(m.classify(rec('a1', 0, ['propose', '-m', 'p'])), 'coordination')
   t.is(m.classify(rec('a1', 0, ['restore', 'CONTRACTS.md'])), 'coordination')
   t.is(m.classify(rec('a1', 0, ['watch', '--json'])), 'feed')
@@ -40,8 +40,8 @@ test('metrics: coordination cost of a run', (t) => {
   const started = Date.UTC(2026, 9, 17, 12, 0, 0)
   const recs = [
     rec('a1', 1, ['watch', '--json'], [], 300000), // the feed: not counted
-    rec('a1', 10, ['claims']),
-    rec('a1', 20, ['claim', 'C1']),
+    rec('a1', 10, ['task']),
+    rec('a1', 20, ['task', 'start', 'C1']),
     rec('a1', 60, ['land', '-m', 'x'], ['landed #4']),
     rec('a1', 70, ['watch', '--path', 'src/b.js', '--count', '1'], [], 30000),
     rec('a1', 120, ['land', '-m', 'y'], ['landed P2 as #9']),

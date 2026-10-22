@@ -142,8 +142,8 @@ test('site split longer than the claim lease: a running feed keeps a claim live'
   const owner = require('bare-path').join(tm.dir, 'owner')
   const made = []
   for (const title of ['CR-kept: with a feed', 'CR-lapsed: without one']) {
-    const r = await tm.hs(owner, ['item', 'new', title], 'owner')
-    made.push(r.stdout.match(/item (C[0-9a-f]{6})/)[1])
+    const r = await tm.hs(owner, ['task', 'new', title], 'owner')
+    made.push(r.stdout.match(/task (T[0-9a-f]{6})/)[1])
   }
   const [kept, lapsed] = made
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
@@ -152,12 +152,18 @@ test('site split longer than the claim lease: a running feed keeps a claim live'
   const quiet = tm.bgAs('a2', ['watch', '--json'])
   const zfeed = tm.bgAs('a3', ['watch', '--json'])
   await sleep(3000)
-  t.ok(/you lead/.test((await tm.as('a1', ['claim', kept])).stdout), 'a1 leads kept on site B')
-  t.ok(/you lead/.test((await tm.as('a2', ['claim', lapsed])).stdout), 'a2 leads lapsed on B')
+  t.ok(
+    /you lead/.test((await tm.as('a1', ['task', 'start', kept])).stdout),
+    'a1 leads kept on site B'
+  )
+  t.ok(
+    /you lead/.test((await tm.as('a2', ['task', 'start', lapsed])).stdout),
+    'a2 leads lapsed on B'
+  )
   await quiet.stop() // a2 goes quiet: no feed, no land, no sync
   await sleep(2000)
   for (const id of [kept, lapsed]) {
-    t.ok(/you lead/.test((await tm.as('a3', ['claim', id])).stdout), 'a3 leads on site A')
+    t.ok(/you lead/.test((await tm.as('a3', ['task', 'start', id])).stdout), 'a3 leads on site A')
   }
   await sleep(30_000) // longer than the lease
   // the sites meet: a1's feed restarts on the main network (a feed process would reconnect
@@ -168,7 +174,7 @@ test('site split longer than the claim lease: a running feed keeps a claim live'
   tm.bgAs('a1', ['watch', '--json'])
   let board = ''
   await waitFor(async () => {
-    board = (await tm.as('a3', ['claims'])).stdout
+    board = (await tm.as('a3', ['task'])).stdout
     return /lead a1/.test(board)
   }, 15_000).catch(() => {})
   await zfeed.stop()
@@ -187,26 +193,26 @@ test('site split longer than the claim lease: waiting in wait-final keeps a clai
     env: { HS_CLAIM_TTL_MS: '20000' }
   })
   const owner = require('bare-path').join(tm.dir, 'owner')
-  const id = (await tm.hs(owner, ['item', 'new', 'CR-wait'], 'owner')).stdout.match(
-    /item (C[0-9a-f]{6})/
+  const id = (await tm.hs(owner, ['task', 'new', 'CR-wait'], 'owner')).stdout.match(
+    /task (T[0-9a-f]{6})/
   )[1]
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
   await tm.split(['a1', 'a2'])
   const peer = tm.bgAs('a2', ['watch', '--json']) // a1 has a teammate on its side
   await sleep(3000)
-  t.ok(/you lead/.test((await tm.as('a1', ['claim', id])).stdout), 'a1 leads on site B')
+  t.ok(/you lead/.test((await tm.as('a1', ['task', 'start', id])).stdout), 'a1 leads on site B')
   tm.write('a1', 'b.txt', 'b\n')
   await tm.as('a1', ['land', '-m', 'b'])
   const waiting = tm.bgAs('a1', ['wait-final', '--timeout', '40'])
   await sleep(2000)
-  t.ok(/you lead/.test((await tm.as('a3', ['claim', id])).stdout), 'a3 leads on site A')
+  t.ok(/you lead/.test((await tm.as('a3', ['task', 'start', id])).stdout), 'a3 leads on site A')
   await waitFor(() => waiting.exited(), 60_000)
   await peer.stop()
   tm.heal(['a1', 'a2'])
   let board = ''
   await waitFor(async () => {
     await tm.as('a1', ['sync'])
-    board = (await tm.as('a3', ['claims'])).stdout
+    board = (await tm.as('a3', ['task'])).stdout
     return /lead a1/.test(board)
   }, 15_000).catch(() => {})
   t.ok(/lead a1/.test(board), 'a1 still leads after a wait longer than the lease:\n' + board)
