@@ -52,19 +52,19 @@ test('fixes: restore, markers, messages, proposal diffs, approvals across rebase
   // a proposal, then a teammate's later land on the same file: the review diff shows only
   // the proposal's own change, not the teammate's lines as deletions
   tm.write('a2', 'CONTRACTS.md', '# contracts\nplan(day) -> Plan\n')
-  const prop = await tm.as('a2', ['propose', '-m', 'pin Plan', '-r', 'a1'])
+  const prop = await tm.as('a2', ['review', 'ask', '-m', 'pin Plan', '-r', 'a1'])
   t.is(prop.code, 0, prop.stderr)
   tm.write('a1', 'NOTES.md', '# notes\n- [a1] unrelated\n')
   t.is((await tm.as('a1', ['land', '-m', 'note'])).code, 0)
-  const shown = await tm.as('a1', ['show', 'P1'])
+  const shown = await tm.as('a1', ['show', 'A1'])
   t.ok(shown.stdout.includes('+plan(day) -> Plan'), 'the proposal change')
   t.absent(/^-/m.test(shown.stdout.replace(/^--- .*$/m, '')), 'no phantom deletions')
 
   // approve, then the author lands with --check, which rebases onto a1's unrelated note
   // first: the approved files are untouched, so the approval still counts
-  t.is((await tm.as('a1', ['review', 'P1', 'approve'])).code, 0)
+  t.is((await tm.as('a1', ['review', 'approve', 'A1'])).code, 0)
   const landed = await tm.as('a2', ['land', '--check', 'true'])
-  t.ok(/landed P1 as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
+  t.ok(/landed A1 as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
 
   // an offline land that loses its number to a teammate's settled land is told the new one
   await tm.as('a1', ['sync'])

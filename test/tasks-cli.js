@@ -162,29 +162,29 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
   t.ok(/start it: hs task start/.test(idea.stdout), idea.stdout)
 
   // the person's inbox lists it; a1's doesn't (its own item)
-  const mine = await tm.as('a1', ['inbox'])
+  const mine = await tm.as('a1', ['review', 'inbox'])
   t.ok(/nothing waiting on you/.test(mine.stdout), mine.stdout)
-  const inbox = await tm.as('ann', ['inbox'])
+  const inbox = await tm.as('ann', ['review', 'inbox'])
   t.ok(
     new RegExp(`${id} \\[contract\\] "rename the api" by a1, .*needs 1 approval`).test(
       inbox.stdout
     ),
     inbox.stdout
   )
-  const json = await tm.as('ann', ['inbox', '--json', '--offline'])
+  const json = await tm.as('ann', ['review', 'inbox', '--json', '--offline'])
   t.is(JSON.parse(json.stdout.trim().split('\n')[0]).task, id, json.stdout)
 
   // a1's own approval doesn't count
-  const self = await tm.as('a1', ['review', id, 'approve'])
+  const self = await tm.as('a1', ['review', 'approve', id])
   t.ok(/your own task/.test(self.stderr), self.stderr)
   t.ok(/needs 1 approval \(0\/1/.test(self.stdout), self.stdout)
 
-  const approved = await tm.as('ann', ['inbox', '--approve-all'])
+  const approved = await tm.as('ann', ['review', 'approve', '--all'])
   t.ok(
     new RegExp(`${id} "rename the api": approved by you; approved \\(1/1\\)`).test(approved.stdout),
     approved.stdout + approved.stderr
   )
-  const after = await tm.as('ann', ['inbox'])
+  const after = await tm.as('ann', ['review', 'inbox'])
   t.ok(/nothing waiting on you/.test(after.stdout), after.stdout)
 
   // a land that names no item links itself to the approved item covering its paths (TO-FIVE
@@ -207,13 +207,13 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
   // the plan is approved: its author lands into the protected paths it names
   tm.write('a1', 'src/api/v2.js', '// v2\n')
   // a proposal made as a fallback doesn't get in the way of the approved item (q2h-2)
-  const fallback = await tm.as('a1', ['propose', '-m', 'api v2, in case'])
-  t.ok(/proposed P\d+.*asked ann/.test(fallback.stdout), fallback.stdout + fallback.stderr)
+  const fallback = await tm.as('a1', ['review', 'ask', '-m', 'api v2, in case'])
+  t.ok(/asked for review: A\d+.*asked ann/.test(fallback.stdout), fallback.stdout + fallback.stderr)
   const landed = await tm.as('a1', ['land', '-m', 'api v2', '--task', id])
   // the item carried it, and the fallback proposal is done with it
-  t.ok(/landed P\d+ as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
-  const fallbackId = fallback.stdout.match(/proposed (P\d+)/)[1]
-  const props = await tm.as('a1', ['proposals'])
+  t.ok(/landed A\d+ as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
+  const fallbackId = fallback.stdout.match(/: (A\d+)\b/)[1]
+  const props = await tm.as('a1', ['review', 'list'])
   t.absent(new RegExp(`${fallbackId} (open|approved)`).test(props.stdout), props.stdout)
 
   // split by default (TO-FIVE #14, #16): a land that is only partly protected lands the rest
@@ -222,10 +222,10 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
   const split = await tm.as('a1', ['land', '-m', 'v3 and b'])
   t.ok(/split: \/src\/api\/v3\.js needs approval/.test(split.stdout), split.stdout + split.stderr)
   t.ok(/landed #\d+/.test(split.stdout), split.stdout + split.stderr)
-  t.ok(/proposed P\d+ .*for \/src\/api\/v3\.js, asked ann/.test(split.stdout), split.stdout)
+  t.ok(/asked ann to review \/src\/api\/v3\.js: A\d+/.test(split.stdout), split.stdout)
   t.is(tm.read('a1', 'src/api/v3.js'), '// v3\n', 'the protected file is back in the worktree')
-  const pid = split.stdout.match(/proposed (P\d+)/)[1]
-  const ok = await tm.as('ann', ['review', pid, 'approve'])
+  const pid = split.stdout.match(/: (A\d+)\b/)[1]
+  const ok = await tm.as('ann', ['review', 'approve', pid])
   t.is(ok.code, 0, ok.stdout + ok.stderr)
   const last = await tm.as('a1', ['land'])
   t.ok(new RegExp(`landed ${pid} as #\\d+`).test(last.stdout), last.stdout + last.stderr)
@@ -250,7 +250,7 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
     'src/api/v4.js'
   ])
   const id2 = made2.stdout.match(/task (T[0-9a-f]{6})/)[1]
-  await tm.as('ann', ['review', id2, 'approve'])
+  await tm.as('ann', ['review', 'approve', id2])
   tm.write('a1', 'src/api/v4.js', '// v4\n')
   tm.write('a1', 'src/api/v5.js', '// v5\n')
   tm.write('a1', 'src/c.js', 'c\n')
@@ -261,10 +261,10 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
   t.ok(new RegExp(`once approved: hs land --task ${id2}`).test(mix.stdout), mix.stdout)
   const open2 = await tm.as('a1', ['task'])
   t.ok(new RegExp(`${id2} "v4 endpoint"`).test(open2.stdout), open2.stdout)
-  const pid2 = mix.stdout.match(/proposed (P\d+)/)[1]
-  await tm.as('ann', ['review', pid2, 'approve'])
+  const pid2 = mix.stdout.match(/: (A\d+)\b/)[1]
+  await tm.as('ann', ['review', 'approve', pid2])
   const fin = await tm.as('a1', ['land', '--task', id2])
-  t.ok(/landed (P\d+ as )?#\d+/.test(fin.stdout), fin.stdout + fin.stderr)
+  t.ok(/landed (A\d+ as )?#\d+/.test(fin.stdout), fin.stdout + fin.stderr)
   t.ok(new RegExp(`completes ${id2}`).test(fin.stdout), fin.stdout)
 })
 
@@ -286,13 +286,13 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
 
   tm.write('a1', 'CONTRACTS.md', '# contracts\n\n## a1\nloadDay(file) -> Day\n\n## a2\n\n## end\n')
   tm.write('a2', 'CONTRACTS.md', '# contracts\n\n## a1\n\n## a2\nplan(day) -> Plan\n\n## end\n')
-  const p1 = await tm.as('a1', ['propose', '-m', 'a1 section'])
-  const p2 = await tm.as('a2', ['propose', '-m', 'a2 section'])
-  const id1 = p1.stdout.match(/proposed (P\d+)/)[1]
-  const id2 = p2.stdout.match(/proposed (P\d+)/)[1]
+  const p1 = await tm.as('a1', ['review', 'ask', '-m', 'a1 section'])
+  const p2 = await tm.as('a2', ['review', 'ask', '-m', 'a2 section'])
+  const id1 = p1.stdout.match(/: (A\d+)\b/)[1]
+  const id2 = p2.stdout.match(/: (A\d+)\b/)[1]
   t.ok(/asked ann/.test(p2.stdout), p2.stdout)
-  await tm.as('ann', ['review', id1, 'approve'])
-  await tm.as('ann', ['review', id2, 'approve'])
+  await tm.as('ann', ['review', 'approve', id1])
+  await tm.as('ann', ['review', 'approve', id2])
 
   const l1 = await tm.as('a1', ['land'])
   t.ok(new RegExp(`landed ${id1} as #\\d+`).test(l1.stdout), l1.stdout + l1.stderr)
@@ -341,16 +341,16 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     '# contracts\n\n## a1\nloadDay(file) -> Day\nextra\n\n## a2\n\n## end\n'
   )
   await tm.as('a1', ['sync'])
-  const p3 = await tm.as('a1', ['propose', '-m', 'a1 extra'])
-  const id3 = p3.stdout.match(/proposed (P\d+)/)[1]
-  await tm.as('ann', ['review', id3, 'approve'])
+  const p3 = await tm.as('a1', ['review', 'ask', '-m', 'a1 extra'])
+  const id3 = p3.stdout.match(/: (A\d+)\b/)[1]
+  await tm.as('ann', ['review', 'approve', id3])
   tm.write(
     'a1',
     'CONTRACTS.md',
     '# contracts\n\n## a1\nloadDay(file) -> Day\nextra\nsneaky\n\n## a2\nplan(day) -> Plan\n\n## end\n'
   )
   const l3 = await tm.as('a1', ['land'])
-  t.absent(/landed P/.test(l3.stdout), l3.stdout)
+  t.absent(/landed A/.test(l3.stdout), l3.stdout)
   t.ok(/content changed since/.test(l3.stdout + l3.stderr), l3.stdout + l3.stderr)
   // a wait for a file you already have waits for a newer change, and its timeout names the
   // one you have (#21; returning early on it misfired in q2-hs-7)
@@ -364,8 +364,8 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     'CONTRACTS.md',
     tm.read('a2', 'CONTRACTS.md').replace('plan(day) -> Plan', 'plan(day) -> Plan\nplan.trips[]')
   )
-  const p4 = await tm.as('a2', ['propose', '-m', 'trips'])
-  const id4 = p4.stdout.match(/proposed (P\d+)/)[1]
+  const p4 = await tm.as('a2', ['review', 'ask', '-m', 'trips'])
+  const id4 = p4.stdout.match(/: (A\d+)\b/)[1]
   tm.write('a2', 'src/y.js', 'y\n')
   const other = await tm.as('a2', ['land', '-m', 'y'])
   t.ok(/landed #\d+/.test(other.stdout), other.stdout + other.stderr)
@@ -380,7 +380,7 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
 
   // an approved proposal this work went beyond: what was approved lands first, then only the
   // new lines are proposed (#24)
-  await tm.as('ann', ['review', id4, 'approve'])
+  await tm.as('ann', ['review', 'approve', id4])
   tm.write(
     'a2',
     'CONTRACTS.md',
@@ -393,7 +393,7 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     beyond.stdout + beyond.stderr
   )
   t.ok(new RegExp(`landed ${id4} as #\\d+`).test(beyond.stdout), beyond.stdout)
-  t.ok(/proposed P\d+ for \/CONTRACTS\.md, asked ann/.test(beyond.stdout), beyond.stdout)
+  t.ok(/asked ann to review \/CONTRACTS\.md: A\d+/.test(beyond.stdout), beyond.stdout)
   await tm.as('a1', ['sync'])
   const onMain = tm.read('a1', 'CONTRACTS.md')
   t.ok(onMain.includes('plan.trips[]') && !onMain.includes('plan.unassigned[]'), onMain)

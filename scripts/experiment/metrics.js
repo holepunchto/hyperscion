@@ -32,7 +32,8 @@ const BASE = new Set([
 // board): waiting on these is the scenario, not a teammate
 const SCENARIO_PATHS = /CHANGE-REQUEST|NOTES\.md|TASKS\.md/
 
-const LANDED = /landed (P\d+ as )?#\d+/
+// an ask lands as `landed A5 as #27` (archived runs: `landed P5 as #27`)
+const LANDED = /landed ([AP]\d+ as )?#\d+/
 
 const has = (r, re) => (r.out || []).some((l) => re.test(l))
 

@@ -13,6 +13,6 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
   `hs land --done` (or `hs task done T1a2b3c`).
 - **Someone else leads:** don't build it too (`hs task start T1a2b3c --if-free` steps away
   again at once). Ask them for a piece in NOTES.md, or review their land when it comes:
-  `hs review 27 approve` (or `changes -m "..."`), no NOTES.md land needed.
+  `hs review approve 27` (or `hs review changes 27 -m "..."`), no NOTES.md land needed.
 - Starting a task never blocks anyone. It lapses after 20 min without activity; `land`, `sync`
   and a running feed keep it alive. `hs task stop T1a2b3c` when you step away.

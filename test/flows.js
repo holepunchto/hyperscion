@@ -113,21 +113,21 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     const split = await tm.as(lead, ['land', '-m', 'pricing'])
     t.ok(/split: \/CONTRACTS\.md needs approval/.test(split.stdout), split.stdout + split.stderr)
     t.ok(/landed #\d+/.test(split.stdout), split.stdout)
-    const m = split.stdout.match(/proposed (P\d+) for \/CONTRACTS\.md, asked ann/)
+    const m = split.stdout.match(/asked ann to review \/CONTRACTS\.md: (A\d+)/)
     t.ok(m, split.stdout)
     pid = m && m[1]
     // a teammate reviews the land itself: a review record, no NOTES.md land (q0b-min-2)
     const seq = split.stdout.match(/landed #(\d+)/)[1]
     await tm.as(others[0], ['sync'])
-    const reviewed = await tm.as(others[0], ['review', '#' + seq, 'approve', '-m', 'looks right'])
+    const reviewed = await tm.as(others[0], ['review', 'approve', '#' + seq, '-m', 'looks right'])
     t.is(reviewed.code, 0, reviewed.stdout + reviewed.stderr)
   })
 
   // F4: the person approves from the inbox; the author lands the approved proposal
   await flow('F4 approve and land', async () => {
-    const inbox = await tm.as('ann', ['inbox', '--json'])
+    const inbox = await tm.as('ann', ['review', 'inbox', '--json'])
     t.ok(inbox.stdout.includes(pid), inbox.stdout)
-    const ok = await tm.as('ann', ['review', pid, 'approve'])
+    const ok = await tm.as('ann', ['review', 'approve', pid])
     t.is(ok.code, 0, ok.stdout + ok.stderr)
     const landed = await tm.as(lead, ['land'])
     t.ok(new RegExp(`landed ${pid} as #\\d+`).test(landed.stdout), landed.stdout + landed.stderr)
@@ -143,10 +143,10 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
       const text = tm.read(a, 'CONTRACTS.md')
       tm.write(a, 'CONTRACTS.md', text.replace(section[a], section[a] + `${a}(day) -> Plan\n`))
     }
-    const px = (await tm.as(x, ['propose', '-m', 'x'])).stdout.match(/proposed (P\d+)/)[1]
-    const py = (await tm.as(y, ['propose', '-m', 'y'])).stdout.match(/proposed (P\d+)/)[1]
-    await tm.as('ann', ['review', px, 'approve'])
-    await tm.as('ann', ['review', py, 'approve'])
+    const px = (await tm.as(x, ['review', 'ask', '-m', 'x'])).stdout.match(/: (A\d+)\b/)[1]
+    const py = (await tm.as(y, ['review', 'ask', '-m', 'y'])).stdout.match(/: (A\d+)\b/)[1]
+    await tm.as('ann', ['review', 'approve', px])
+    await tm.as('ann', ['review', 'approve', py])
     const lx = await tm.as(x, ['land'])
     t.ok(new RegExp(`landed ${px} as #\\d+`).test(lx.stdout), lx.stdout + lx.stderr)
     const ly = await tm.as(y, ['land'])

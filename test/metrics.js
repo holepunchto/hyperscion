@@ -17,7 +17,7 @@ test('metrics: calls are change control, coordination, waits, the feed or help',
   t.is(m.classify(rec('a1', 0, ['land', '-m', 'x'])), 'base')
   t.is(m.classify(rec('a1', 0, ['status'])), 'base')
   t.is(m.classify(rec('a1', 0, ['task'])), 'coordination')
-  t.is(m.classify(rec('a1', 0, ['propose', '-m', 'p'])), 'coordination')
+  t.is(m.classify(rec('a1', 0, ['review', 'ask', '-m', 'p'])), 'coordination')
   t.is(m.classify(rec('a1', 0, ['restore', 'CONTRACTS.md'])), 'coordination')
   t.is(m.classify(rec('a1', 0, ['watch', '--json'])), 'feed')
   t.is(m.classify(rec('a1', 0, ['watch', '--path', 'src/a.js', '--count', '1'])), 'wait')
@@ -44,7 +44,7 @@ test('metrics: coordination cost of a run', (t) => {
     rec('a1', 20, ['task', 'start', 'C1']),
     rec('a1', 60, ['land', '-m', 'x'], ['landed #4']),
     rec('a1', 70, ['watch', '--path', 'src/b.js', '--count', '1'], [], 30000),
-    rec('a1', 120, ['land', '-m', 'y'], ['landed P2 as #9']),
+    rec('a1', 120, ['land', '-m', 'y'], ['landed A2 as #9']),
     rec('a2', 30, ['watch', '--path', '/CHANGE-REQUEST.md', '--count', '1'], [], 20000),
     rec('a2', 90, ['land', '-m', 'z'], ['!! not landed: needs review']),
     rec('a2', 150, ['land', '-m', 'z'], ['landed #12'])

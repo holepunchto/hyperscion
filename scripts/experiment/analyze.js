@@ -95,8 +95,13 @@ for (const r of runs) {
   if (r.argv.includes('--help') || r.argv.includes('-h') || cmd === 'help') a.helps++
   if (has(r, /UNKNOWN_FLAG|unknown flag|UNKNOWN_COMMAND|unknown command/i)) a.unknownFlags++
   if (cmd === 'pull' || (['land', 'propose'].includes(cmd) && r.argv.includes('-o'))) a.oldHabits++
-  if (cmd === 'propose' && r.exit === 0) a.proposals++
-  if (cmd === 'review' && r.exit === 0) a.reviewsGiven++
+  // asks and reviews: `hs review ask|approve|changes|comment`, and in archived runs the old
+  // `hs propose` and `hs review <target> <verdict>`
+  const sub = r.argv[1] || ''
+  const asked = cmd === 'propose' || (cmd === 'review' && sub === 'ask')
+  if (asked && r.exit === 0) a.proposals++
+  const reviewed = cmd === 'review' && !['ask', 'list', 'inbox', '--help', '-h', ''].includes(sub)
+  if (reviewed && r.exit === 0) a.reviewsGiven++
   if (r.stalled) a.stalls++
   if (has(r, /could not be fetched|behind main \(marked stale|content is not available/)) {
     a.unavailable++

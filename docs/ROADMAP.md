@@ -332,7 +332,7 @@ did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
   `duplicate_implementations` 3 → 1 and no rise in time to acceptance or calls per land.
 - **Phase 2:** humans in the loop: `human` writers, `item` (now `task`) rules in `/.hsreview`,
   `hs suggest` (now `hs task new --idea`)
-  with approval, `hs inbox`, standing grants, and "approve the plan" (an approved claim
+  with approval, `hs inbox` (now `hs review`), standing grants, and "approve the plan" (an approved claim
   satisfies `/.hsreview` on its paths).
 
 ### The next big experiment (after M6–M8)

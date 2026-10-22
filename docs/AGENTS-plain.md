@@ -124,7 +124,7 @@ What "accepted by review" means depends on the kind of change:
 - **Ship:** final as soon as it settles.
 - **Show:** final once it settles **and** a requested reviewer approved, with no outstanding
   "changes" from any of them.
-- **Ask:** the proposal was approved before it landed, so it's final as soon as it settles.
+- **Ask:** the ask was approved before it landed, so it's final as soon as it settles.
 
 How to use it:
 
@@ -174,6 +174,7 @@ again.
 | `could not be fetched ... no online peer holds it`                                 | the holder is down, or the author left before a holder got it             | tell the team owner; `hs doctor` shows what's reachable                                                     |
 | `push timed out: no holder has your changes yet`                                   | your land is only on your machine                                         | `hs push` when a holder is up                                                                               |
 | `showing to a4 (owner of /src/pricing.js)`                                         | you changed a teammate's files; this is a Show                            | nothing; they'll review after it lands                                                                      |
+| `!! not landed: needs review: ...`                                                 | Ask needed: an unapproved ask or a path protected by `/.hsreview`         | `hs review ask --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`               |
 | `` `hs land` (pid n, running 40s) is using this worktree; wait for it to finish `` | another of your commands (often a long `land --check`) holds the worktree | wait for it; `status`, `log`, `show`, `cat`, `diff` still work meanwhile (local data, offline)              |
 
 Exit codes: `0` means done; `2` means done, but read the `!!` lines; `1` means not done: an

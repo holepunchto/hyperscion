@@ -114,7 +114,7 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
   `hs land --done` (or `hs task done T1a2b3c`).
 - **Someone else leads:** don't build it too (`hs task start T1a2b3c --if-free` steps away
   again at once). Ask them for a piece in NOTES.md, or review their land when it comes:
-  `hs review 27 approve` (or `changes -m "..."`), no NOTES.md land needed.
+  `hs review approve 27` (or `hs review changes 27 -m "..."`), no NOTES.md land needed.
 - Starting a task never blocks anyone. It lapses after 20 min without activity; `land`, `sync`
   and a running feed keep it alive. `hs task stop T1a2b3c` when you step away.
 
@@ -131,7 +131,7 @@ What "accepted by review" means depends on the kind of change:
 - **Ship:** final as soon as it settles.
 - **Show:** final once it settles **and** a requested reviewer approved, with no outstanding
   "changes" from any of them.
-- **Ask:** the proposal was approved before it landed, so it's final as soon as it settles.
+- **Ask:** the ask was approved before it landed, so it's final as soon as it settles.
 
 How to use it:
 
@@ -181,6 +181,7 @@ again.
 | `could not be fetched ... no online peer holds it`                                 | the holder is down, or the author left before a holder got it             | tell the team owner; `hs doctor` shows what's reachable                                                     |
 | `push timed out: no holder has your changes yet`                                   | your land is only on your machine                                         | `hs push` when a holder is up                                                                               |
 | `showing to a4 (owner of /src/pricing.js)`                                         | you changed a teammate's files; this is a Show                            | nothing; they'll review after it lands                                                                      |
+| `!! not landed: needs review: ...`                                                 | Ask needed: an unapproved ask or a path protected by `/.hsreview`         | `hs review ask --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`               |
 | `` `hs land` (pid n, running 40s) is using this worktree; wait for it to finish `` | another of your commands (often a long `land --check`) holds the worktree | wait for it; `status`, `log`, `show`, `cat`, `diff` still work meanwhile (local data, offline)              |
 
 Exit codes: `0` means done; `2` means done, but read the `!!` lines; `1` means not done: an

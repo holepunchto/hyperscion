@@ -603,7 +603,7 @@ is no review UI. Proposals and reviews are ops in main's history, and the CLI, `
   whose latest review approves the proposal's current content hash (blake2b over the
   canonically encoded entries). That is multisig semantics with no extra crypto, and anyone
   can verify it from history.
-- **Ask.** `propose` stores the entries a land would carry (`hs-prop/<id>`) without touching
+- **Ask.** `review ask` (an ask, `A5`; internally a proposal) stores the entries a land would carry (`hs-prop/<id>`) without touching
   `files/`. A new revision changes the hash, so earlier approvals no longer count. A land
   referencing the proposal is accepted only if it is approved and the land's entries hash to
   the approved content. A rebase that changes the content needs review again.
@@ -769,7 +769,7 @@ q2 `status`, `show` and `doctor` refused to run during an agent's own multi-minu
 `land --check`, with a hint about `hs seed`. Now:
 
 - the commands that only read (`status`, `diff`, `log`, `show`, `ls`, `cat`, `export`,
-  `proposals`, `ws list`, `info`) fall back to opening the store read-only. They run on what
+  `review list`, `ws list`, `info`) fall back to opening the store read-only. They run on what
   the land has written so far, offline, and say so: ``(`hs land` (pid 123) is using this
 worktree: showing local data, offline)``. Anything they'd need the network for fails
   with the same reason;

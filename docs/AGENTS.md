@@ -114,14 +114,14 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
   that finishes it: `hs land --done` (or `hs task done T1a2b3c`).
 - **Someone else leads** (`a2 leads T1a2b3c (started 0.4 s before you)`): don't build it too
   (`hs task start T1a2b3c --if-free` steps away again at once). Ask them for a piece in
-  NOTES.md, or review their land when it comes: `hs review 27 approve` (or
-  `changes -m "..."`), no NOTES.md land needed.
+  NOTES.md, or review their land when it comes: `hs review approve 27` (or
+  `hs review changes 27 -m "..."`), no NOTES.md land needed.
 - **Starting a task never blocks anyone,** and works while the hub is down (it travels between
   peers). It lapses after 20 min without activity; `land`, `sync` and a running feed keep it
   alive. `hs task stop T1a2b3c` when you step away.
-- **Some files need approval** (`/.hsreview`): `hs land` lands your other files now and proposes
-  the protected ones to their reviewers (`split:` in its output); land again once the proposal
-  is approved. If a task needs a person's approval (`needs 1 approval` in `hs task`), start
+- **Some files need approval** (`/.hsreview`): `hs land` lands your other files now and asks
+  the protected ones' reviewers to review them (`split:` in its output, an ask like `A5`); land
+  again once the ask is approved. If a task needs a person's approval (`needs 1 approval` in `hs task`), start
   anyway: only your land into the protected paths waits.
 
 Splitting a task into subtasks (`hs task split`), sharing it (`--with`), taking over from a
@@ -137,32 +137,32 @@ from them.
 | -------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Ship** | your own files, routine changes                                                           | `hs land -m "..."`                                                                                                                               |
 | **Show** | someone else's files, or a change worth a second look; land now, review after             | `hs land` (the **default** when you touch files another teammate owns in `/.hsowners`; they're asked automatically), or `hs land --reviewers a3` |
-| **Ask**  | interfaces and contracts others build on, anything risky, and paths `/.hsreview` protects | `hs propose -m "..." --reviewers a3` then wait for approval, then `hs land`                                                                      |
+| **Ask**  | interfaces and contracts others build on, anything risky, and paths `/.hsreview` protects | `hs review ask -m "..." --reviewers a3` then wait for approval, then `hs land`                                                                   |
 
 **Don't fix a teammate's module silently.** If their code doesn't fit yours:
 
 - **Small fix:** land it. It becomes a Show, and they're told.
-- **Interface or contract change:** propose it (Ask), so the owner decides. Three people fixing
+- **Interface or contract change:** ask first (`hs review ask`), so the owner decides. Three people fixing
   the same thing in parallel was the main waste in our last run.
 
 **Reviewing.**
 
-- `hs status` lists what's waiting for you.
+- `hs review` (or `hs status`) lists what's waiting for you.
 - `hs watch --for-me --count 1 --timeout 600` blocks until something involves you: a review
   request, a review of your work, or an approval.
-- `hs show P5` or `hs show 27` shows the change with a diff.
-- Answer with `hs review P5 approve`, `hs review P5 changes -m "src/x.js:42 ..."` or
-  `hs review 27 comment -m "..."`.
+- `hs show A5` or `hs show 27` shows the change with a diff.
+- Answer with `hs review approve A5`, `hs review changes A5 -m "src/x.js:42 ..."` (feedback
+  suggesting changes) or `hs review comment 27 -m "..."`.
 
 **Rules.**
 
 - Approvals only count from people other than the author.
-- An approval is pinned to the content it saw. Running `hs propose` again after changes makes
-  a new revision, and approvals start over. Teammates' changes merged into the proposal's
+- An approval is pinned to the content it saw. Running `hs review ask` again after changes
+  makes a new revision, and approvals start over. Teammates' changes merged into the ask's
   files on the way to landing (by `sync` or `land --check`) keep the approval. In files
   `/.hsreview` protects, the approval is of the lines you add and remove: teammates' sections
   merging in around them keep it, and any other line of yours needs review again.
-- `hs proposals` lists open proposals. Once a proposal is approved, its author lands it with
+- `hs review list` lists open asks. Once an ask is approved, its author lands it with
   `hs land`.
 
 ## Provisional, settled, final
@@ -178,7 +178,7 @@ What "accepted by review" means depends on the kind of change:
 - **Ship:** final as soon as it settles.
 - **Show:** final once it settles **and** a requested reviewer approved, with no outstanding
   "changes" from any of them.
-- **Ask:** the proposal was approved before it landed, so it's final as soon as it settles.
+- **Ask:** the ask was approved before it landed, so it's final as soon as it settles.
 
 How to use it:
 
@@ -228,8 +228,8 @@ again.
 | `could not be fetched ... no online peer holds it`                                 | the holder is down, or the author left before a holder got it             | tell the team owner; `hs doctor` shows what's reachable                                                     |
 | `push timed out: no holder has your changes yet`                                   | your land is only on your machine                                         | `hs push` when a holder is up                                                                               |
 | `showing to a4 (owner of /src/pricing.js)`                                         | you changed a teammate's files; this is a Show                            | nothing; they'll review after it lands                                                                      |
-| `!! not landed: needs review: ...`                                                 | Ask needed: unapproved proposal or a path protected by `/.hsreview`       | `hs propose --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`                  |
-| `stale-review`                                                                     | the proposal changed after you looked                                     | `hs show P5` again, then review again                                                                       |
+| `!! not landed: needs review: ...`                                                 | Ask needed: an unapproved ask or a path protected by `/.hsreview`         | `hs review ask --reviewers ...`, wait for approval (`hs watch --for-me --count 1`), `hs land`               |
+| `stale-review`                                                                     | the ask changed after you looked                                          | `hs show A5` again, then review again                                                                       |
 | `` `hs land` (pid n, running 40s) is using this worktree; wait for it to finish `` | another of your commands (often a long `land --check`) holds the worktree | wait for it; `status`, `log`, `show`, `cat`, `diff` still work meanwhile (local data, offline)              |
 
 Exit codes: `0` means done; `2` means done, but read the `!!` lines; `1` means not done: an

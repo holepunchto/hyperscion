@@ -244,10 +244,10 @@ signatures (DESIGN.md §10), so a quorum is still `apply` counting distinct writ
    go straight through.
 3. **Escalation only by policy:** agents don't decide what needs a human; `/.hsreview` does.
    Everything else flows without one.
-4. **Batching:** `hs inbox` (and `watch --for-me` for humans) lists what waits, grouped by item
+4. **Batching:** `hs review` (and `watch --for-me` for humans) lists what waits, grouped by item
    and kind, with `approve` and `changes` accepting several targets at once.
 
-The weak spot is that humans don't sit in `hs watch`. For now `hs inbox` and `--for-me` are
+The weak spot is that humans don't sit in `hs watch`. For now `hs review` and `--for-me` are
 the surface, and a Keet bridge (posting approval requests to a team room and taking the answer
 back as a review op) is the natural next step.
 
@@ -272,8 +272,9 @@ The sketch above, with these choices made while building it:
 ```sh
 hs add-writer <key> --as ann --human          # team owner only
 hs task new --idea "cache the distance matrix"        # an item of kind idea
-hs inbox [--json] [--approve-all]             # items you can approve, then proposals naming you
-hs review T1a2b3c approve|changes|comment     # an item review
+hs review [inbox] [--json]                    # tasks you can approve, then asks naming you
+hs review approve --all                       # approve every task waiting on you
+hs review approve|changes|comment T1a2b3c     # a task review
 hs land --task T1a2b3c                        # closes it; protected paths ride its approval
 hs land --under T1a2b3c                       # a piece of it; the item stays open
 ```
@@ -283,7 +284,7 @@ hs land --under T1a2b3c                       # a piece of it; the item stays op
   everyone online as a signal, but its record, which an approval needs, sat in the pm's
   oplog until its next online command.
 - **A refused land names the way through:** your pending item for those paths and its
-  approval state, or `hs propose` to whoever the rule names (`@humans` expanded). `propose`
+  approval state, or `hs review ask` (was `hs propose`) to whoever the rule names (`@humans` expanded). `review ask`
   adds those reviewers by default too.
 - **Approvals of protected files bind to the author's lines** (TO-FIVE #17; q2h-4: a2's
   section needed three approval rounds because a1's and a3's approved sections landed in the
@@ -313,8 +314,8 @@ hs task start T7.2 [--with a2] [--note "doing the scheduler side"]          # wa
 hs task                                                               # the live board
 hs task done|stop T7.2   # and hs task start T7.2 --take
 hs land --task T7.2 -m "..."                                            # closes on final
-hs review T7 approve        # humans, or reviewers named by policy
-hs inbox                    # what waits for you (humans)
+hs review approve T7        # humans, or reviewers named by policy
+hs review                   # what waits for you (humans)
 ```
 
 **Where claims show up:**
@@ -381,12 +382,12 @@ hs inbox                    # what waits for you (humans)
 - `human` writers;
 - `item` rules in `/.hsreview` and `TARGET_ITEM` reviews;
 - `hs task new --idea` with approval;
-- `hs inbox` with batched approvals;
+- `hs review` (was `hs inbox`) with batched approvals;
 - standing grants;
 - "approve the plan" (an approved claim satisfies `/.hsreview` on its paths).
 
 **Gate:** a scenario with a human-gated item (a contract change that needs `@humans`), with
-a scripted human approving from `hs inbox`. It measures approvals needed per land and the
+a scripted human approving from `hs review` (then `hs inbox`). It measures approvals needed per land and the
 time agents waited on them.
 
 ## Open questions

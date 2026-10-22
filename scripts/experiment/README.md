@@ -73,7 +73,7 @@ Use it before a full round. There are two tiers.
      change request lands with a `/.hsreview` that makes `CONTRACTS.md` changes need
      approval from ann, a human writer that `setup.sh` marks with `add-writer --human`. The
      CR is a contract item (a3 leads). `inject.js` starts `approver.js`, a scripted ann who
-     approves what `hs inbox` and `hs proposals` show after 10 s, but holds the CR item for
+     approves what `hs review inbox` and `hs review list` show after 10 s, but holds the CR item for
      90 s. Her decisions go to `<teamdir>/approvals.jsonl`, and `alerts.js` prints them
      along with refused lands.
    - **Coordination only, `q0` (about 3 min, the retrospective's experiment):** a finished,

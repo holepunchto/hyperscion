@@ -194,7 +194,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   )
   t.ok(req.stdout.includes(`@ #${showSeq} by a2: review requested from a1`), 'and in its feed')
 
-  t.is((await hs(A1, ['review', '#' + showSeq, 'approve', '-m', 'ok'], 'a1')).code, 0)
+  t.is((await hs(A1, ['review', 'approve', '#' + showSeq, '-m', 'ok'], 'a1')).code, 0)
   // a2 hears the approval and that its Show land is final (exactly once)
   const heard = await hs(A2, ['watch', '--for-me', '--count', '2', '--timeout', '30'], 'a2')
   t.is(heard.code, 0, heard.stdout + heard.stderr)
@@ -204,25 +204,25 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
 
   // 7. Ask: a2 proposes a contract change to a1; it lands only once approved
   fs.writeFileSync(path.join(A2, 'CONTRACTS.md'), '# contracts\nplan(day) -> Plan\n')
-  const prop = await hs(A2, ['propose', '-m', 'pin Plan shape', '-r', 'a1'], 'a2')
+  const prop = await hs(A2, ['review', 'ask', '-m', 'pin Plan shape', '-r', 'a1'], 'a2')
   t.is(prop.code, 0, prop.stdout + prop.stderr)
-  t.ok(/proposed P1: 1 path\(s\), needs 1 approval\(s\), asked a1/.test(prop.stdout))
+  t.ok(/asked for review: A1: 1 path\(s\), needs 1 approval\(s\), asked a1/.test(prop.stdout))
 
   const early = await hs(A2, ['land', '-m', 'pin Plan shape'], 'a2')
   t.is(early.code, 1, 'cannot land before approval: not landed exits 1')
-  t.ok(early.stderr.includes('not landed: needs review: P1 has 0/1 approvals'), early.stderr)
+  t.ok(early.stderr.includes('not landed: needs review: A1 has 0/1 approvals'), early.stderr)
   t.ok(/committed but not on main: \/CONTRACTS.md/.test(early.stderr), 'says where the work is')
 
-  const shown = await hs(A1, ['show', 'P1'], 'a1')
-  t.ok(shown.stdout.includes('proposal P1 revision 0 by a2: open'))
+  const shown = await hs(A1, ['show', 'A1'], 'a1')
+  t.ok(shown.stdout.includes('ask A1 revision 0 by a2: open'))
   t.ok(shown.stdout.includes('+plan(day) -> Plan'), 'reviewer sees the diff')
-  const approve = await hs(A1, ['review', 'P1', 'approve', '-m', 'lgtm'], 'a1')
-  t.ok(approve.stdout.includes('P1: approved; 1/1 approvals, approved'))
+  const approve = await hs(A1, ['review', 'approve', 'A1', '-m', 'lgtm'], 'a1')
+  t.ok(approve.stdout.includes('A1: approved; 1/1 approvals, approved'))
 
   const landed = await hs(A2, ['land', '-m', 'pin Plan shape'], 'a2')
   t.is(landed.code, 0, landed.stdout + landed.stderr)
-  t.ok(/landed P1 as #\d+/.test(landed.stdout))
-  t.ok((await hs(A1, ['proposals', '--all'], 'a1')).stdout.includes('P1 landed'))
+  t.ok(/landed A1 as #\d+/.test(landed.stdout))
+  t.ok((await hs(A1, ['review', 'list', '--all'], 'a1')).stdout.includes('A1 landed'))
 
   // 8. provisional -> final: the seeding hub acks, so a Ship land becomes final in seconds
   t.is((await hs(A1, ['sync'], 'a1')).code, 0)

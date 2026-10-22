@@ -20,16 +20,34 @@ test('surface: full, minimal and plain', async (t) => {
   const minimal = await commands('minimal')
   const plain = await commands('plain')
   const tasks = ['list', 'new', 'split', 'start', 'stop', 'done', 'drop'].map((c) => 'task ' + c)
-  for (const c of [...tasks, 'propose', 'review', 'inbox']) {
+  const reviews = ['inbox', 'ask', 'approve', 'changes', 'comment', 'list'].map(
+    (c) => 'review ' + c
+  )
+  for (const c of [...tasks, ...reviews]) {
     t.ok(full.includes(c), 'full has ' + c)
   }
-  for (const c of ['task list', 'task start', 'task stop', 'task done', 'review']) {
+  for (const c of [
+    'task list',
+    'task start',
+    'task stop',
+    'task done',
+    'review approve',
+    'review changes',
+    'review comment'
+  ]) {
     t.ok(minimal.includes(c), 'minimal keeps ' + c)
   }
-  for (const c of ['task new', 'task split', 'task drop', 'propose', 'inbox', 'proposals']) {
+  for (const c of [
+    'task new',
+    'task split',
+    'task drop',
+    'review ask',
+    'review inbox',
+    'review list'
+  ]) {
     t.absent(minimal.includes(c), 'minimal drops ' + c)
   }
-  for (const c of tasks) t.absent(plain.includes(c), 'plain drops ' + c)
+  for (const c of [...tasks, ...reviews]) t.absent(plain.includes(c), 'plain drops ' + c)
   for (const c of ['land', 'sync', 'status', 'watch', 'log', 'show', 'cat']) {
     t.ok(plain.includes(c), 'every arm keeps ' + c)
   }
@@ -44,6 +62,6 @@ test('surface: full, minimal and plain', async (t) => {
   const plainTask = await run(os.cwd(), ['task'], env('plain'))
   t.not(plainTask.code, 0, 'plain has no tasks at all')
 
-  const hidden = await run(os.cwd(), ['propose'], env('minimal'))
+  const hidden = await run(os.cwd(), ['review', 'ask'], env('minimal'))
   t.not(hidden.code, 0, 'a hidden command is unknown')
 })

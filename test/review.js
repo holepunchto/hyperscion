@@ -120,7 +120,7 @@ test("an approval survives merging teammates' changes into the proposal on the w
   await wc.commit([put('/y.txt', 'y changed by the author\n')])
   const again = await wc.land()
   t.is(again.outcome.status, 'needs-review')
-  t.ok(/content changed since P\d+ was reviewed/.test(again.outcome.reason))
+  t.ok(/content changed since A\d+ was reviewed/.test(again.outcome.reason))
 })
 
 test('.hsreview-protected paths: approvals bind to the approved lines (TO-FIVE #17)', async (t) => {

@@ -1,5 +1,5 @@
-// A scripted person in the loop (q2h, docs/TASKS.md phase 2): polls `hs inbox` and
-// `hs proposals` as the scenario's human writer and approves what waits, after a short human
+// A scripted person in the loop (q2h, docs/TASKS.md phase 2): polls `hs review inbox` and
+// `hs review list` as the scenario's human writer and approves what waits, after a short human
 // delay, holding items whose title matches `holdMatching` for `holdS` seconds instead.
 //
 //   node scripts/experiment/approver.js <teamdir>
@@ -50,14 +50,14 @@ const done = new Set()
 
 function notice(target, title, kind) {
   if (seen.has(target) || done.has(target)) return
-  // the hold is for items (the change request), not proposals that mention it
+  // the hold is for tasks (the change request), not asks that mention it
   const waitS = kind === 'task' && hold && hold.test(title) ? cfg.holdS : cfg.delayS
   seen.set(target, { at: Date.now(), title, waitS })
   log({ do: 'seen', target, kind, title, holdS: waitS })
 }
 
 async function tick() {
-  const inbox = await hs(['inbox', '--json'])
+  const inbox = await hs(['review', 'inbox', '--json'])
   for (const line of inbox.out.split('\n')) {
     let e
     try {
@@ -67,21 +67,21 @@ async function tick() {
     }
     if (e.type === 'task') notice(e.task, e.title || '', 'task')
   }
-  // every open proposal, not only those naming us: a person would look at what's blocked
-  const props = await hs(['proposals', '--offline'])
+  // every open ask, not only those naming us: a person would look at what's blocked
+  const props = await hs(['review', 'list', '--offline'])
   for (const line of props.out.split('\n')) {
-    const m = line.match(/^P(\d+) open\s+(\d+)\/(\d+) by (\S+) .*:: (.*)$/)
+    const m = line.match(/^A(\d+) open\s+(\d+)\/(\d+) by (\S+) .*:: (.*)$/)
     if (!m || m[4] === me) continue
     // approved before, open again with fewer approvals: a new revision reset them
-    if (done.has('P' + m[1]) && Number(m[2]) < Number(m[3])) {
-      done.delete('P' + m[1])
-      log({ do: 'revised', target: 'P' + m[1] })
+    if (done.has('A' + m[1]) && Number(m[2]) < Number(m[3])) {
+      done.delete('A' + m[1])
+      log({ do: 'revised', target: 'A' + m[1] })
     }
-    notice('P' + m[1], m[5], 'proposal')
+    notice('A' + m[1], m[5], 'ask')
   }
   for (const [target, s] of seen) {
     if (Date.now() - s.at < s.waitS * 1000) continue
-    const res = await hs(['review', target, 'approve', '-m', 'ok from ' + me])
+    const res = await hs(['review', 'approve', target, '-m', 'ok from ' + me])
     const ok = res.code === 0 && /approved by you|approved;|approvals/.test(res.out)
     if (ok) {
       seen.delete(target)

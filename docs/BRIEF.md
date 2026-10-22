@@ -38,8 +38,12 @@ control; never use git.
 
 ## Review
 
-- `hs review 12 approve -m "<what you checked>"`. Name changesets by their number (12):
-  shells read a word starting with # as a comment, so `#12` would vanish.
+- `hs review` shows what waits on you.
+- `hs review approve 12 -m "<what you checked>"`, or `hs review changes 12 -m "..."` to
+  submit feedback suggesting changes. Name changesets by their number (12): shells read a
+  word starting with # as a comment, so `#12` would vanish.
+- Ask before landing something risky: `hs review ask -m "..." -r <handle>`, then `hs land`
+  once it's approved.
 
 ## When hs says your land was undone
 
