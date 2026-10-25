@@ -293,6 +293,16 @@ test('ui model: Review lists the inbox; a, x and m review the selected entry', a
   t.alike(client.calls[2], ['review', 'comment', 'A6', '-m', 'ok'], 'comments on it are fine')
 })
 
+test('ui model: shifted letters as the terminal sends them (a with shift is A)', async (t) => {
+  const shifted = (c) => key(c, { shift: true })
+  const { app, client } = await started()
+  await press(app, shifted('a'))
+  t.ok(screen(app).includes('instead of landing'), 'shift+a opens the ask form, not nothing')
+  await press(app, key('escape', { meta: true }), shifted('p'))
+  t.ok(screen(app).includes('Message for this land'), 'shift+p lands, it does not sync')
+  t.alike(client.calls, [], 'and nothing ran')
+})
+
 test('ui model: A asks for review instead of landing, reviewers optional', async (t) => {
   const { app, client } = await started()
   await press(app, 'A')
