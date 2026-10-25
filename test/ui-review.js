@@ -73,4 +73,34 @@ test('ui review: ask, see it in Review, approve it; a Show and a request for cha
     (await client.read('review')).some((e) => e.kind === 'change'),
     'reviewed: off the panel'
   )
+
+  // an ask naming nobody: anyone may review it, so it is in everyone's inbox (CLI and UI)
+  tm.write('a1', 'src/d.js', 'd\n')
+  const open = await tm.as('a1', ['review', 'ask', '-m', 'anyone?'])
+  const aid = /asked for review: (A\d+)/.exec(open.stdout)[1]
+  t.ok(/asked anyone/.test(open.stdout), 'it names nobody: ' + open.stdout)
+  await tm.as('a2', ['fetch'])
+  const inbox = await tm.as('a2', ['review', 'inbox', '--offline'])
+  t.ok(
+    new RegExp(`^${aid} 0/1 by a1, unassigned \\(anyone may review\\) :: anyone\\?$`, 'm').test(
+      inbox.stdout
+    ),
+    'the CLI inbox lists it, marked: ' + inbox.stdout
+  )
+  const json = await tm.as('a2', ['review', 'inbox', '--json', '--offline'])
+  const row = json.stdout
+    .trim()
+    .split('\n')
+    .map((l) => JSON.parse(l))
+    .find((e) => e.ask === aid)
+  t.ok(row && row.unassigned, 'and --json says unassigned')
+  const own = await tm.as('a1', ['review', 'inbox', '--offline'])
+  t.absent(own.stdout.includes(aid), "not in its author's inbox")
+  const panel = (await client.read('review')).find((e) => e.id === aid)
+  t.ok(panel && panel.unassigned && !panel.mine, 'the Review panel lists it as unassigned')
+
+  const ok = await client.run(['review', 'approve', aid])
+  t.is(ok.code, 0, ok.lines.join('\n'))
+  const after = await tm.as('a2', ['review', 'inbox', '--offline'])
+  t.absent(after.stdout.includes(aid), 'approved as it stands: out of the inbox')
 })

@@ -272,7 +272,7 @@ The sketch above, with these choices made while building it:
 ```sh
 hs add-writer <key> --as ann --human          # team owner only
 hs task new --idea "cache the distance matrix"        # an item of kind idea
-hs review [inbox] [--json]                    # tasks you can approve, then asks naming you
+hs review [inbox] [--json]                    # tasks you can approve, then asks naming you or nobody
 hs review approve --all                       # approve every task waiting on you
 hs review approve|changes|comment T1a2b3c     # a task review
 hs land --task T1a2b3c                        # closes it; protected paths ride its approval
