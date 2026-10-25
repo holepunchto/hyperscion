@@ -48,6 +48,9 @@ test('surface: full, minimal and plain', async (t) => {
     t.absent(minimal.includes(c), 'minimal drops ' + c)
   }
   for (const c of [...tasks, ...reviews]) t.absent(plain.includes(c), 'plain drops ' + c)
+  t.ok(full.includes('ui'), 'full has ui')
+  t.absent(minimal.includes('ui'), 'minimal drops ui (a person’s view)')
+  t.absent(plain.includes('ui'), 'plain drops ui')
   for (const c of ['land', 'sync', 'status', 'watch', 'log', 'show', 'cat']) {
     t.ok(plain.includes(c), 'every arm keeps ' + c)
   }

@@ -4,10 +4,12 @@ import fs from 'bare-fs'
 import { isWindows } from 'which-runtime'
 import createCli from './lib/cli.js'
 import menu from './lib/menu.js'
+import startUpdates from './lib/updates.js'
 
 const isDev = path.basename(Bare.argv[0]) === (isWindows ? 'bare.exe' : 'bare')
 const argv = Bare.argv.slice(isDev ? 2 : 1)
 
+createCli.setUpdates(startUpdates)
 const cli = createCli()
 
 // Bare exits when its event loop drains, even with a promise still pending. If that happens

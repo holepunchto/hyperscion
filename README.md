@@ -117,6 +117,11 @@ its flags (F1 explains the focused field; space on an empty path field opens a f
 picker), and it runs as the typed command would, printed so you learn it. `hs land --menu` opens one command's form directly; `hs <command> --help` has the
 same descriptions and examples.
 
+For the everyday loop there is `hs ui`, a lazygit-style terminal UI: Status, the files `land`
+would send and the log on the left, the selected diff on the right; `c` lands, `p` syncs, `d`
+discards a file, `?` lists the keys. It runs its commands on worker threads, exactly as typed.
+In Neovim, the lazyscion plugin opens it in a float, as lazygit.nvim does for lazygit.
+
 Every command that talks to peers does so by default; `--offline` opts out. A land is
 **provisional** until the hub acks it, then **settled** (it can't be reordered), then **final**
 (settled and accepted by review). `land` waits up to 10 s for the hub, so it usually ends with
@@ -128,6 +133,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`               | join a repo, request write access, sparse checkout                                                       |
 | `status`                                                                       | your edits, unlanded work, stale files, lands not yet final, reviews for you                             |
 | `diff [--stat]`                                                                | what `land` would send, as a unified diff                                                                |
+| `ui`                                                                           | a lazygit-style terminal UI: your files, diffs and the log; land, sync and discard by key                |
 | `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]` | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle                       |
 | `sync [--offline]`                                                             | bring main into your files and rebase your work onto it                                                  |
 | `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`      | stream lands, reviews and settlement as they happen                                                      |
