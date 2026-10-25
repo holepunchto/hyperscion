@@ -121,6 +121,27 @@ const LOG = [
   { seq: 2, who: 'bob', state: 'settled', message: 'second', files: ['/b.txt'] }
 ]
 
+const REVIEW = [
+  {
+    kind: 'task',
+    id: 'T1a2b3c',
+    title: 'cache it',
+    by: 'bob',
+    state: 'needs 1 approval',
+    mine: false
+  },
+  { kind: 'ask', id: 'A5', title: 'add f', by: 'bob', state: '0/1 approvals', mine: false },
+  {
+    kind: 'change',
+    id: '27',
+    title: 'tweak',
+    by: 'cat',
+    state: 'landed, review requested',
+    mine: false
+  },
+  { kind: 'ask', id: 'A6', title: 'mine', by: 'you', state: 'open, 0/1 approvals', mine: true }
+]
+
 function fake() {
   const calls = []
   return {
@@ -131,6 +152,8 @@ function fake() {
       if (op === 'snapshot') return Promise.resolve(SNAP)
       if (op === 'log') return Promise.resolve(LOG)
       if (op === 'show') return Promise.resolve(`changeset #${args.seq}\n+line of ${args.seq}\n`)
+      if (op === 'review') return Promise.resolve(REVIEW)
+      if (op === 'detail') return Promise.resolve(`detail of ${args.id}\n+diff of ${args.id}\n`)
       return Promise.reject(new Error('op ' + op))
     },
     run(argv) {
@@ -158,10 +181,10 @@ async function press(app, ...keys) {
 
 const screen = (app) => style.stripAnsi(app.view())
 
-async function started(opts = {}) {
+async function started({ height = 20, ...opts } = {}) {
   const client = fake()
   const app = new App({ client, idleMs: 60_000, ...opts })
-  app.update({ type: 'resize', width: 100, height: 20 })
+  app.update({ type: 'resize', width: 100, height })
   await exec(app, app.init())
   return { app, client }
 }
@@ -240,4 +263,46 @@ test('ui model: e edits the selected file through the editor hook', async (t) =>
   const { app } = await started({ edit: (file) => (opened.push(file), null) })
   await press(app, 'e')
   t.alike(opened, ['/w/a.txt'], 'the absolute path')
+})
+
+test('ui model: Review lists the inbox; a, x and m review the selected entry', async (t) => {
+  const { app, client } = await started({ height: 40 })
+  await press(app, '4')
+  const s = screen(app)
+  t.ok(s.includes('[4] Review'), 'the panel')
+  t.ok(s.includes('T1a2b3c bob cache it') && s.includes('A5 bob add f'), 'tasks and asks')
+  t.ok(s.includes('#27 cat tweak') && s.includes('A6 yours mine'), 'changes and your asks')
+  t.ok(s.includes('+diff of T1a2b3c'), 'the selected entry in full')
+
+  await press(app, 'j')
+  t.ok(screen(app).includes('+diff of A5'), 'j: the next entry')
+  await press(app, 'a', 'enter')
+  t.alike(client.calls, [['review', 'approve', 'A5']], 'approve: the message is optional')
+  await press(app, key('escape', { meta: true }))
+
+  await press(app, 'j', 'x', 'enter')
+  t.is(client.calls.length, 1, 'changes needs a message')
+  await press(app, 'f', 'i', 'x', 'enter')
+  t.alike(client.calls[1], ['review', 'changes', '27', '-m', 'fix'])
+  await press(app, key('escape', { meta: true }))
+
+  await press(app, 'j', 'a')
+  t.ok(screen(app).includes('your own ask'), 'no approving your own ask')
+  t.is(client.calls.length, 2)
+  await press(app, 'm', 'o', 'k', 'enter')
+  t.alike(client.calls[2], ['review', 'comment', 'A6', '-m', 'ok'], 'comments on it are fine')
+})
+
+test('ui model: A asks for review instead of landing, reviewers optional', async (t) => {
+  const { app, client } = await started()
+  await press(app, 'A')
+  t.ok(screen(app).includes('instead of landing'), 'the ask form')
+  await press(app, 'enter')
+  t.alike(client.calls, [], 'an ask needs a message')
+  await press(app, 'w', 'h', 'y', 'tab', 'a', 'n', 'n', 'enter')
+  t.alike(client.calls, [['review', 'ask', '-m', 'why', '-r', 'ann']])
+
+  const second = await started()
+  await press(second.app, 'A', 'h', 'i', 'enter')
+  t.alike(second.client.calls, [['review', 'ask', '-m', 'hi']], 'no -r: owners and /.hsreview')
 })

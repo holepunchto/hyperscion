@@ -26,7 +26,8 @@ const INTEGRATION = [
   'test/outage-swarm.js',
   'test/fixes.js',
   'test/net.js',
-  'test/reland.js'
+  'test/reland.js',
+  'test/ui-review.js'
 ]
 
 const argv = process.argv.slice(2)
