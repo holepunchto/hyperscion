@@ -142,7 +142,13 @@ const REVIEW = [
   { kind: 'ask', id: 'A6', title: 'mine', by: 'you', state: 'open, 0/1 approvals', mine: true }
 ]
 
-function fake() {
+const TEAM = [
+  { handle: 'ann', human: true, default: true },
+  { handle: 'bob', human: false, default: false },
+  { handle: 'cat', human: false, default: false }
+]
+
+function fake({ team = TEAM } = {}) {
   const calls = []
   return {
     calls,
@@ -154,6 +160,10 @@ function fake() {
       if (op === 'show') return Promise.resolve(`changeset #${args.seq}\n+line of ${args.seq}\n`)
       if (op === 'review') return Promise.resolve(REVIEW)
       if (op === 'detail') return Promise.resolve(`detail of ${args.id}\n+diff of ${args.id}\n`)
+      if (op === 'team') {
+        this.teamPaths = args.paths
+        return team ? Promise.resolve(team) : Promise.reject(new Error('no store'))
+      }
       return Promise.reject(new Error('op ' + op))
     },
     run(argv) {
@@ -181,8 +191,8 @@ async function press(app, ...keys) {
 
 const screen = (app) => style.stripAnsi(app.view())
 
-async function started({ height = 20, ...opts } = {}) {
-  const client = fake()
+async function started({ height = 20, team, ...opts } = {}) {
+  const client = fake({ team })
   const app = new App({ client, idleMs: 60_000, ...opts })
   app.update({ type: 'resize', width: 100, height })
   await exec(app, app.init())
@@ -315,4 +325,33 @@ test('ui model: A asks for review instead of landing, reviewers optional', async
   const second = await started()
   await press(second.app, 'A', 'h', 'i', 'enter')
   t.alike(second.client.calls, [['review', 'ask', '-m', 'hi']], 'no -r: owners and /.hsreview')
+})
+
+test('ui model: the ask form lists teammates to pick as reviewers', async (t) => {
+  const { app, client } = await started({ height: 40 })
+  await press(app, 'A', 'w', 'h', 'y', 'tab')
+  t.alike(client.teamPaths, ['/a.txt', '/c.txt'], 'defaults are for the files being asked about')
+  let s = screen(app)
+  t.ok(/› \[ \] ann {2}default {2}person/.test(s), 'teammates, the defaults marked: ' + s)
+  t.ok(s.includes('[ ] bob') && s.includes('[ ] cat'))
+  t.ok(s.includes('none picked, so the defaults'))
+
+  await press(app, 'down', 'space')
+  t.ok(screen(app).includes('[x] bob'), 'space picks the one under the cursor')
+  await press(app, 'c', 'space')
+  s = screen(app)
+  t.ok(s.includes('Reviewers: bob, cat'), 'typing filters; the match is picked: ' + s)
+  t.ok(s.includes('[ ] ann'), 'and the filter clears for the next one')
+  await press(app, 'up', 'space')
+  t.ok(screen(app).includes('[ ] bob'), 'space again unpicks')
+  await press(app, 'space', 'enter')
+  t.alike(client.calls, [['review', 'ask', '-m', 'why', '-r', 'cat,bob']])
+})
+
+test('ui model: without a teammate list, Reviewers takes typed handles', async (t) => {
+  const { app, client } = await started({ height: 40, team: null })
+  await press(app, 'A', 'w', 'h', 'y', 'tab')
+  t.ok(screen(app).includes('teammates unavailable (no store)'))
+  await press(app, 'd', 'a', 'n', 'enter')
+  t.alike(client.calls, [['review', 'ask', '-m', 'why', '-r', 'dan']])
 })

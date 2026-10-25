@@ -38,6 +38,14 @@ test('ui review: ask, see it in Review, approve it; a Show and a request for cha
   const detail = await backend.detail(tm.agents.a2, { id: 'A1' })
   t.ok(/^ask A1 /.test(detail) && detail.includes('+b'), 'the ask with its diff')
 
+  // who an ask can name: teammates, not yourself and not the hub
+  const people = await backend.team(tm.agents.a1, { paths: ['/src/a.js'] })
+  t.alike(
+    people.map((p) => p.handle),
+    ['a2', 'owner'],
+    "a1's teammates to pick from"
+  )
+
   // a1 sees its own ask there too
   const mine = (await backend.review(tm.agents.a1)).find((e) => e.id === 'A1')
   t.ok(mine && mine.mine, "a1's own ask, marked as theirs")

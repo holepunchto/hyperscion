@@ -119,7 +119,7 @@ same descriptions and examples.
 
 For the everyday loop there is `hs ui`, a lazygit-style terminal UI: Status, the files `land`
 would send, the log and Review (your inbox and open asks) on the left, the selected diff on the
-right; `c` lands, `A` asks for review instead, `p` syncs, `d` discards a file, and in Review `a`
+right; `c` lands, `A` asks for review instead (pick reviewers from your teammates), `p` syncs, `d` discards a file, and in Review `a`
 approves, `x` asks for changes, `m` comments; `?` lists the keys. It runs its commands on worker
 threads, exactly as typed. In Neovim, the lazyscion plugin opens it in a float, as lazygit.nvim does for lazygit.
 
