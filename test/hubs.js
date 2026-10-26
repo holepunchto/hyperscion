@@ -128,3 +128,57 @@ test('hubs: one process hubs many repos', async (t) => {
     }
   }
 })
+
+test('hubs: adopt a team hub into a home, then move the repo out again', async (t) => {
+  const { team } = require('./helpers/team')
+  const tm = await team(t, { agents: ['a1', 'a2'] })
+  const home = path.join(tm.dir, 'home')
+  const env = { ...tm.env, HS_HUB_HOME: home }
+  const hs = (cwd, args, user = 'me') => run(cwd, args, { ...env, USER: user })
+  const landFinal = async (who, file, message) => {
+    tm.write(who, file, message + '\n')
+    const r = await tm.as(who, ['land', '-m', message])
+    t.ok(/#\d+ final/.test(r.stdout), `${who}: ${message}, final: ${r.stdout}${r.stderr}`)
+  }
+  const settledBy = async (who) => (await tm.as(who, ['doctor'])).stdout.match(/indexer +(\S+)/)[1]
+  await landFinal('a1', 'one.txt', 'before the move')
+
+  // adopt: refused while the old hub's seed runs, then the replacement procedure
+  const busy = await hs(tm.dir, ['hubs', 'adopt', 'app', tm.hub])
+  t.is(busy.code, 1, 'refused while the old hub runs: ' + busy.stderr.trim())
+  await tm.stopHub()
+  const adopted = await hs(tm.dir, ['hubs', 'adopt', 'app', tm.hub])
+  t.is(adopted.code, 0, adopted.stderr)
+  t.ok(adopted.stdout.includes('copied everything'), 'held everything the old hub held')
+  t.ok(adopted.stdout.includes(tm.invite), 'the same invite')
+
+  const server = background(tm.dir, ['hubs', 'serve'], { ...env, USER: 'me' })
+  t.teardown(() => server.stop(), { order: 1 })
+  await waitFor(() => server.output().includes('hubs serving 1 repo(s)'), 30_000)
+  await landFinal('a2', 'two.txt', 'after the adopt')
+  t.is(await settledBy('a2'), 'hub2', "the home's hub settles now")
+  await tm.as('a1', ['sync'])
+  t.is(tm.read('a1', 'two.txt'), 'after the adopt\n', 'teammates sync through the home')
+
+  // move out: the next hub runs, the home adds it, then steps down
+  const hub3 = path.join(tm.dir, 'hub3')
+  t.is((await hs(tm.dir, ['clone', tm.invite, hub3, '--as', 'hub3'], 'hub3')).code, 0)
+  const key = (await hs(hub3, ['info'], 'hub3')).stdout.match(/writer\s+(\S+)/)[1]
+  const seed3 = background(hub3, ['seed'], { ...env, USER: 'hub3' })
+  t.teardown(() => seed3.stop(), { order: 1 })
+  await waitFor(() => seed3.output().includes('seeding'), 30_000)
+  const added = await hs(tm.dir, ['hubs', 'add-writer', 'app', key, '--as', 'hub3', '--indexer'])
+  t.is(added.code, 0, 'added, and a teammate has it: ' + added.stdout + added.stderr)
+  const removed = await hs(tm.dir, ['hubs', 'remove', 'app'])
+  t.is(removed.code, 0, removed.stdout + removed.stderr)
+  await landFinal('a1', 'three.txt', 'after the move out')
+  t.is(await settledBy('a1'), 'hub3', 'the standalone hub settles alone')
+  t.absent((await hs(tm.dir, ['hubs', 'list'])).stdout.includes('app'), 'gone from the home')
+
+  // the guard: a home that is a repo's only hub doesn't drop it by accident
+  t.is((await hs(tm.dir, ['hubs', 'new', 'solo', '--as', 'me'])).code, 0)
+  const guarded = await hs(tm.dir, ['hubs', 'remove', 'solo'])
+  t.is(guarded.code, 1, 'refused: ' + guarded.stderr.trim())
+  const forced = await hs(tm.dir, ['hubs', 'remove', 'solo', '--force'])
+  t.is(forced.code, 2, 'forced, and says nobody heard: ' + forced.stderr.trim())
+})

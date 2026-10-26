@@ -277,12 +277,30 @@ What changes from one hub per repo:
 - **One process hubs everything.** If it stops, every repo's lands stay provisional until it's
   back. Run it under a supervisor (systemd, launchd) that restarts it.
 - **One store.** All the repos' hub data lives in `~/hubs/store`, one namespace each, so a
-  single repo's hub can't be moved by copying a directory. To move one, use the replacement
-  procedure above.
+  single repo's hub can't be moved by copying a directory. Moving one in or out uses the
+  replacement procedure (below).
 - **Repos are made on the hub's machine,** because the hub has to be created with the repo.
   The owner's worktree starts in `owners/<repo>`; clone the repo elsewhere to work on it.
-- **Not yet:** moving an existing hub into a home (`hubs adopt`), removing a repo from a home,
-  and blind peers for a home's repos.
+- **Not yet:** reclaiming a removed repo's space in the store, and blind peers for a home's
+  repos.
+
+**Moving a hub into a home.** `hs hubs adopt <name> <old hub dir>` runs the replacement
+procedure in one step. Stop `hs seed` in the old hub first. The old hub grants the home's hub
+weight 2 (as `hub2`, or the next free `hubN`), the home copies everything the old hub held,
+and then the old hub is removed. Teammates change nothing; the invite stays the same. Never
+run `hs seed` in the old directory again.
+
+**Moving a repo out of a home.** This is the replacement procedure the other way round. Start
+the next hub first, so it receives the change:
+
+```sh
+hs clone <invite> new-hub --as hub3 && cd new-hub && hs seed   # on the new machine; keep it running
+hs hubs add-writer web-app <its key> --as hub3 --indexer        # on the hub's machine
+hs hubs remove web-app                                          # the home's hub steps down
+```
+
+`hs hubs remove` refuses if the home is the repo's only hub. With `--force` it removes it
+anyway, and the repo then settles on every writer's acks for good.
 
 ## Commands
 
@@ -324,7 +342,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `ws new\|switch\|list`                                                         | workspaces                                                                                               |
 | `fetch`, `push`                                                                | download main without touching files; make sure a holder has your lands                                  |
 | `seed [--admit dir] [--no-mirror] [--updates]`                                 | be the team's holder: stay online, hold everything, settle lands, admit writers                          |
-| `hubs new <name>`, `hubs serve`, `hubs list` (`--home dir`)                    | host many repos' hubs from one process (a hub home)                                                      |
+| `hubs new\|serve\|list\|adopt\|add-writer\|remove` (`--home dir`)              | host many repos' hubs from one process (a hub home), and move hubs in and out                            |
 | `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                   | identity, connectivity and settlement, access                                                            |
 | `remove-writer <handle or key>`                                                | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first |
 | `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`      | configure blind peers; replay a git branch's first-parent history                                        |

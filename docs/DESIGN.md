@@ -1118,7 +1118,22 @@ served, the server holds the store's RocksDB lock, so `hubs new` drops a request
   listeners), which is cheap per connection but grows with repos × connections. Not measured
   yet at 100+ repos.
 
-**Not built yet:** adopting an existing hub (`hubs adopt`, by the replacement procedure),
-removing a repo, blind peers per repo, and agents on replicator (sharing one connection per
-machine across worktrees). Measure memory and connections at 10 and 100 repos before
-deciding on the last one.
+**Moving hubs in and out (M2).**
+
+- `hubs adopt` is the replacement procedure run in one process. The old hub's store and a new
+  namespace are linked in-process. The old hub grants the new writer weight 2 as an indexer
+  (handle `hubN`, since a removed writer keeps its handle). The new hub's `Network` mirrors
+  over the link (`LinkSwarm`), so it holds everything the old hub held, including content
+  whose authors have left. Then the new hub removes the old one, and both must see only the
+  new hub as a settler before the adopt finishes.
+- `hubs add-writer` and `hubs remove` move a repo out:
+  - `remove` makes the home's hub remove itself.
+  - It refuses when no other indexer exists, unless `--force`, which falls back to every
+    writer.
+  - It keeps serving until a teammate holds the removal, so they never wait for a hub that's
+    gone. A `remove` that found nobody online can be run again.
+- While the home is served, these commands go through `requests/` like `hubs new`.
+
+**Not built yet:** reclaiming a removed repo's space in the store, blind peers per repo, and
+agents on replicator (sharing one connection per machine across worktrees). Measure memory
+and connections at 10 and 100 repos before deciding on the last one.
