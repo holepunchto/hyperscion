@@ -33,7 +33,7 @@ Scion mapping, the measured results (including where git still wins) and the ope
 Or with the [Pear CLI](https://install.pears.com):
 
 ```sh
-pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry 
+pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry
 ```
 
 With npm:
@@ -47,7 +47,6 @@ the `hs` binary peer-to-peer with [pear-install](https://www.npmjs.com/package/p
 (what `pear install` uses) and puts it in `~/.local/bin/hs` on macOS and Linux, or
 `%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hyperscion` skips the question.
 The npm package is only the installer (a few kB, no dependencies); the binary comes from peers.
-
 
 ## Quick start
 
@@ -252,6 +251,39 @@ copy of an open RocksDB store may not be consistent. Keep it encrypted and offli
 the hub's key. Never run it while the original might still be alive. Restoring a copy hasn't
 been tested.
 
+### Hosting many repos
+
+One machine can hub many repos from one process: a **hub home**. It has one directory, one
+store and one set of connections, so a teammate working on five of its repos needs one
+connection to the host, not five. Each repo still has its own hub key, so finality,
+replacing a hub and `hs doctor` work per repo exactly as above.
+
+Run these on the hub's machine:
+
+```sh
+export HS_HUB_HOME=~/hubs              # or pass --home ~/hubs to each command
+hs hubs new web-app --as me            # prints the invite; makes owners/web-app, your worktree
+hs hubs serve                          # keep it running: hubs every repo in the home
+hs hubs new api --as me                # while serving: the server makes it and serves it at once
+hs hubs list                           # each repo's invite, main and how far it is settled
+```
+
+Teammates clone as usual and are admitted by themselves:
+`hs clone <invite> <dir> --as <handle> --admit ~/hubs/admit/<repo>`. The admit directory is
+on the hub's machine, so it has to be one both can reach.
+
+What changes from one hub per repo:
+
+- **One process hubs everything.** If it stops, every repo's lands stay provisional until it's
+  back. Run it under a supervisor (systemd, launchd) that restarts it.
+- **One store.** All the repos' hub data lives in `~/hubs/store`, one namespace each, so a
+  single repo's hub can't be moved by copying a directory. To move one, use the replacement
+  procedure above.
+- **Repos are made on the hub's machine,** because the hub has to be created with the repo.
+  The owner's worktree starts in `owners/<repo>`; clone the repo elsewhere to work on it.
+- **Not yet:** moving an existing hub into a home (`hubs adopt`), removing a repo from a home,
+  and blind peers for a home's repos.
+
 ## Commands
 
 To explore them, run `hs --menu`: pick a command from a filterable list, fill a form built from
@@ -292,6 +324,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `ws new\|switch\|list`                                                         | workspaces                                                                                               |
 | `fetch`, `push`                                                                | download main without touching files; make sure a holder has your lands                                  |
 | `seed [--admit dir] [--no-mirror] [--updates]`                                 | be the team's holder: stay online, hold everything, settle lands, admit writers                          |
+| `hubs new <name>`, `hubs serve`, `hubs list` (`--home dir`)                    | host many repos' hubs from one process (a hub home)                                                      |
 | `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                   | identity, connectivity and settlement, access                                                            |
 | `remove-writer <handle or key>`                                                | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first |
 | `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`      | configure blind peers; replay a git branch's first-parent history                                        |

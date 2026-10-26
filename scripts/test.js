@@ -16,7 +16,7 @@ const path = require('path')
 const ROOT = path.join(__dirname, '..')
 // longest first (measured), so the slowest start at once and the rest fill in around them
 const INTEGRATION = [
-  'test/hubs-spike.js',
+  'test/hubs.js',
   'test/site-finality.js',
   'test/flows.js',
   'test/tasks-cli.js',

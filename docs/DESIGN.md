@@ -1075,3 +1075,50 @@ Bridging later: an optional Keet room per repo that hs posts intent lines to.
    implementations with **no** rise in time to acceptance, blocked time or calls per land.
    If it doesn't beat the NOTES.md convention, don't ship it as a feature. Document the
    convention instead.
+
+## 15. One hub, many repos (`hs hubs`)
+
+A developer or an agent fleet hosting many repos needed one hub per repo: a directory, an
+`hs seed` process, a DHT node and a connection per agent and repo. A **hub home** hubs them
+all from one process (`lib/hubs.js`, `lib/hubnet.js`, `test/hubs.js`).
+
+**Layout.** `<home>/hubs.json` names each repo's key and namespace. `<home>/store` is one
+corestore holding every repo's hub writer, each in its own namespace, so each repo keeps its
+own hub key and can replace its hub on its own. `admit/<name>` and `owners/<name>` are as with
+`seed --admit` and `init --hub`. `status.json` is what the server last saw (for `hubs list`).
+
+**Network: `@holepunchto/replicator`.** Replicator (Holepunch's hyperswarm replacement for a
+root corestore, also landing in keet) keeps one connection per peer and replicates the whole
+root store on it, so a peer pays one connection for every repo of the home it works on.
+Why it fits, measured in the M0 spike:
+
+- Its discovery announces and looks up the same DHT topic as hyperswarm, so agents keep
+  plain hyperswarm and need no change.
+- Each repo's existing `Network` (mirror, acks, signals) runs on top through `RepoSwarm`,
+  the slice of hyperswarm it uses. `Network` gets `replicate: false`, since the replicator
+  already replicates every connection.
+- **Signals are passive on a home** (`passiveSignals`). A home's connections carry every
+  repo, so it only answers a peer's `hs/signal` channel for a repo, never opens one, rather
+  than leaving one channel per repo open on every connection.
+- Every repo is pinned (`autoswarm: false`), so rotation and session GC never drop one.
+- Replicator drops a connection after 3 min without traffic. A feed idle for 200 s kept its
+  connection (hypercore's keepalive counts as traffic).
+
+**Creation.** `hubs new` runs the same genesis handover as `init --hub` (`handover` in
+`lib/hubs.js`), with the hub's `Repo` on a namespace of the home's store. While the home is
+served, the server holds the store's RocksDB lock, so `hubs new` drops a request in
+`requests/` and the server makes and serves the repo.
+
+**Costs:**
+
+- One process for all repos: if it stops, every repo's lands stay provisional.
+- One RocksDB for all repos: a repo's hub can't be moved by copying a directory (the
+  replacement procedure moves one).
+- Each repo's `Network` still sees every connection of the home (counting and close
+  listeners), which is cheap per connection but grows with repos × connections. Not measured
+  yet at 100+ repos.
+
+**Not built yet:** adopting an existing hub (`hubs adopt`, by the replacement procedure),
+removing a repo, blind peers per repo, and agents on replicator (sharing one connection per
+machine across worktrees). Measure memory and connections at 10 and 100 repos before
+deciding on the last one.
