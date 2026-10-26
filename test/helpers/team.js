@@ -10,6 +10,30 @@ const tmp = require('test-tmp')
 
 const BIN = path.join(__dirname, '..', '..', 'bin.mjs')
 
+// Background hs processes (hubs, feeds) still running. A test's teardown stops them, but an
+// uncaught error ends the test file before teardown runs, and Bare aborts without its exit
+// hooks: the hubs and feeds outlived the run (and kept their ports and CPU). So kill them on
+// any exit, and on an uncaught error first, then fail as Bare would have.
+const children = new Set()
+
+function reap() {
+  for (const p of children) {
+    try {
+      p.kill('SIGKILL')
+    } catch {}
+  }
+  children.clear()
+}
+
+Bare.on('exit', reap)
+for (const event of ['uncaughtException', 'unhandledRejection']) {
+  Bare.on(event, (err) => {
+    reap()
+    console.error('Uncaught', err)
+    Bare.exit(1)
+  })
+}
+
 // files: { 'path': 'content' } for the skeleton the hub lands first
 async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} } = {}) {
   const testnet = await createTestnet(3, t.teardown)
@@ -136,12 +160,14 @@ function run(cwd, args, env) {
 
 function background(cwd, args, env) {
   const p = spawn(os.execPath(), [BIN, ...args], { cwd, env })
+  children.add(p)
   const chunks = []
   let exited = false
   p.stdout.on('data', (d) => chunks.push(d))
   p.stderr.on('data', (d) => chunks.push(d))
   p.on('exit', () => {
     exited = true
+    children.delete(p)
   })
   return {
     output: () => b4a.toString(b4a.concat(chunks)),
