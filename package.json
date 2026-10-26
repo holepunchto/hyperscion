@@ -33,6 +33,7 @@
     "build": "node scripts/build.js"
   },
   "devDependencies": {
+    "@holepunchto/replicator": "1.2.0",
     "autobee": "^2.12.1",
     "b4a": "^1.6.7",
     "bare-build": "^1.0.2",
