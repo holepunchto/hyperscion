@@ -29,9 +29,27 @@ hub.
   **final** once it is also accepted by review (see below).
 - **Holders** keep landed files available when their author is offline. The team's hub
   (`hs seed`, or a blind peer) is the one that's always on. Every running `hs watch` feed is a
-  holder too: it announces itself and keeps a copy of everything landed, so while the hub is
-  down, teammates still land and sync through each other's feeds. Only the hub survives your
-  machine going away, though. Don't run `hs seed` in your own worktree.
+  holder too: it announces itself and keeps a copy of everything landed. Only the hub survives
+  your machine going away, though.
+
+## The hub
+
+The hub is the team's always-on peer. It makes lands final and holds everything landed. It
+isn't yours to run: the team owner looks after it.
+
+- **Never run `hs seed` in your own worktree.** The hub has its own.
+- **When the hub is down, keep working.** You still land, sync and start tasks: they travel
+  between teammates' feeds. Your lands stay _provisional_ and settle by themselves when the hub
+  is back. Feeds print `!! watch: hub not settling` (`{"type":"hub","state":"stalled",...}`),
+  and `land` says `provisional: the hub is not reachable`. Neither is an error.
+- **Don't wait on finality during an outage** unless your next step needs it:
+  `land --wait-final` and `hs wait-final` keep waiting until the hub is back.
+- **If it lasts,** run `hs doctor` and tell the team owner what it says. Don't try to fix the
+  hub yourself: adding or removing hubs (`hs add-writer --indexer`, `hs remove-writer`) is the
+  owner's call, and a wrong move can stall settlement for the whole team.
+
+Why there's a hub in a peer-to-peer tool, and how to set it up, watch it, replace it and back
+it up: [The hub](../README.md#the-hub) in the README.
 
 ## The loop
 
