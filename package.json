@@ -12,7 +12,7 @@
     "README.md",
     "LICENSE"
   ],
-  "upgrade": "pear://<YOUR_KEY_HERE>",
+  "upgrade": "pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry",
   "scripts": {
     "format": "prettier . --write",
     "test": "node scripts/test.js quick",

@@ -30,6 +30,12 @@ Scion mapping, the measured results (including where git still wins) and the ope
 
 ## Install
 
+Or with the [Pear CLI](https://install.pears.com):
+
+```sh
+pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry 
+```
+
 With npm:
 
 ```sh
@@ -42,11 +48,6 @@ the `hs` binary peer-to-peer with [pear-install](https://www.npmjs.com/package/p
 `%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hyperscion` skips the question.
 The npm package is only the installer (a few kB, no dependencies); the binary comes from peers.
 
-Or with the [Pear CLI](https://install.pears.com):
-
-```sh
-pear install <the hs pear:// link>
-```
 
 ## Quick start
 
@@ -56,7 +57,8 @@ alias hs="bare $PWD/bin.mjs"
 
 mkdir demo && cd demo
 hs init --as me --hub ../demo-hub    # prints the repo invite, and creates the team's hub
-(cd ../demo-hub && hs seed) &        # keep the hub online: it holds lands and makes them final
+(cd ../demo-hub && hs seed > ../demo-hub.log) &   # the hub: it holds lands and makes them final
+until grep -q seeding ../demo-hub.log 2>/dev/null; do sleep 0.2; done   # wait until it's online
 echo hello > README.md
 hs diff                      # what land would send
 hs land -m "first"           # commit + land onto main: ends with `#1 final`
