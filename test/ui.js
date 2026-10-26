@@ -142,6 +142,31 @@ const REVIEW = [
   { kind: 'ask', id: 'A6', title: 'mine', by: 'you', state: 'open, 0/1 approvals', mine: true }
 ]
 
+const TASKS = [
+  {
+    id: 'T1a2b3c',
+    title: 'cache distances',
+    kind: '',
+    by: 'bob',
+    mine: false,
+    parent: null,
+    lead: null,
+    onIt: false,
+    text: 'nobody on it: s starts it, and you lead\n\ntask T1a2b3c by bob'
+  },
+  {
+    id: 'T4d5e6f',
+    title: 'tidy the docs',
+    kind: '',
+    by: 'you',
+    mine: true,
+    parent: null,
+    lead: 'you',
+    onIt: true,
+    text: 'lead you (started 5m ago, active 1m ago)\n\ntask T4d5e6f by ann'
+  }
+]
+
 const TEAM = [
   { handle: 'ann', human: true, default: true },
   { handle: 'bob', human: false, default: false },
@@ -160,6 +185,7 @@ function fake({ team = TEAM } = {}) {
       if (op === 'show') return Promise.resolve(`changeset #${args.seq}\n+line of ${args.seq}\n`)
       if (op === 'review') return Promise.resolve(REVIEW)
       if (op === 'detail') return Promise.resolve(`detail of ${args.id}\n+diff of ${args.id}\n`)
+      if (op === 'tasks') return Promise.resolve(TASKS)
       if (op === 'team') {
         this.teamPaths = args.paths
         return team ? Promise.resolve(team) : Promise.reject(new Error('no store'))
@@ -354,4 +380,43 @@ test('ui model: without a teammate list, Reviewers takes typed handles', async (
   t.ok(screen(app).includes('teammates unavailable (no store)'))
   await press(app, 'd', 'a', 'n', 'enter')
   t.alike(client.calls, [['review', 'ask', '-m', 'why', '-r', 'dan']])
+})
+
+test('ui model: Tasks lists the board; n files a task', async (t) => {
+  const { app, client } = await started({ height: 40 })
+  await press(app, '5')
+  const s = screen(app)
+  t.ok(s.includes('[5] Tasks'), 'the fifth panel')
+  t.ok(s.includes('T1a2b3c open cache distances'), 'nobody on it: open')
+  t.ok(s.includes('T4d5e6f you tidy the docs'), 'yours')
+  t.ok(s.includes('nobody on it: s starts it'), "the selected task's detail")
+
+  await press(app, 'n', 'enter')
+  t.alike(client.calls, [], 'a task needs a title')
+  await press(app, 'h', 'i', 'enter')
+  t.alike(client.calls, [['task', 'new', 'hi']])
+})
+
+test('ui model: in Tasks, s starts, S stops, D marks done, X drops', async (t) => {
+  const esc = key('escape', { meta: true }) // a lone Esc, as the decoder reports it
+  const { app, client } = await started({ height: 40 })
+  await press(app, '5', 'S')
+  t.ok(screen(app).includes("you're not on T1a2b3c"), 'S needs you on it')
+  await press(app, 's')
+  t.alike(client.calls.pop(), ['task', 'start', 'T1a2b3c'])
+  await press(app, esc, 'X')
+  t.ok(screen(app).includes('only whoever filed T1a2b3c can drop it (bob)'))
+  await press(app, 'D', 'n')
+  t.alike(client.calls, [], 'D asks first; n keeps it')
+  await press(app, 'D', 'y')
+  t.alike(client.calls.pop(), ['task', 'done', 'T1a2b3c'])
+
+  await press(app, esc, 'j', 's')
+  t.ok(screen(app).includes("you're on T4d5e6f already"))
+  await press(app, 'S')
+  t.alike(client.calls.pop(), ['task', 'stop', 'T4d5e6f'])
+  await press(app, esc, 'X')
+  t.ok(screen(app).includes('Drop T4d5e6f "tidy the docs"?'), 'X asks first')
+  await press(app, 'y')
+  t.alike(client.calls.pop(), ['task', 'drop', 'T4d5e6f'])
 })

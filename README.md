@@ -118,9 +118,11 @@ picker), and it runs as the typed command would, printed so you learn it. `hs la
 same descriptions and examples.
 
 For the everyday loop there is `hs ui`, a lazygit-style terminal UI: Status, the files `land`
-would send, the log and Review (your inbox and open asks) on the left, the selected diff on the
-right; `c` lands, `A` asks for review instead (pick reviewers from your teammates), `p` syncs, `d` discards a file, and in Review `a`
-approves, `x` asks for changes, `m` comments; `?` lists the keys. It runs its commands on worker
+would send, the log, Review (your inbox and open asks) and Tasks (the board) on the left, the
+selected diff on the right; `c` lands, `A` asks for review instead (pick reviewers from your
+teammates), `p` syncs, `d` discards a file; in Review `a` approves, `x` asks for changes, `m`
+comments; in Tasks `n` files a task, `s` starts it, `S` stops, `D` marks it done, `X` drops it;
+`?` lists the keys. It runs its commands on worker
 threads, exactly as typed. In Neovim, the lazyscion plugin opens it in a float, as lazygit.nvim does for lazygit.
 
 Every command that talks to peers does so by default; `--offline` opts out. A land is
@@ -134,7 +136,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`               | join a repo, request write access, sparse checkout                                                       |
 | `status`                                                                       | your edits, unlanded work, stale files, lands not yet final, reviews for you                             |
 | `diff [--stat]`                                                                | what `land` would send, as a unified diff                                                                |
-| `ui`                                                                           | a lazygit-style terminal UI: files, diffs, log and review inbox; land, ask, review, sync by key          |
+| `ui`                                                                           | a lazygit-style terminal UI: files, diffs, log, review inbox and tasks; land, ask, review, sync by key   |
 | `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]` | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle                       |
 | `sync [--offline]`                                                             | bring main into your files and rebase your work onto it                                                  |
 | `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`      | stream lands, reviews and settlement as they happen                                                      |

@@ -112,3 +112,42 @@ test('ui review: ask, see it in Review, approve it; a Show and a request for cha
   const after = await tm.as('a2', ['review', 'inbox', '--offline'])
   t.absent(after.stdout.includes(aid), 'approved as it stands: out of the inbox')
 })
+
+test('ui tasks: file, start, stop, done and drop from the UI; a teammate sees the lead', async (t) => {
+  const tm = await team(t, { agents: ['a1', 'a2'], files: { 'src/a.js': 'a\n' } })
+  as(t, tm, 'a2')
+  const client = new Client({ cwd: tm.agents.a2 })
+  t.teardown(() => client.close())
+  const task = (id) => client.read('tasks').then((l) => l.find((e) => e.id === id))
+
+  const filed = await client.run(['task', 'new', 'cache distances'])
+  t.is(filed.code, 0, filed.lines.join('\n'))
+  const id = /task (T[0-9a-f]+)/.exec(filed.lines.join('\n'))[1]
+  let e = await task(id)
+  t.ok(e && e.mine && !e.lead && !e.onIt, 'on the board, nobody on it')
+
+  const started = await client.run(['task', 'start', id])
+  t.is(started.code, 0, started.lines.join('\n'))
+  e = await task(id)
+  t.is(e.lead, 'you')
+  t.ok(e.onIt && e.text.startsWith('lead you'), 'a2 leads it')
+
+  await tm.as('a1', ['fetch'])
+  const seen = (await backend.tasks(tm.agents.a1)).find((x) => x.id === id)
+  t.ok(seen && seen.lead === 'a2' && !seen.mine && !seen.onIt, "a1's board: a2 leads it")
+
+  const stopped = await client.run(['task', 'stop', id])
+  t.is(stopped.code, 0, stopped.lines.join('\n'))
+  e = await task(id)
+  t.ok(e && !e.lead && !e.onIt, 'stopped: open again')
+
+  const done = await client.run(['task', 'done', id])
+  t.is(done.code, 0, done.lines.join('\n'))
+  t.absent(await task(id), 'done: off the board')
+
+  const other = await client.run(['task', 'new', 'never mind'])
+  const oid = /task (T[0-9a-f]+)/.exec(other.lines.join('\n'))[1]
+  const dropped = await client.run(['task', 'drop', oid])
+  t.is(dropped.code, 0, dropped.lines.join('\n'))
+  t.absent(await task(oid), 'dropped: off the board')
+})
