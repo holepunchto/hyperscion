@@ -1181,4 +1181,24 @@ the hub 43 MB. It would also need a per-machine store, which is the daemon model
 of agents. The next agent-side saving is the store's write buffer (`bench/store-mem.js tuned`
 has a 4 MB one), which would cut the preallocated log too.
 
-**Not built yet:** reclaiming a removed repo's space in the store, and blind peers per repo.
+**Running a home as a service, and updating it.**
+
+- `hs hubs service install` writes a systemd user unit (Linux) or launchd agent (macOS) for
+  `hs hubs serve --updates --restart-on-update`. The unit has `Restart=always` / `KeepAlive`,
+  so any exit starts the hub again, and `service.json` in the home records which service it
+  is. Rendering is pure (`lib/service.js`, `test/service.js`). The systemd path is checked
+  on Linux (install, a restart, uninstall); launchd isn't tested yet.
+- The template's updater replaces the binary the hub runs (`os.execPath()`, which the unit
+  launches too), but the running process keeps its old code. `--restart-on-update` turns an
+  applied update into a restart at the next quiet moment: every repo settled through main
+  and no land for 60 s, at most 30 minutes after the update. `hs hubs restart` asks for the
+  same thing (`--now`: at once), through `requests/` like other commands
+  (`test/hubs-restart.js`). In a checkout an update never replaces the code, so the unit
+  leaves updates out.
+- The quiet wait is courtesy, not correctness: a restart costs a few seconds of provisional
+  lands, and feeds reconnect by themselves (`test/hubs.js`).
+- Only `hubs list` (from `status.json`) and the hub's log show the hub's version and a pending
+  update. Agents can't see the hub's version, and nothing compares versions between them yet.
+
+**Not built yet:** reclaiming a removed repo's space in the store, blind peers per repo, a
+Windows service, and restart-on-update for a single `hs seed` hub.

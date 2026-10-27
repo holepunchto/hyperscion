@@ -97,32 +97,47 @@ Two things are new. A land is **provisional** for a moment, until the hub has se
 it's **final**, once any review it asked for is done. `hs land` waits for that and says which.
 And `hs watch` streams teammates' lands as they happen, so nobody needs to poll.
 
-### 3. When you're ready: teammates, an always-on hub, many repos
+### 3. Run your hubs for real
 
-Each step builds on the repo you already have.
+A hub has to be online whenever anyone works, so once you go past a try, run it as a service
+on a machine that stays up: your own, to start with. One process can hub every repo you make,
+from one directory, a **hub home**. Do this on the machine the hub runs on:
 
-- **Teammates or agents on the same machine.** Run the hub with `--admit` and teammates let
-  themselves in:
+```sh
+export HS_HUB_HOME=~/hubs                  # the hub home (or pass --home ~/hubs to each command)
+hs hubs adopt demo ../demo-hub             # optional: bring the demo's hub along (its hs seed stopped)
+hs hubs service install                    # runs the home as a service: at login, restarted if it stops
+hs hubs new my-project --as me             # each new repo: made here and served at once
+hs hubs list                               # every repo's invite, main and how far it's settled
+```
 
-  ```sh
-  cd ../demo-hub && hs seed --admit ../admit                      # keep it running
-  hs clone <invite> ../bob --as bob --admit ../admit              # each teammate
-  ```
+`hs hubs new` also makes your worktree for the repo, in `~/hubs/owners/my-project`. Work
+there, or move that directory wherever you keep code (with no `hs` command running in it).
 
-  `scripts/team.sh ./team 5` sets up a hub and five agent worktrees in one command. For agents,
-  read **[docs/AGENTS.md](docs/AGENTS.md)**, the playbook (`hs agents --write` saves a short
-  version as `AGENTS.md` in a worktree, where agent tools read it).
+The service is a systemd user service on Linux or a launchd agent on macOS. It keeps hs up to
+date by itself and restarts the hub for an update at a quiet moment
+([Updates and restarts](#updates-and-restarts)). `hs hubs service status` and
+`hs hubs service logs -f` show what it's doing. On Linux, run `loginctl enable-linger` once
+so the hubs keep running after you log out.
 
-- **Teammates on other machines.** The hub needs to be online whenever they work, so move it to
-  a machine that stays up: stop `hs seed`, copy the hub directory there, and run `hs seed`
-  there instead ([Running the hub elsewhere](#running-the-hub-elsewhere)). Then teammates
-  clone from anywhere.
+### 4. Bring in teammates and agents
 
-- **Many repos.** One machine can hub all of them from one process, a hub home
-  ([Hosting many repos](#hosting-many-repos)). `hs hubs adopt` moves an existing repo's hub
-  into it; teammates change nothing.
+Each repo has an admit directory in the hub home. A teammate or agent on the hub's machine
+lets themselves in:
 
-`hs init --encrypt` encrypts all repo data at rest. The invite then carries the key.
+```sh
+hs clone <invite> ../bob --as bob --admit ~/hubs/admit/my-project
+```
+
+From another machine, a teammate clones, then sends you the writer key `hs clone` prints, and
+you add it on the hub's machine:
+`hs hubs add-writer my-project <key> --as bob`.
+
+For agents, read **[docs/AGENTS.md](docs/AGENTS.md)**, the playbook. `hs agents --write`
+saves a short version as `AGENTS.md` in a worktree, where agent tools read it.
+
+`hs hubs new --encrypt` (or `hs init --encrypt`) encrypts all repo data at rest. The invite
+then carries the key.
 
 **Ignoring files.** hs honors your `.gitignore` files, so `node_modules/` and build output never
 land. An optional `.hsignore` (same syntax, in the same places) applies after them: add patterns
@@ -281,36 +296,60 @@ been tested.
 ### Hosting many repos
 
 One machine can hub many repos from one process: a **hub home**, with one directory, one
-store and one network node. Measured (`bench/hubs.js`), 30 repos hubbed from one home use
-133 MB, against 3.3 GB as 30 separate `hs seed` processes, with the same land latency. Each
-repo still has its own hub key, so finality, replacing a hub and `hs doctor` work per repo
-exactly as above.
+store and one network node. It's what [step 3 of the quick start](#3-run-your-hubs-for-real)
+sets up. Measured (`bench/hubs.js`), 30 repos hubbed from one home use 133 MB, against 3.3 GB
+as 30 separate `hs seed` processes, with the same land latency. Each repo still has its own hub
+key, so finality, replacing a hub and `hs doctor` work per repo exactly as above.
 
-Run these on the hub's machine:
+| command                                             | what                                                                |
+| --------------------------------------------------- | ------------------------------------------------------------------- |
+| `hs hubs new <repo>`                                | a new repo with its hub in the home, and your worktree in `owners/` |
+| `hs hubs service install\|uninstall`                | run the home as a service, or stop doing so                         |
+| `hs hubs service status`, `hs hubs service logs -f` | is it running, and what it says                                     |
+| `hs hubs list`                                      | every repo's invite and how far it's settled; the hub's version     |
+| `hs hubs restart [--now]`                           | restart the hub at the next quiet moment                            |
+| `hs hubs adopt <repo> <hub dir>`                    | move an existing repo's hub into the home                           |
+| `hs hubs add-writer <repo> <key> --as <h>`          | let a teammate write (`--indexer`: the repo's next hub)             |
+| `hs hubs remove <repo>`                             | stop hubbing a repo here                                            |
+| `hs hubs serve`                                     | run the home in the foreground, without a service                   |
 
-```sh
-export HS_HUB_HOME=~/hubs              # or pass --home ~/hubs to each command
-hs hubs new web-app --as me            # prints the invite; makes owners/web-app, your worktree
-hs hubs serve                          # keep it running: hubs every repo in the home
-hs hubs new api --as me                # while serving: the server makes it and serves it at once
-hs hubs list                           # each repo's invite, main and how far it is settled
-```
-
-Teammates clone as usual and are admitted by themselves:
-`hs clone <invite> <dir> --as <handle> --admit ~/hubs/admit/<repo>`. The admit directory is
-on the hub's machine, so it has to be one both can reach.
+All of them take `--home <dir>`, or `HS_HUB_HOME`. While the home is served, they ask the
+server to do the work, since it holds the store.
 
 What changes from one hub per repo:
 
 - **One process hubs everything.** If it stops, every repo's lands stay provisional until it's
-  back. Run it under a supervisor (systemd, launchd) that restarts it.
+  back, which is why the home runs as a service.
 - **One store.** All the repos' hub data lives in `~/hubs/store`, one namespace each, so a
   single repo's hub can't be moved by copying a directory. Moving one in or out uses the
   replacement procedure ([Replacing a hub](#replacing-a-hub)).
 - **Repos are made on the hub's machine,** because the hub has to be created with the repo.
-  The owner's worktree starts in `owners/<repo>`; clone the repo elsewhere to work on it.
-- **Not yet:** reclaiming a removed repo's space in the store, and blind peers for a home's
-  repos.
+- **Not yet:** reclaiming a removed repo's space in the store, blind peers for a home's repos,
+  and a service on Windows (run `hs hubs serve --updates` under your own supervisor there).
+
+### Updates and restarts
+
+The service runs `hs hubs serve --updates --restart-on-update`. hs updates itself over the
+peer-to-peer network: when a new release is out, the hub fetches it within the hour (each
+machine waits a random delay, so they don't all fetch at once) and replaces the `hs` binary.
+The running hub keeps the old code until it restarts, so it then restarts at the next **quiet
+moment**: every repo settled and no land for a minute, or after 30 minutes whatever happens.
+It stops cleanly, and the service starts it again on the new binary.
+
+A restart is safe at any time. For the few seconds the hub is down, lands stay provisional and
+settle when it's back, and teammates' feeds reconnect by themselves. Waiting for a quiet moment
+only keeps the restart out of the way.
+
+- **To see it:** `hs hubs list` shows the version the hub runs, and whether an update is
+  applied and a restart is pending. The service log says when it fetched, applied and
+  restarted. Teammates' and agents' commands don't show the hub's version.
+- **To restart it yourself:** `hs hubs restart` (at the next quiet moment) or
+  `hs hubs restart --now`. With a service it comes back by itself; without one, run
+  `hs hubs serve` again.
+- **Without a service** (`hs hubs serve` in a terminal): add `--updates` to fetch them;
+  `hs hubs list` then says when one is applied, and `hs hubs restart` runs it.
+- **Teammates update their own `hs`,** so an agent can run a different version than the hub.
+  hs doesn't compare versions between them yet.
 
 **Moving a hub into a home.** `hs hubs adopt <name> <old hub dir>` runs the replacement
 procedure in one step. Stop `hs seed` in the old hub first. The old hub grants the home's hub
