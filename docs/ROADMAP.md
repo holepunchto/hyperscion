@@ -21,16 +21,16 @@ small check with real agents.
 
 ## Where we are
 
-| milestone     | what                                                                                                                                  | evidence                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| M1            | core prototype: workspaces as cheap forks, autobee landing with path-level OCC, sparse fetch, mirror and blind peers, CLI, git import | fork 1.3 ms at 100k paths; 500 workspaces from 4 writers converge (DESIGN.md §7) |
-| M2            | experiment 1 fixes: no stalls, stale files never landed, union merge, `watch`, `show`, `restore`, `seed --admit`, playbook            | agents rated hs 2/5 → 4/5 against git                                            |
-| M3            | review: Ship / Show / Ask                                                                                                             | rarely used by agents so far                                                     |
-| M4            | finality: provisional → settled → final                                                                                               | land-state trust 4.8–5.0                                                         |
-| M5            | CLI defaults (online by default, `fetch`, `land --check`, …)                                                                          | experiment 3: 4/5 from all five agents, all would choose hs                      |
-| round 4       | git control team, 14 runs, scenarios S1–S3                                                                                            | EXPERIMENTS.md "Experiment 4"                                                    |
-| after round 4 | feeds as holders, outage and hub-stall signals, correctness fixes, fast feedback loop                                                 | `test/outage.js`, `test/fixes.js`, quick runs q1-hs-1/2                          |
-| hub homes     | one hub process for many repos on `@holepunchto/replicator` (`hs hubs`, DESIGN.md §15)                                                | `test/hubs.js`: two repos, one process, unchanged agents land to final           |
+| milestone     | what                                                                                                                                  | evidence                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| M1            | core prototype: workspaces as cheap forks, autobee landing with path-level OCC, sparse fetch, mirror and blind peers, CLI, git import | fork 1.3 ms at 100k paths; 500 workspaces from 4 writers converge (DESIGN.md §7)             |
+| M2            | experiment 1 fixes: no stalls, stale files never landed, union merge, `watch`, `show`, `restore`, `seed --admit`, playbook            | agents rated hs 2/5 → 4/5 against git                                                        |
+| M3            | review: Ship / Show / Ask                                                                                                             | rarely used by agents so far                                                                 |
+| M4            | finality: provisional → settled → final                                                                                               | land-state trust 4.8–5.0                                                                     |
+| M5            | CLI defaults (online by default, `fetch`, `land --check`, …)                                                                          | experiment 3: 4/5 from all five agents, all would choose hs                                  |
+| round 4       | git control team, 14 runs, scenarios S1–S3                                                                                            | EXPERIMENTS.md "Experiment 4"                                                                |
+| after round 4 | feeds as holders, outage and hub-stall signals, correctness fixes, fast feedback loop                                                 | `test/outage.js`, `test/fixes.js`, quick runs q1-hs-1/2                                      |
+| hub homes     | one hub process for many repos on `@holepunchto/replicator` (`hs hubs`, DESIGN.md §15)                                                | `test/hubs.js`; `bench/hubs.js`: 30 repos in 133 MB vs 3.3 GB as separate hubs, same latency |
 
 **What the experiments say:**
 

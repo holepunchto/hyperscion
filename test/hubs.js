@@ -109,10 +109,24 @@ test('hubs: one process hubs many repos', async (t) => {
   const stopped = await hs(dir, ['hubs', 'list'])
   t.ok(stopped.stdout.includes('not served'), 'list after stop: ' + stopped.stdout)
   t.ok(/r2 +main #\d+, settled #\d+/.test(stopped.stdout), 'reads the store when not served')
+  // a land while the hub is down: a2's feed holds it, then its author's command is gone, so
+  // the restarted hub must fetch it from the feed (nobody else has it open)
+  fs.writeFileSync(path.join(r2a1, 'outage.txt'), 'outage\n')
+  const outage = await hs(r2a1, ['land', '-m', 'during the outage'], 'a1')
+  t.ok(/landed #(\d+)/.test(outage.stdout), 'landed while the hub is down: ' + outage.stdout)
+  const outageSeq = Number(outage.stdout.match(/landed #(\d+)/)[1])
+  await waitFor(() => feed.output().includes('during the outage'), 30_000)
   server = startServer()
   await waitFor(() => server.output().includes('hubs serving 2 repo(s)'), 30_000)
   await waitFor(() => connections() >= 1, 60_000)
   t.pass('the feed reconnected to the restarted hub')
+  await waitFor(() => server.output().includes(`r2: mirrored #${outageSeq}`), 60_000).catch(
+    () => {}
+  )
+  t.ok(
+    server.output().includes(`r2: mirrored #${outageSeq}`),
+    'the restarted hub holds the outage land, from the feed'
+  )
   fs.writeFileSync(path.join(r2a1, 'after.txt'), 'after\n')
   const after = await hs(r2a1, ['land', '-m', 'after the restart'], 'a1')
   t.ok(/#\d+ final/.test(after.stdout), 'final after a restart')

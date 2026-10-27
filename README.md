@@ -253,10 +253,11 @@ been tested.
 
 ### Hosting many repos
 
-One machine can hub many repos from one process: a **hub home**. It has one directory, one
-store and one set of connections, so a teammate working on five of its repos needs one
-connection to the host, not five. Each repo still has its own hub key, so finality,
-replacing a hub and `hs doctor` work per repo exactly as above.
+One machine can hub many repos from one process: a **hub home**, with one directory, one
+store and one network node. Measured (`bench/hubs.js`), 30 repos hubbed from one home use
+133 MB, against 3.3 GB as 30 separate `hs seed` processes, with the same land latency. Each
+repo still has its own hub key, so finality, replacing a hub and `hs doctor` work per repo
+exactly as above.
 
 Run these on the hub's machine:
 

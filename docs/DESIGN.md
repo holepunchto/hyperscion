@@ -1089,8 +1089,9 @@ own hub key and can replace its hub on its own. `admit/<name>` and `owners/<name
 
 **Network: `@holepunchto/replicator`.** Replicator (Holepunch's hyperswarm replacement for a
 root corestore, also landing in keet) keeps one connection per peer and replicates the whole
-root store on it, so a peer pays one connection for every repo of the home it works on.
-Why it fits, measured in the M0 spike:
+root store on it. Agents still run a swarm per repo, so an agent on five of a home's repos
+holds five connections to it (sharing those is the agent-side question, decided below). Why
+it fits, measured in the M0 spike:
 
 - Its discovery announces and looks up the same DHT topic as hyperswarm, so agents keep
   plain hyperswarm and need no change.
@@ -1115,8 +1116,7 @@ served, the server holds the store's RocksDB lock, so `hubs new` drops a request
 - One RocksDB for all repos: a repo's hub can't be moved by copying a directory (the
   replacement procedure moves one).
 - Each repo's `Network` still sees every connection of the home (counting and close
-  listeners), which is cheap per connection but grows with repos × connections. Not measured
-  yet at 100+ repos.
+  listeners). Measured below: it isn't what costs.
 
 **Moving hubs in and out (M2).**
 
@@ -1134,6 +1134,51 @@ served, the server holds the store's RocksDB lock, so `hubs new` drops a request
     gone. A `remove` that found nobody online can be run again.
 - While the home is served, these commands go through `requests/` like `hubs new`.
 
-**Not built yet:** reclaiming a removed repo's space in the store, blind peers per repo, and
-agents on replicator (sharing one connection per machine across worktrees). Measure memory
-and connections at 10 and 100 repos before deciding on the last one.
+**Measured (M3, `bench/hubs.js`).** One home (`hs hubs serve`) against one `hs seed` per
+repo, on a local DHT testnet on one 24-core machine. F feed processes each follow K repos,
+each repo through its own store and `Network` as separate `hs watch` processes would.
+Memory and CPU are the hub processes' only. Lands are timed from the owner's `hs land` to
+`final`, and to every feed following that repo. Every land in every run was final.
+
+| mode       | repos | feeds × repos | hub processes | start ms | MB idle | MB with feeds | hub connections | idle CPU % | land → final p50/p90 ms | land → feeds p50/p90 ms |
+| ---------- | ----: | ------------- | ------------: | -------: | ------: | ------------: | --------------: | ---------: | ----------------------- | ----------------------- |
+| standalone |     1 | 10×1          |             1 |      804 |     109 |           119 |               - |        0.2 | 1772/1876               | 1305/1360               |
+| home       |     1 | 10×1          |             1 |     3224 |     108 |           119 |              10 |        0.4 | 1685/1772               | 1203/1278               |
+| standalone |    10 | 10×3          |            10 |     1120 |    1085 |          1109 |               - |        1.4 | 1790/1869               | 1246/1329               |
+| home       |    10 | 10×3          |             1 |     3823 |     120 |           128 |              30 |        1.1 | 1607/1722               | 1128/1246               |
+| standalone |    30 | 10×3          |            30 |     2261 |    3259 |          3290 |               - |        2.0 | 1717/2094               | 1168/1451               |
+| home       |    30 | 10×3          |             1 |     5822 |     132 |           133 |              30 |        1.7 | 1603/1777               | 1140/1204               |
+| home       |   100 | 10×3          |             1 |    14874 |     167 |           172 |              30 |        3.4 | 1565/1745               | 1099/1184               |
+| home       |   100 | 40×5          |             1 |    14640 |     166 |           209 |             200 |        3.9 | 1605/1717               | 1092/1242               |
+
+(100 standalone hubs would need about 11 GB and weren't run.)
+
+- **A hub costs about 108 MB as its own process and about 0.6 MB as a repo in a home.** At
+  30 repos that's 3.3 GB against 133 MB. Latency is the same either way.
+- **Fixed during M3: a home's store must be passive.** With corestore's default
+  (`active: true`), every connection got a channel for every open core of every repo, though
+  a peer wants only its repo's. Per-connection memory grew with the home's size: 0.4 MB at 10
+  repos, 1.5 MB at 30, 5 MB at 100. At 100 repos and 200 connections the hub used 1,041 MB.
+  With `active: false` on the root store, a core is attached only when a peer opens it; peers
+  stay active, so they open every core of their repo, the hub's included. The same run then
+  used 209 MB, about 0.2 MB per connection. `test/hubs.js` checks the case this could break:
+  a land made while the hub was down, held only by a teammate's feed, mirrored by the
+  restarted hub.
+- **Fixed during M3: start-up was one repo at a time.** Each repo waits about 2 s for its DHT
+  announce, so 10 repos took 22 s. The server now starts 16 at a time: 3.8 s for 10, 15 s for 100.
+- **Idle CPU grows slowly with repos:** about 0.035% of a core per repo (3.4% at 100).
+- **The per-repo `Network` fan-out is cheap.** With a passive store, 200 connections × 100
+  repos' `Network`s added 43 MB.
+- **Agents, not hubs, now cost the most.** Every store preallocates RocksDB's write-ahead log
+  (about 72 MB on disk, from the 64 MB write buffer), so every agent worktree and feed
+  reserves that much disk. On a tmpfs `/tmp` that's RAM: the first 200-feed run filled 12 GB.
+  The 100-repo home's one store was 95 MB in total.
+
+**Decision: agents stay on hyperswarm.** Replicator on the agent side would share one
+connection per machine across worktrees, but the hub no longer needs it: 200 connections cost
+the hub 43 MB. It would also need a per-machine store, which is the daemon model parked in §8
+(identity per machine, conflicts with per-agent sandboxes). Revisit it if a host runs hundreds
+of agents. The next agent-side saving is the store's write buffer (`bench/store-mem.js tuned`
+has a 4 MB one), which would cut the preallocated log too.
+
+**Not built yet:** reclaiming a removed repo's space in the store, and blind peers per repo.
