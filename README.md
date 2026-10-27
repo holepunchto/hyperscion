@@ -30,13 +30,13 @@ Scion mapping, the measured results (including where git still wins) and the ope
 
 ## Install
 
-Or with the [Pear CLI](https://install.pears.com):
+With the [Pear CLI](https://install.pears.com):
 
 ```sh
 pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry
 ```
 
-With npm:
+Or with npm:
 
 ```sh
 npm init hyperscion
@@ -50,14 +50,16 @@ The npm package is only the installer (a few kB, no dependencies); the binary co
 
 ## Quick start
 
-```sh
-npm install
-alias hs="bare $PWD/bin.mjs"
+### 1. Try it on your machine
 
+With `hs` installed (above). From a checkout of this repo, use
+`npm install && alias hs="bare $PWD/bin.mjs"` instead.
+
+```sh
 mkdir demo && cd demo
-hs init --as me --hub ../demo-hub    # prints the repo invite, and creates the team's hub
-(cd ../demo-hub && hs seed > ../demo-hub.log) &   # the hub: it holds lands and makes them final
-until grep -q seeding ../demo-hub.log 2>/dev/null; do sleep 0.2; done   # wait until it's online
+hs init --as me --hub ../demo-hub    # a repo here, and its hub next to it in ../demo-hub
+(cd ../demo-hub && hs seed > ../demo-hub.log) &   # run the hub while you try things
+until grep -q seeding ../demo-hub.log 2>/dev/null; do sleep 0.2; done   # wait until it's up
 echo hello > README.md
 hs diff                      # what land would send
 hs land -m "first"           # commit + land onto main: ends with `#1 final`
@@ -70,40 +72,55 @@ hs ws switch default && hs sync
 kill %1                      # stop the hub when you're done
 ```
 
-Don't skip the hub. It is the always-on peer that keeps landed work available and makes lands
-final, and it can only be created along with the repo. Without one, lands stay on your machine
-until someone else is online. [The hub](#the-hub) explains what it does and how to run it.
+`--hub` made a second directory, `../demo-hub`. That's the repo's **hub**: the peer that
+makes lands final and keeps a copy of everything landed. For now it runs on your machine
+next to your repo, and that's all a try needs.
 
-For teams, and AI agents in particular, read **[docs/AGENTS.md](docs/AGENTS.md)**. It's the
-playbook: watch instead of poll, sync, land small, learn from teammates' diffs. The binary
-carries the agent instructions too: `hs agents` prints a short brief (docs/BRIEF.md),
-`hs agents --full` the playbook, and `hs agents --write` saves the brief as `AGENTS.md` in the
-worktree, where agent tools read it. To set up a
-team with one command (an always-on holder plus N writable worktrees):
+The one thing you can't change later is whether a repo has a hub: it can only be made
+together with the repo. Where the hub runs is up to you later, and nothing you do here is
+lost when you move it (step 3).
 
-```sh
-scripts/team.sh ./team 5      # hub runs `hs seed --admit`, agents in team/agents/a1..a5
-```
+### 2. Coming from git
 
-Every team needs a **hub**: a worktree running `hs seed` (see [The hub](#the-hub)).
+| git                                             | hs                                                                   |
+| ----------------------------------------------- | -------------------------------------------------------------------- |
+| `git clone <url>`                               | `hs clone <invite>`                                                  |
+| the shared remote (`origin`)                    | the hub, though it only orders and holds lands ([The hub](#the-hub)) |
+| `git status`, `git diff`, `git log`             | `hs status`, `hs diff`, `hs log`                                     |
+| `git commit` + `git pull --rebase` + `git push` | `hs land`: commits, rebases onto main, retries, pushes               |
+| `git pull --rebase`                             | `hs sync`                                                            |
+| `git switch -c feature`                         | `hs ws new feature` (a workspace, forked in constant time)           |
+| `git restore <path>`                            | `hs restore <path>`                                                  |
+| `git show <commit>`                             | `hs show <n>` (changesets are numbered: `#27`)                       |
 
-Collaborating across machines by hand:
+Two things are new. A land is **provisional** for a moment, until the hub has seen it; then
+it's **final**, once any review it asked for is done. `hs land` waits for that and says which.
+And `hs watch` streams teammates' lands as they happen, so nobody needs to poll.
 
-```sh
-# machine A: the hub created by `hs init --hub ../my-hub`
-cd ../my-hub && hs seed       # stay online, hold all landed content, settle lands
+### 3. When you're ready: teammates, an always-on hub, many repos
 
-# machine B
-hs clone <invite> work --sparse src   # only materialize src/
-cd work && hs info                     # copy the writer key
+Each step builds on the repo you already have.
 
-# machine A: admit without stopping the seed (`hs seed --admit ./admit`, and clone with
-# `hs clone <invite> --as bob --admit ./admit`), or stop the seed and:
-hs add-writer <writer-key> --as bob
+- **Teammates or agents on the same machine.** Run the hub with `--admit` and teammates let
+  themselves in:
 
-# machine B
-hs land -m "my change"                 # pulls, rebases if main moved, pushes, waits to settle
-```
+  ```sh
+  cd ../demo-hub && hs seed --admit ../admit                      # keep it running
+  hs clone <invite> ../bob --as bob --admit ../admit              # each teammate
+  ```
+
+  `scripts/team.sh ./team 5` sets up a hub and five agent worktrees in one command. For agents,
+  read **[docs/AGENTS.md](docs/AGENTS.md)**, the playbook (`hs agents --write` saves a short
+  version as `AGENTS.md` in a worktree, where agent tools read it).
+
+- **Teammates on other machines.** The hub needs to be online whenever they work, so move it to
+  a machine that stays up: stop `hs seed`, copy the hub directory there, and run `hs seed`
+  there instead ([Running the hub elsewhere](#running-the-hub-elsewhere)). Then teammates
+  clone from anywhere.
+
+- **Many repos.** One machine can hub all of them from one process, a hub home
+  ([Hosting many repos](#hosting-many-repos)). `hs hubs adopt` moves an existing repo's hub
+  into it; teammates change nothing.
 
 `hs init --encrypt` encrypts all repo data at rest. The invite then carries the key.
 
@@ -115,12 +132,58 @@ never replaces `.gitignore`. Only untracked files are ignored, as in git, and
 
 ## The hub
 
-The hub is a worktree running `hs seed`, on a machine that stays online. It does two jobs:
+Every team repo has a hub. It's the closest thing hs has to git's shared remote, with two jobs:
 
-- **It makes lands final.** The hub is the repo's indexer. Once it has seen a land, the land's
-  place in main's history is fixed (_settled_), and nothing can reorder or undo it.
+- **It makes lands final.** Once the hub has seen a land, the land's place in main's history is
+  fixed (_settled_), and nothing can reorder or undo it.
 - **It holds everything landed,** so teammates can fetch your work after your machine goes
   away. With `--admit <dir>` it also lets new writers in.
+
+### Seeds and the hub
+
+**Seeding** a repo means staying online to hold and serve its data, as in BitTorrent. `hs seed`
+seeds the repo of the worktree it runs in.
+
+- Run in the **hub's worktree** (the one `hs init --hub` made), `hs seed` also settles lands.
+  That's what makes it the hub. One repo has one hub.
+- Run in **any other worktree** (a clone made just for it), `hs seed` is an extra seed. It
+  holds and serves everything, which supports the hub: teammates can still fetch work while
+  the hub is down. It doesn't settle anything, so its downtime never delays a land.
+- **Blind peers** (`hs blind-peer <key>`) support the hub the same way, as a hosted service.
+  They store the repo encrypted and can't read it.
+- A teammate's running `hs watch` keeps a copy too, while it runs.
+
+Never run `hs seed` in the worktree you work in. It keeps the worktree busy, and the hub or an
+extra seed has a directory of its own.
+
+### Running it
+
+```sh
+hs init --as me --hub ../my-hub             # in your worktree: prints the invite
+cd ../my-hub && hs seed --admit ../admit    # keep this running
+```
+
+Teammates clone with `hs clone <invite> <dir> --as <handle> --admit ../admit`, and the hub
+admits them by itself. The admit directory is a plain folder the clone drops its key into, so
+it has to be one both can reach (the same machine, or a shared folder). Otherwise stop
+`hs seed` and run `hs add-writer <key> --as <handle>` in the hub, with the key `hs info`
+prints in the teammate's clone.
+
+#### Running the hub elsewhere
+
+The hub is made on the machine that runs `hs init`. To run it on another machine, stop
+`hs seed`, then copy the hub directory there and run `hs seed` in it. Everything is under
+`<hub>/.hs/`, with paths relative to the worktree. Moving a hub directory and seeding from its
+new place works (tested on one machine). Delete the old copy once the new one runs: two copies
+of one hub must never both write.
+
+#### Watching it
+
+- `hs doctor` (in any worktree) shows how far main is settled, what each indexer has seen,
+  and which settlement rule the repo is on.
+- If lands stay unsettled for 20 s (`HS_HUB_STALL_S`), `hs status` and `hs land` print
+  `!! hub not settling`, and feeds print `{"type":"hub","state":"stalled",...}`. They print
+  `{"type":"hub","state":"settling",...}` when it's back.
 
 ### Isn't a hub a central point of failure?
 
@@ -166,51 +229,15 @@ What it does cost, plainly:
 - If the hub's key is lost for good, the repo falls back to waiting for every writer, for good
   (see [Backups](#backups)).
 
-### Setting it up
-
-Create the hub with the repo. It can't be added later: only a weight-2 writer can grant the
-weight a hub needs, and the throwaway writer that creates the repo hands that weight to the
-hub and then deletes its own key.
-
-```sh
-hs init --as me --hub ../my-hub      # in your worktree: prints the invite
-cd ../my-hub && hs seed --admit ../admit    # keep this running
-```
-
-Teammates then clone with `hs clone <invite> <dir> --as <handle> --admit ../admit`, and the
-seed admits them by itself. The admit directory is a plain folder the clone drops its key into,
-so it has to be one both can reach (the same machine, or a shared folder). Otherwise stop `hs seed` and
-run `hs add-writer <key> --as <handle>` in the hub, with the key `hs info` prints in the
-teammate's clone.
-
-To run the hub on another machine, create it on the machine that runs `hs init`, then move the
-directory while no `hs` command runs in it. Everything is under `<hub>/.hs/`, with paths
-relative to the worktree. Moving a hub directory and seeding from its new place works (tested
-on one machine). Delete the old copy once the new one runs: two copies of one hub must never
-both write.
-
-Never run `hs seed` in your own worktree. The hub has its own.
-
-### Watching it
-
-- `hs doctor` (in any worktree) shows how far main is settled, what each indexer has seen,
-  and which settlement rule the repo is on.
-- If lands stay unsettled for 20 s (`HS_HUB_STALL_S`), `hs status` and `hs land` print
-  `!! hub not settling`, and feeds print `{"type":"hub","state":"stalled",...}`. They print
-  `{"type":"hub","state":"settling",...}` when it's back.
-
-### More holders, not more hubs
-
-For more availability, add **holders**: an `hs seed` in a plain (non-indexer) worktree, or blind
-peers (`hs blind-peer <key>`), which keep the repo encrypted and can't read it. Holders serve
-everything, but their downtime never delays finality.
+### One hub, not several
 
 You can have more than one hub (`hs add-writer <key> --as <handle> --indexer`, run in the
 hub), but each one is another thing finality waits for. A land settles only once **every**
 hub has seen it, so if any hub is down, settlement stalls until it's back or removed, and
 during a split neither side settles. Keep two only while you replace one, or as a deliberate
-standby if losing the hub's key is a real risk. A blind peer can't be a hub: it has no writer
-key and can't read what it stores.
+standby if losing the hub's key is a real risk. For more availability, add extra seeds or
+blind peers instead (above). A blind peer can't be a hub: it has no writer key and can't read
+what it stores.
 
 ### Replacing a hub
 
@@ -231,7 +258,7 @@ the repo falls back to every writer.
 
 ### Backups
 
-The hub's data doesn't need a backup: holders, blind peers and teammates have copies of
+The hub's data doesn't need a backup: extra seeds, blind peers and teammates have copies of
 everything landed, and a new hub fetches it again. What can't be replaced is the hub's key,
 which lives in its store (`<hub>/.hs/store`).
 
@@ -279,7 +306,7 @@ What changes from one hub per repo:
   back. Run it under a supervisor (systemd, launchd) that restarts it.
 - **One store.** All the repos' hub data lives in `~/hubs/store`, one namespace each, so a
   single repo's hub can't be moved by copying a directory. Moving one in or out uses the
-  replacement procedure (below).
+  replacement procedure ([Replacing a hub](#replacing-a-hub)).
 - **Repos are made on the hub's machine,** because the hub has to be created with the repo.
   The owner's worktree starts in `owners/<repo>`; clone the repo elsewhere to work on it.
 - **Not yet:** reclaiming a removed repo's space in the store, and blind peers for a home's
