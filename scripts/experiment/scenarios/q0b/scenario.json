@@ -1,0 +1,30 @@
+{
+  "name": "Q0b: coordination with no owners",
+  "about": "q0 with nobody owning any module: the change request (pricing per flight minute) could be built by anyone, in the scheduler, in pricing or in the report. Same arms, skeleton and acceptance as q0; only ownership is removed, so who builds it is a real coordination question.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other.\n",
+  "roles": {
+    "a1": "**You work on the whole codebase; there are no module owners.**",
+    "a2": "**You work on the whole codebase; there are no module owners.**",
+    "a3": "**You work on the whole codebase; there are no module owners.**"
+  },
+  "schedule": [
+    {
+      "at": 0.5,
+      "do": "change-request",
+      "files": "change-request"
+    }
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main and `npm test` passes there, or at minute 3 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
+}

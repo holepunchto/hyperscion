@@ -1,0 +1,1154 @@
+{
+  "version": 19,
+  "schema": [
+    {
+      "name": "head",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "length",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "base",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "entry",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "value",
+          "type": "buffer",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "land",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "entries",
+          "array": true,
+          "type": "@hs/entry",
+          "version": 1
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 3
+        },
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "policy",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
+        },
+        {
+          "name": "items",
+          "array": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "under",
+          "array": true,
+          "type": "fixed32",
+          "version": 14
+        },
+        {
+          "name": "texts",
+          "array": true,
+          "type": "@hs/text",
+          "version": 15
+        },
+        {
+          "name": "mains",
+          "array": true,
+          "type": "@hs/text",
+          "version": 16
+        }
+      ]
+    },
+    {
+      "name": "add-writer",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "indexer",
+          "type": "bool",
+          "version": 1
+        },
+        {
+          "name": "handle",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "human",
+          "type": "bool",
+          "version": 13
+        },
+        {
+          "name": "owner",
+          "type": "bool",
+          "version": 17
+        }
+      ]
+    },
+    {
+      "name": "op",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "type",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "land",
+          "type": "@hs/land",
+          "version": 1
+        },
+        {
+          "name": "addWriter",
+          "type": "@hs/add-writer",
+          "version": 1
+        },
+        {
+          "name": "propose",
+          "type": "@hs/propose",
+          "version": 7
+        },
+        {
+          "name": "review",
+          "type": "@hs/review",
+          "version": 7
+        },
+        {
+          "name": "seen",
+          "type": "@hs/base",
+          "version": 8
+        },
+        {
+          "name": "removeWriter",
+          "type": "@hs/remove-writer",
+          "version": 9
+        },
+        {
+          "name": "item",
+          "type": "@hs/item-op",
+          "version": 11
+        }
+      ]
+    },
+    {
+      "name": "meta",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "proposals",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "events",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "settled",
+          "type": "uint",
+          "version": 8
+        }
+      ]
+    },
+    {
+      "name": "changeset",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 6,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "writer",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "node",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "paths",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 3
+        },
+        {
+          "name": "files",
+          "array": true,
+          "type": "string",
+          "version": 5
+        },
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
+        }
+      ]
+    },
+    {
+      "name": "outcome",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "status",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "seq",
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "conflicts",
+          "array": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        }
+      ]
+    },
+    {
+      "name": "path",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "seq",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 5,
+      "fields": [
+        {
+          "name": "name",
+          "required": true,
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "tree",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "blobs",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 1
+        },
+        {
+          "name": "fork",
+          "required": true,
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "landed",
+          "type": "@hs/head",
+          "version": 1
+        },
+        {
+          "name": "head",
+          "type": "@hs/head",
+          "version": 2
+        },
+        {
+          "name": "landNode",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandHead",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandFork",
+          "type": "@hs/head",
+          "version": 4
+        },
+        {
+          "name": "preLandBase",
+          "type": "@hs/base",
+          "version": 4
+        },
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "earlierLands",
+          "array": true,
+          "type": "@hs/head",
+          "version": 18
+        },
+        {
+          "name": "landPaths",
+          "array": true,
+          "type": "string",
+          "version": 19
+        }
+      ]
+    },
+    {
+      "name": "hist",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "prev",
+          "type": "buffer",
+          "version": 6
+        },
+        {
+          "name": "next",
+          "type": "buffer",
+          "version": 6
+        }
+      ]
+    },
+    {
+      "name": "propose",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 7
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 7
+        },
+        {
+          "name": "entries",
+          "array": true,
+          "type": "@hs/entry",
+          "version": 7
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "quorum",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "replaces",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "policy",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "blobsLength",
+          "type": "uint",
+          "version": 10
+        },
+        {
+          "name": "texts",
+          "array": true,
+          "type": "@hs/text",
+          "version": 15
+        },
+        {
+          "name": "mains",
+          "array": true,
+          "type": "@hs/text",
+          "version": 16
+        }
+      ]
+    },
+    {
+      "name": "review",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "seq",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "verdict",
+          "required": true,
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "hash",
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "comment",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "item",
+          "type": "fixed32",
+          "version": 13
+        }
+      ]
+    },
+    {
+      "name": "writer",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "handle",
+          "required": true,
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "indexer",
+          "type": "bool",
+          "version": 8
+        },
+        {
+          "name": "removed",
+          "type": "bool",
+          "version": 9
+        },
+        {
+          "name": "human",
+          "type": "bool",
+          "version": 13
+        },
+        {
+          "name": "weight",
+          "type": "uint",
+          "version": 17
+        },
+        {
+          "name": "owner",
+          "type": "bool",
+          "version": 17
+        }
+      ]
+    },
+    {
+      "name": "proposal",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 4,
+      "fields": [
+        {
+          "name": "id",
+          "required": true,
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "author",
+          "required": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "ws",
+          "required": true,
+          "type": "@hs/head",
+          "version": 7
+        },
+        {
+          "name": "base",
+          "required": true,
+          "type": "@hs/base",
+          "version": 7
+        },
+        {
+          "name": "entries",
+          "array": true,
+          "type": "@hs/entry",
+          "version": 7
+        },
+        {
+          "name": "hash",
+          "required": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "blobs",
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "quorum",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "revision",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "status",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "approvals",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "landed",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "policy",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "hunks",
+          "array": true,
+          "type": "@hs/hunk",
+          "version": 15
+        }
+      ]
+    },
+    {
+      "name": "review-record",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "writer",
+          "required": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "verdict",
+          "required": true,
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "hash",
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "comment",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 7
+        }
+      ]
+    },
+    {
+      "name": "request",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "author",
+          "required": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "fixed32",
+          "version": 7
+        }
+      ]
+    },
+    {
+      "name": "event",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 3,
+      "fields": [
+        {
+          "name": "n",
+          "required": true,
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "type",
+          "required": true,
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "actor",
+          "required": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "proposal",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "seq",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "verdict",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "comment",
+          "type": "string",
+          "version": 7
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "fixed32",
+          "version": 7
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 7
+        },
+        {
+          "name": "item",
+          "type": "fixed32",
+          "version": 11
+        }
+      ]
+    },
+    {
+      "name": "policy",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "text",
+          "type": "string",
+          "version": 7
+        }
+      ]
+    },
+    {
+      "name": "remove-writer",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": -1,
+      "fields": [
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 9
+        }
+      ]
+    },
+    {
+      "name": "item-op",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 3,
+      "fields": [
+        {
+          "name": "item",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "action",
+          "required": true,
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "writer",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "at",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "ttl",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "parent",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "paths",
+          "array": true,
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "with",
+          "array": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "signer",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "sig",
+          "type": "buffer",
+          "version": 11
+        },
+        {
+          "name": "lead",
+          "type": "fixed32",
+          "version": 12
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "id",
+          "required": true,
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "author",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "time",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "parent",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "kind",
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "paths",
+          "array": true,
+          "type": "string",
+          "version": 11
+        },
+        {
+          "name": "done",
+          "type": "uint",
+          "version": 11
+        },
+        {
+          "name": "doneBy",
+          "type": "fixed32",
+          "version": 11
+        },
+        {
+          "name": "dropped",
+          "type": "bool",
+          "version": 11
+        },
+        {
+          "name": "lead",
+          "type": "fixed32",
+          "version": 12
+        },
+        {
+          "name": "needs",
+          "type": "uint",
+          "version": 13
+        },
+        {
+          "name": "reviewers",
+          "array": true,
+          "type": "fixed32",
+          "version": 13
+        },
+        {
+          "name": "hash",
+          "type": "fixed32",
+          "version": 13
+        },
+        {
+          "name": "approvals",
+          "type": "uint",
+          "version": 13
+        }
+      ]
+    },
+    {
+      "name": "text",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "version": 15
+        }
+      ]
+    },
+    {
+      "name": "hunk",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "path",
+          "required": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "added",
+          "array": true,
+          "type": "string",
+          "version": 15
+        },
+        {
+          "name": "removed",
+          "array": true,
+          "type": "string",
+          "version": 15
+        }
+      ]
+    },
+    {
+      "name": "protected-text",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "text",
+          "type": "string",
+          "version": 15
+        }
+      ]
+    }
+  ]
+}

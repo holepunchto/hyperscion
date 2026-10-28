@@ -1,0 +1,42 @@
+{
+  "name": "Q0bs: coordination with no owners, across a two-site split",
+  "about": "q0b with the team split into two sites from 0.2 to 5; the change request lands at 0.3 on both sides (the pm visits site B): a1 and a2 (site B) meet each other but not the hub, pm or a3 (site A, with the hub). Unlike q0bp nobody is alone: a claim made on either side is heard there, so two leads can exist until the sites meet again, and the earliest-claim rule (or the board merge) has to sort them out on heal. Claim leases are 20 minutes and renewed while held, so a 4.5-minute split exercises the same lead rule as an hours-long one.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work, then waiting for it to be final).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other. Your network may split for a while (some teammates reachable, others and the hub not); keep going.\n",
+  "roles": {
+    "a1": "**You work on the whole codebase; there are no module owners.**",
+    "a2": "**You work on the whole codebase; there are no module owners.**",
+    "a3": "**You work on the whole codebase; there are no module owners.**"
+  },
+  "schedule": [
+    {
+      "at": 0.2,
+      "do": "partition",
+      "agents": ["a1", "a2"]
+    },
+    {
+      "at": 0.3,
+      "do": "change-request",
+      "files": "change-request",
+      "bothSites": true
+    },
+    {
+      "at": 5,
+      "do": "heal",
+      "agents": ["a1", "a2"]
+    }
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main, final (the hub has it: `hs wait-final`, or no provisional line in `hs status`) and `npm test` passes there, or at minute 8 (`date` against when you started), whichever comes first. Do not wait for teammates to finish.",
+  "sites": true
+}
