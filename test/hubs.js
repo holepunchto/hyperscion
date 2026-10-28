@@ -41,7 +41,7 @@ test('hubs: one process hubs many repos', async (t) => {
   // r2 made while serving: the server makes it and serves it at once
   const made2 = await hs(dir, ['hubs', 'new', 'r2', '--as', 'me'])
   t.is(made2.code, 0, made2.stderr)
-  t.ok(server.output().includes('serving r2'), 'served without a restart')
+  t.ok(server.output().includes('serving repo r2'), 'served without a restart')
 
   const repos = config().repos
   t.not(repos.r1.ns, repos.r2.ns, 'each repo in its own namespace of the store')

@@ -104,15 +104,23 @@ on a machine that stays up: your own, to start with. One process can hub every r
 from one directory, a **hub home**. Do this on the machine the hub runs on:
 
 ```sh
-export HS_HUB_HOME=~/hubs                  # the hub home (or pass --home ~/hubs to each command)
-hs hubs adopt demo ../demo-hub             # optional: bring the demo's hub along (its hs seed stopped)
-hs hubs service install                    # runs the home as a service: at login, restarted if it stops
-hs hubs new my-project --as me             # each new repo: made here and served at once
-hs hubs list                               # every repo's invite, main and how far it's settled
+hs hubs init                           # makes ~/hubs, a hub home, and this machine's default
+hs hubs service install                # runs it as a service: at login, and again if it stops
+hs hubs adopt demo ../demo-hub         # optional: bring the demo's hub along (its hs seed stopped)
+hs hubs new my-project --as me         # a new repo in the home, served at once
+hs hubs list                           # every repo's invite, main and how far it's settled
 ```
 
-`hs hubs new` also makes your worktree for the repo, in `~/hubs/owners/my-project`. Work
-there, or move that directory wherever you keep code (with no `hs` command running in it).
+The hub home starts empty; each repo is one `hs hubs new` (or `hs hubs adopt`). `hs hubs new`
+also makes your worktree for the repo, in `~/hubs/owners/my-project`. Work there, or move that
+directory wherever you keep code (with no `hs` command running in it).
+
+**A folder you already have** (a project, or a git checkout) becomes a repo in place:
+
+```sh
+hs hubs new notes --dir ~/notes        # ~/notes becomes the repo's worktree; its files stay put
+cd ~/notes && hs land -m "first"       # lands them (.gitignore is honored, .git never lands)
+```
 
 The service is a systemd user service on Linux or a launchd agent on macOS. It keeps hs up to
 date by itself and restarts the hub for an update at a quiet moment
@@ -303,6 +311,7 @@ key, so finality, replacing a hub and `hs doctor` work per repo exactly as above
 
 | command                                             | what                                                                |
 | --------------------------------------------------- | ------------------------------------------------------------------- |
+| `hs hubs init [dir]`                                | make a hub home (default `~/hubs`) and this machine's default       |
 | `hs hubs new <repo>`                                | a new repo with its hub in the home, and your worktree in `owners/` |
 | `hs hubs service install\|uninstall`                | run the home as a service, or stop doing so                         |
 | `hs hubs service status`, `hs hubs service logs -f` | is it running, and what it says                                     |
@@ -313,8 +322,9 @@ key, so finality, replacing a hub and `hs doctor` work per repo exactly as above
 | `hs hubs remove <repo>`                             | stop hubbing a repo here                                            |
 | `hs hubs serve`                                     | run the home in the foreground, without a service                   |
 
-All of them take `--home <dir>`, or `HS_HUB_HOME`. While the home is served, they ask the
-server to do the work, since it holds the store.
+They use the home `hs hubs init` made this machine's default. For another one, pass
+`--home <dir>` or set `HS_HUB_HOME` (or run the command inside it). While the home is served,
+they ask the server to do the work, since it holds the store.
 
 What changes from one hub per repo:
 
