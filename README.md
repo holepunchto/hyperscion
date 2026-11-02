@@ -7,7 +7,6 @@ Peer-to-peer source control for agent-scale change volume, built on the Holepunc
 [blind peers](https://github.com/holepunchto/blind-peering). It ships as a standalone
 [Bare](https://github.com/holepunchto/bare) binary, `hs`.
 
-
 > [!NOTE]
 > This is an experimental Pear Labs project. It works and is safe to try, but it is not officially supported by Tether/Holepunch and may change, break, or disappear at any time.
 
