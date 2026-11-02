@@ -7,6 +7,13 @@ Peer-to-peer source control for agent-scale change volume, built on the Holepunc
 [blind peers](https://github.com/holepunchto/blind-peering). It ships as a standalone
 [Bare](https://github.com/holepunchto/bare) binary, `hs`.
 
+
+> [!NOTE]
+> This is an experimental Pear Labs project. It works and is safe to try, but it is not officially supported by Tether/Holepunch and may change, break, or disappear at any time.
+
+> Pear Labs projects are built by members of the Pear and Platform team, often outside of regular feature work, to explore ideas and show what's possible on the platform. They have been given a light review and are considered trustworthy to install and run, but they do not carry the guarantees of our first-class software.
+> There is no commitment to maintenance, backwards compatibility, security response times, or long-term availability, and they should not be relied on for anything critical. Use them to learn, test, and have fun - and please send feedback, but treat them as experiments rather than products.
+
 hyperscion takes the ideas behind Anthropic's
 [Scion](https://www.anthropic.com/engineering/redesigning-source-control) and asks how far a
 system can get without a server:
