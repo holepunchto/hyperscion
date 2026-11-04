@@ -1,0 +1,44 @@
+{
+  "city": "Port Lumen",
+  "dayLengthMinutes": 480,
+  "serviceMinutes": 4,
+  "depots": [
+    {
+      "id": "west",
+      "name": "West Dock",
+      "lat": 52.37,
+      "lon": 4.84
+    },
+    {
+      "id": "east",
+      "name": "East Yard",
+      "lat": 52.365,
+      "lon": 4.94
+    }
+  ],
+  "drones": [
+    {
+      "id": "w1",
+      "depot": "west",
+      "maxPayloadKg": 4,
+      "rangeKm": 20,
+      "speedKmh": 60
+    },
+    {
+      "id": "w2",
+      "depot": "west",
+      "maxPayloadKg": 6,
+      "rangeKm": 14,
+      "speedKmh": 50
+    },
+    {
+      "id": "e1",
+      "depot": "east",
+      "maxPayloadKg": 3,
+      "rangeKm": 26,
+      "speedKmh": 80
+    }
+  ],
+  "date": "2026-11-03",
+  "packages": []
+}
