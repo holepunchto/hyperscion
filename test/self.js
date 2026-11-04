@@ -2,11 +2,13 @@
 // when standalone (it once passed the bundle's bin.mjs path along, and the binary refused it)
 const test = require('brittle')
 const os = require('bare-os')
+const { isWindows } = require('which-runtime')
 const { selfCommand, isDev, BIN } = require('../lib/self')
 
 test('self: a checkout runs bin.mjs with bare', (t) => {
-  t.ok(isDev('/usr/local/bin/bare'))
-  t.alike(selfCommand(['keepalive'], '/usr/local/bin/bare'), [os.execPath(), [BIN, 'keepalive']])
+  const bare = isWindows ? 'C:\\Program Files\\bare\\bare.exe' : '/usr/local/bin/bare'
+  t.ok(isDev(bare))
+  t.alike(selfCommand(['keepalive'], bare), [os.execPath(), [BIN, 'keepalive']])
 })
 
 test('self: the standalone binary runs itself, with no script path', (t) => {

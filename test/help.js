@@ -113,6 +113,8 @@ test('help: hs with no command prints the grouped help and exits 1, as git does'
   const { env } = require('bare-process')
   const r = await run(await tmp(t), [], { ...env, HS_SURFACE: '' })
   t.is(r.code, 1, 'no command is a usage mistake')
-  t.ok(/\nYour work\n/.test(r.stdout) && /\nSet up a team\n/.test(r.stdout), 'the groups')
+  // console.log ends lines with \r\n on Windows
+  const stdout = r.stdout.replace(/\r\n/g, '\n')
+  t.ok(/\nYour work\n/.test(stdout) && /\nSet up a team\n/.test(stdout), 'the groups')
   t.is((await run(await tmp(t), ['--help'], { ...env, HS_SURFACE: '' })).code, 0, '--help exits 0')
 })

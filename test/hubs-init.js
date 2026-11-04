@@ -4,6 +4,7 @@ const test = require('brittle')
 const fs = require('bare-fs')
 const path = require('bare-path')
 const tmp = require('test-tmp')
+const { isWindows } = require('which-runtime')
 const { run } = require('./helpers/team')
 
 test('hubs init: an empty home, the default from then on', async (t) => {
@@ -13,6 +14,7 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   const env = {
     ...require('bare-process').env,
     HOME: user,
+    USERPROFILE: user, // the home directory on Windows
     XDG_CONFIG_HOME: path.join(user, '.config')
   }
   delete env.HS_HUB_HOME
@@ -37,9 +39,12 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   const listed = await hs(['hubs', 'list'])
   t.is(listed.code, 0, listed.stderr)
   t.ok(listed.stdout.startsWith(home + ': not served'), listed.stdout)
-  const printed = await hs(['hubs', 'service', 'install', '--print'])
-  t.is(printed.code, 0, 'an empty home can be a service: ' + printed.stderr)
-  t.ok(printed.stdout.includes('--home ' + home), 'the service names the home')
+  // services are systemd and launchd only (lib/service.js)
+  if (!isWindows) {
+    const printed = await hs(['hubs', 'service', 'install', '--print'])
+    t.is(printed.code, 0, 'an empty home can be a service: ' + printed.stderr)
+    t.ok(printed.stdout.includes('--home ' + home), 'the service names the home')
+  }
 
   // ~ as fish leaves it
   const tilde = await run(path.join(user, 'elsewhere'), ['hubs', 'list'], {
@@ -60,6 +65,7 @@ test('hubs new --dir: an existing folder becomes the worktree, files kept', asyn
   const env = {
     ...require('bare-process').env,
     HOME: dir,
+    USERPROFILE: dir, // the home directory on Windows
     XDG_CONFIG_HOME: path.join(dir, '.config'),
     USER: 'me'
   }
