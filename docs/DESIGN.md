@@ -514,9 +514,14 @@ It passes both unencrypted and encrypted.
 5. **Compression and deltas.** Per-blob compression, maybe chunked dedup for large files.
 6. **Writer scaling.** Multi-process and multi-machine landing benchmarks, and profiling of the
    reorg and apply cost per writer.
-7. **Server-side derived data, kept in reserve.** Blame and code search need more than
-   `apply` should do. A custom indexer peer (a P2P service building derived views from main)
-   is the escape hatch if client-side derivation gets too heavy.
+7. **Server-side derived data, kept in reserve.** Code search needs more than `apply` should
+   do. A custom indexer peer (a P2P service building derived views from main) is the escape
+   hatch if client-side derivation gets too heavy. Blame turned out not to need it: `hs blame`
+   (`lib/blame.js`) derives it on the client from `hs-hist`, walking a path's versions newest
+   first and stopping once every line is attributed, so it fetches old content only as far
+   back as the lines go. Content no online peer holds ends the walk at a `^#n` boundary
+   instead of failing. Not done: renames (hs has no rename op), and caching for long
+   histories (a local per-`(path, seq)` cache, or the indexer peer, if it gets slow).
 8. Virtual file system, directory ACLs, pairing UX for `add-writer`, and a bidirectional git
    bridge.
 

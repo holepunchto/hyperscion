@@ -111,6 +111,8 @@ it up: [The hub](../README.md#the-hub) in the README.
      `hs log src/geo.js` is the history of one file. If your feed knows main is further
      ahead, `log` and `status` say so.
    - `hs cat /src/geo.js` — the latest landed version of a file, without touching your worktree.
+   - `hs blame src/geo.js` — who last changed each line, and in which changeset (`-L 40,60` for
+     some lines): who to ask, or whose land to review. Lines you haven't landed say `not landed`.
 5. **When you see `!! your last land was undone by a concurrent land`** (or a `reorg` naming
    your land), run `hs sync`: it brings your changes back and lands them again (`#51 re-landed
 as #N`). A `land` that finds its own land undone does this by itself.

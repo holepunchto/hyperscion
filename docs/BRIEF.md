@@ -53,5 +53,5 @@ control; never use git.
 
 ## Look around
 
-- `hs status`, `hs diff`, `hs log`, `hs show 12`, `hs task`, `hs doctor`.
+- `hs status`, `hs diff`, `hs log`, `hs show 12`, `hs blame <file>`, `hs task`, `hs doctor`.
 - The full playbook: `hs agents --full`.
