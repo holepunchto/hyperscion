@@ -68,6 +68,29 @@ test('ui backend: snapshot, log and show, as data', async (t) => {
   )
 })
 
+test('ui backend: blame, the worktree or main', async (t) => {
+  const dir = await worktree(t)
+  const b = await backend.blame(dir, { path: 'a.txt' })
+  t.is(b.path, '/a.txt')
+  t.ok(b.worktree)
+  t.is(b.at, 1)
+  t.alike(
+    b.rows.map((r) => [r.line, r.seq, r.landed, r.author, r.text]),
+    [
+      [1, 1, true, 'ann', 'one'],
+      [2, null, false, null, 'two']
+    ]
+  )
+  t.is(b.rows[0].message, 'first files')
+  const m = await backend.blame(dir, { path: '/a.txt', main: true })
+  t.absent(m.worktree)
+  t.alike(
+    m.rows.map((r) => r.text),
+    ['one']
+  )
+  await t.exception(() => backend.blame(dir, { path: '/nope.txt' }), /no such file/)
+})
+
 test('ui client: reads and runs on worker threads, output captured', async (t) => {
   const dir = await worktree(t)
   const client = new Client({ cwd: dir })
@@ -173,6 +196,22 @@ const TEAM = [
   { handle: 'cat', human: false, default: false }
 ]
 
+function blameOf({ path, main }) {
+  const row = (line, seq, author, text) => ({
+    line,
+    seq,
+    landed: seq !== null,
+    author,
+    time: seq ? Date.UTC(2026, 10, seq) : null,
+    state: seq ? 'final' : 'not landed',
+    message: seq ? 'msg ' + seq : null,
+    text
+  })
+  const rows = [row(1, 2, 'bob', 'one'), row(2, 3, 'ann', 'two')]
+  if (!main) rows.push(row(3, null, null, 'mine'))
+  return { path, at: 3, head: main ? 3 : 4, worktree: !main, boundary: null, rows }
+}
+
 function fake({ team = TEAM } = {}) {
   const calls = []
   return {
@@ -186,6 +225,10 @@ function fake({ team = TEAM } = {}) {
       if (op === 'review') return Promise.resolve(REVIEW)
       if (op === 'detail') return Promise.resolve(`detail of ${args.id}\n+diff of ${args.id}\n`)
       if (op === 'tasks') return Promise.resolve(TASKS)
+      if (op === 'blame') {
+        this.blamed = args
+        return Promise.resolve(blameOf(args))
+      }
       if (op === 'team') {
         this.teamPaths = args.paths
         return team ? Promise.resolve(team) : Promise.reject(new Error('no store'))
@@ -419,4 +462,43 @@ test('ui model: in Tasks, s starts, S stops, D marks done, X drops', async (t) =
   t.ok(screen(app).includes('Drop T4d5e6f "tidy the docs"?'), 'X asks first')
   await press(app, 'y')
   t.alike(client.calls.pop(), ['task', 'drop', 'T4d5e6f'])
+})
+
+test('ui model: b blames the selected file; enter shows the changeset; m toggles main', async (t) => {
+  const { app, client } = await started()
+  await press(app, 'b')
+  t.alike(client.blamed, { path: '/a.txt', main: false }, 'the selected file, your worktree')
+  let s = screen(app)
+  t.ok(s.includes('blame /a.txt · your worktree, as of #3 (main is at #4)'), s)
+  t.ok(/#2 bob 2026-11-02 1 one/.test(s), 'git blame layout')
+  t.ok(/- +not landed +3 mine/.test(s), 'your lines are not landed')
+
+  await press(app, 'enter')
+  t.ok(screen(app).includes('+line of 2'), "enter: line 1's changeset")
+  await press(app, key('escape', { meta: true }))
+  t.ok(screen(app).includes('blame /a.txt'), 'esc: back to the blame')
+
+  await press(app, 'j', 'j', 'enter')
+  t.ok(app.notice.startsWith('not landed'), 'a line not landed has no changeset')
+  t.ok(screen(app).includes('blame /a.txt'))
+
+  await press(app, 'm')
+  t.alike(client.blamed, { path: '/a.txt', main: true }, 'm: main')
+  s = screen(app)
+  t.ok(s.includes('blame /a.txt · main #3'), s)
+  t.absent(s.includes('mine'))
+
+  await press(app, 'q')
+  t.ok(screen(app).includes('+two'), 'q closes the blame')
+  t.alike(client.calls, [], 'blame runs nothing')
+})
+
+test("ui model: b in Log asks which file, prefilled with the changeset's", async (t) => {
+  const { app, client } = await started()
+  await press(app, '3', 'j', 'b')
+  t.ok(screen(app).includes('Blame which file?'))
+  t.ok(screen(app).includes('> /b.txt'), 'the first file of #2')
+  await press(app, 'enter')
+  t.alike(client.blamed, { path: '/b.txt', main: false })
+  t.ok(screen(app).includes('blame /b.txt'))
 })
