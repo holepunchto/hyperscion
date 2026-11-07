@@ -1,3 +1,5 @@
+// first: on Android, console output and uncaught errors must reach the terminal (lib/stdio.js)
+import './lib/stdio.js'
 import process from 'bare-process'
 import path from 'bare-path'
 import fs from 'bare-fs'
