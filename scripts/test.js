@@ -18,6 +18,7 @@ const ROOT = path.join(__dirname, '..')
 const INTEGRATION = [
   'test/hubs.js',
   'test/hubs-restart.js',
+  'test/hubs-offline-writer.js',
   'test/site-finality.js',
   'test/flows.js',
   'test/tasks-cli.js',
