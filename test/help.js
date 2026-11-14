@@ -118,3 +118,24 @@ test('help: hs with no command prints the grouped help and exits 1, as git does'
   t.ok(/\nYour work\n/.test(stdout) && /\nSet up a team\n/.test(stdout), 'the groups')
   t.is((await run(await tmp(t), ['--help'], { ...env, HS_SURFACE: '' })).code, 0, '--help exits 0')
 })
+
+test('help: a group typed alone lists its subcommands and exits 1', async (t) => {
+  const { run } = require('./helpers/team')
+  const tmp = require('test-tmp')
+  const { env } = require('bare-process')
+  const cwd = await tmp(t)
+  for (const [args, sub] of [
+    [['hubs'], 'serve'],
+    [['hubs', 'service'], 'install'],
+    [['gip'], 'publish'],
+    [['ws'], 'switch']
+  ]) {
+    const r = await run(cwd, args, { ...env, HS_SURFACE: '' })
+    const stdout = r.stdout.replace(/\r\n/g, '\n')
+    const name = ['hs', ...args].join(' ')
+    t.is(r.code, 1, `${name}: a usage mistake`)
+    t.ok(stdout.startsWith(`${name} <command>\n`), `${name}: usage first`)
+    t.ok(new RegExp(`\\n  ${sub} +\\S`).test(stdout), `${name}: lists ${sub}`)
+    t.absent(stdout.includes('Flags:'), `${name}: not the long help`)
+  }
+})
