@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+.DS_Store
+docs/experiments/**/.raw/
+
+# per-run experiment archives: kept on the machine that ran them, out of git (see
+# docs/experiments/README.md); the summaries next to them stay tracked
+docs/experiments/*/*/
