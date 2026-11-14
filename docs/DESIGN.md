@@ -54,7 +54,9 @@ gip/gear (git on hypercore) shows what to avoid:
 - no "haves";
 - git objects stored one by one.
 
-hyperscion has no git object model inside; git is only an import source.
+hyperscion has no git object model inside. git is an import source (`hs import-git`) and,
+through git+pear (gip), an export target: main is published as a plain git branch and commits
+made on top of it are landed back (§6, git+pear).
 
 ## 2. Data model
 
@@ -216,6 +218,35 @@ at 4 writers / 200 workspaces.
 - `hs import-git` replays `rev-list --first-parent --reverse` using `diff-tree` and a single
   long-lived `cat-file --batch`, keeping author, time and message. It skips symlinks and
   submodules.
+- **git+pear (gip)**, `lib/gitexport.js` and `lib/gip.js` on gip-remote:
+  - **Publishing.** A gip repo is one single-writer HyperDB core. The hub owns one, in its store
+    under the `hs-gip` namespace, and `hs seed --gip` serves it on its discovery key.
+    - Settled changesets only, since a provisional one can still be reordered and a published
+      commit can't be taken back.
+    - Each becomes one commit: parent #n−1, tree from main at #n, the changeset's author and
+      time (+0000), and an `Hs-Changeset: <repo>#<n>` trailer. The export is deterministic.
+    - Trees are rebuilt incrementally: only the directories on changed paths are rehashed, and
+      a run resumes from the branch tip's trailer and tree. So hs stores no export state, and
+      content it already published is never read again.
+    - All new commits go in one gip-remote `push`, batched every 32 MB. gip's push walks the
+      whole tree each time, so pushing per changeset would cost O(changesets × files).
+  - **Importing.** Commits after the newest trailer commit on someone else's gip repo are
+    replayed like a sync:
+    - paths main hasn't touched apply as they are;
+    - text both sides changed gets a diff3 merge;
+    - anything else stops the import;
+    - each land records `Git-Commit: <oid>`, so re-running is idempotent;
+    - commits that carry a trailer are never imported, so nothing loops.
+  - **Not exported:** proposals, reviews, claims and workspaces. git sees main only.
+  - **Measured.**
+    - hypercore's history imported with `hs import-git` (2,098 changesets): published in 6 s,
+      and every published tree is identical to the original git commit's tree.
+    - A 50k-path tree: the first publish of 24 changesets took 9.4 s, then 1.2 s for one more
+      and 3.4 s for ten more. gip-remote's push walks the whole tree, so every publish costs
+      about one tree walk, however small. `seed --gip` coalesces settles that arrive while a
+      publish runs.
+  - **Not yet:** `hs hubs serve` (a hub home) has no `--gip`, and the hub doesn't ask its
+    blind peers to mirror the gip core.
 
 ## 7. Measured results
 

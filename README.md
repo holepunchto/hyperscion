@@ -103,6 +103,35 @@ Two things are new. A land is **provisional** for a moment, until the hub has se
 it's **final**, once any review it asked for is done. `hs land` waits for that and says which.
 And `hs watch` streams teammates' lands as they happen, so nobody needs to poll.
 
+#### Using both: git users over git+pear
+
+Some people and tools will keep using git. With [gip](https://github.com/holepunchto/gip-transport)
+installed they can `git clone git+pear://…` with no server, and the hub can publish main there as a
+plain git branch:
+
+```sh
+cd ../my-hub && hs seed --gip          # the hub: also publishes main and serves it; prints the link
+git clone git+pear://<key>/<name>      # anyone with gip: one commit per changeset, authors kept
+```
+
+Each settled changeset becomes one commit, the same commits on every run, each with an
+`Hs-Changeset: <repo>#<n>` trailer. A git user can't write the hub's repo, so they push their
+commits to their own (`gip new my-fork`, then `git push git+pear://<their-key>/my-fork main`),
+and a writer lands them:
+
+```sh
+hs gip import git+pear://<their-key>/my-fork   # 3-way merges what main changed meanwhile
+```
+
+The imported commits come back out as hs commits on the next publish, so the git user pulls
+with `git pull --rebase`, as after a squash-merged pull request. Imports never loop, and running
+one twice does nothing. A folder can be both a git checkout and an hs worktree: hs ignores
+`.git`, and `hs init`/`hs clone` keep `.hs/` out of git's status.
+
+`--gip` works with `hs seed` in a single repo's hub; a hub home (`hs hubs serve`) doesn't have it
+yet. An encrypted repo is published only with `--public`, since anyone with the link can read a
+git+pear repo.
+
 ### 3. Run your hubs for real
 
 A hub has to be online whenever anyone works, so once you go past a try, run it as a service
@@ -406,30 +435,31 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 (settled and accepted by review). `land` waits up to 10 s for the hub, so it usually ends with
 `#27 final`.
 
-| command                                                                        | what                                                                                                     |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `init [dir] [--as handle] [--encrypt]`                                         | create a repo                                                                                            |
-| `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`               | join a repo, request write access, sparse checkout                                                       |
-| `status`                                                                       | your edits, unlanded work, stale files, lands not yet final, reviews for you                             |
-| `diff [--stat]`                                                                | what `land` would send, as a unified diff                                                                |
-| `ui`                                                                           | a lazygit-style terminal UI: files, diffs, log, review inbox and tasks; land, ask, review, sync by key   |
-| `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]` | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle                       |
-| `sync [--offline]`                                                             | bring main into your files and rebase your work onto it                                                  |
-| `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`      | stream lands, reviews and settlement as they happen                                                      |
-| `log [path] [-n n] [--oneline]`, `show <n\|An> [--stat] [--path p]`            | history with files and states; a changeset or an ask with its diff                                       |
-| `review` (alone: what waits on you), `review ask [-m] [-r handles] [-q n]`     | ask before landing (Ship / Show / Ask, see docs/AGENTS.md)                                               |
-| `review approve\|changes\|comment <An\|n\|Tid> [-m]`, `review list [--all]`    | approve, submit feedback suggesting changes, or comment; every open ask                                  |
-| `task` (the board), `task new\|split\|start\|stop\|done\|drop`                 | who builds what: start a task before building it (docs/TASKS.md)                                         |
-| `ls [prefix]`, `cat <path>`                                                    | read main (or `--ws`, your workspace) without a checkout                                                 |
-| `commit`, `restore <path…>`, `checkout [prefix…]`                              | checkpoint edits, discard edits, materialize files (optionally sparse)                                   |
-| `export <dir> [--at n]`                                                        | write main as it was at changeset #n into a directory (like `git archive`)                               |
-| `ws new\|switch\|list`                                                         | workspaces                                                                                               |
-| `fetch`, `push`                                                                | download main without touching files; make sure a holder has your lands                                  |
-| `seed [--admit dir] [--no-mirror] [--updates]`                                 | be the team's holder: stay online, hold everything, settle lands, admit writers                          |
-| `hubs new\|serve\|list\|adopt\|add-writer\|remove` (`--home dir`)              | host many repos' hubs from one process (a hub home), and move hubs in and out                            |
-| `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                   | identity, connectivity and settlement, access                                                            |
-| `remove-writer <handle or key>`                                                | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first |
-| `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`      | configure blind peers; replay a git branch's first-parent history                                        |
+| command                                                                        | what                                                                                                      |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `init [dir] [--as handle] [--encrypt]`                                         | create a repo                                                                                             |
+| `clone <invite> [dir] [--as handle] [--admit dir] [--sparse p]…`               | join a repo, request write access, sparse checkout                                                        |
+| `status`                                                                       | your edits, unlanded work, stale files, lands not yet final, reviews for you                              |
+| `diff [--stat]`                                                                | what `land` would send, as a unified diff                                                                 |
+| `ui`                                                                           | a lazygit-style terminal UI: files, diffs, log, review inbox and tasks; land, ask, review, sync by key    |
+| `land [-m msg] [--check cmd] [-r handles] [--ship] [--wait-final] [--offline]` | commit, pull, rebase if main moved, test the merge (`--check`), land, push, settle                        |
+| `sync [--offline]`                                                             | bring main into your files and rebase your work onto it                                                   |
+| `watch [--path p] [--count n] [--timeout s] [--for-me] [--json] [--stop]`      | stream lands, reviews and settlement as they happen                                                       |
+| `log [path] [-n n] [--oneline]`, `show <n\|An> [--stat] [--path p]`            | history with files and states; a changeset or an ask with its diff                                        |
+| `review` (alone: what waits on you), `review ask [-m] [-r handles] [-q n]`     | ask before landing (Ship / Show / Ask, see docs/AGENTS.md)                                                |
+| `review approve\|changes\|comment <An\|n\|Tid> [-m]`, `review list [--all]`    | approve, submit feedback suggesting changes, or comment; every open ask                                   |
+| `task` (the board), `task new\|split\|start\|stop\|done\|drop`                 | who builds what: start a task before building it (docs/TASKS.md)                                          |
+| `ls [prefix]`, `cat <path>`                                                    | read main (or `--ws`, your workspace) without a checkout                                                  |
+| `commit`, `restore <path…>`, `checkout [prefix…]`                              | checkpoint edits, discard edits, materialize files (optionally sparse)                                    |
+| `export <dir> [--at n]`                                                        | write main as it was at changeset #n into a directory (like `git archive`)                                |
+| `ws new\|switch\|list`                                                         | workspaces                                                                                                |
+| `fetch`, `push`                                                                | download main without touching files; make sure a holder has your lands                                   |
+| `seed [--admit dir] [--no-mirror] [--updates] [--gip]`                         | be the team's holder: stay online, hold everything, settle lands, admit writers (and publish to git+pear) |
+| `hubs new\|serve\|list\|adopt\|add-writer\|remove` (`--home dir`)              | host many repos' hubs from one process (a hub home), and move hubs in and out                             |
+| `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                   | identity, connectivity and settlement, access                                                             |
+| `remove-writer <handle or key>`                                                | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first  |
+| `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`      | configure blind peers; replay a git branch's first-parent history                                         |
+| `gip publish [--name n]`, `gip import <git+pear link> [--branch]`              | publish main as a git+pear repo; land commits git users pushed to theirs                                  |
 
 ## Library
 

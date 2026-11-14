@@ -30,7 +30,8 @@ const INTEGRATION = [
   'test/fixes.js',
   'test/net.js',
   'test/reland.js',
-  'test/ui-review.js'
+  'test/ui-review.js',
+  'test/gip-net.js'
 ]
 
 const argv = process.argv.slice(2)
