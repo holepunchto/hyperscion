@@ -250,6 +250,9 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok(
     /settled\s+through #\d+/.test(doc.stdout) && doc.stdout.includes('indexer      hub has seen')
   )
+  const version = require('../package.json').version
+  t.is((await hs(A1, ['--version'], 'a1')).stdout.trim(), `hs ${version}`)
+  t.is((await hs(A1, ['-v'], 'a1')).stdout.trim(), `hs ${version}`)
   const one = await hs(A1, ['log', '-n', '2', '--oneline'], 'a1')
   t.is(one.stdout.trim().split('\n').length, 2, 'log --oneline is one line per changeset')
   const sp = await hs(A1, ['show', String(finSeq), '--path', 'src'], 'a1')
