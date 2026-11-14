@@ -300,6 +300,21 @@ Breakdown of what the hyperscion peer fetched:
 With an explicit fast-forward boot head, the oplog cost drops to 1 block (56 KB) and the total
 to 3.4 MB.
 
+**Re-measured 2026-11 (same machine, old and new deps side by side).** hyperbee2 2.21.4 fixed
+a compression bug that had been inflating tree blocks since 2.11.2 (#127). Main's view tree is
+about a quarter smaller (about 45 MB to 34 MB here):
+
+|                | full clone | sparse peer received |
+| -------------- | ---------- | -------------------- |
+| hyperbee2 2.18 | 102.0 MB   | 4.3 MB               |
+| hyperbee2 2.22 | 90.8 MB    | 3.9 MB               |
+
+hyperbee2 2.22's ranged, parallel `db.download()` fetched one directory's tree nodes in
+2.4 MB instead of 3.0 MB here. It isn't wired in: the CLI's checkouts only wait on the network
+after `fetchViews` has pulled whole view cores, so the tree is already local by then, and on a
+local 50k-path tree the first `download()` of `/` costs 1.9 s, against 0.24 s for `list()`.
+It becomes useful for a sparse clone that skips `fetchViews`.
+
 **git wins this one today.** Content fetch is exact and fast-forward works, but reading one
 directory's entries pulls 3.1 MB of tree blocks. That is the same key-scatter effect as the
 cold reads above. Two further costs: git compresses (zlib) and hyperscion does not, and every
