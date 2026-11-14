@@ -245,8 +245,13 @@ at 4 writers / 200 workspaces.
       and 3.4 s for ten more. gip-remote's push walks the whole tree, so every publish costs
       about one tree walk, however small. `seed --gip` coalesces settles that arrive while a
       publish runs.
-  - **Not yet:** `hs hubs serve` (a hub home) has no `--gip`, and the hub doesn't ask its
-    blind peers to mirror the gip core.
+  - **Hub homes:** a repo's entry in `hubs.json` may carry `gip: { name, public }` (`hs hubs gip`,
+    `hs hubs new --gip`). The server runs the same publisher as `seed --gip` (`gip.Publisher`)
+    per repo, with the gip repo in the repo's own namespace of the shared store, so its link
+    survives restarts. Its topic is joined on the shared replicator like the repo's own; the
+    store is passive, and a git+pear peer opening the core is what attaches it. Adopting a repo
+    into a home makes a new gip repo (a new link): the old hub's stays in the old hub's store.
+  - **Not yet:** the hub doesn't ask its blind peers to mirror the gip core.
 
 ## 7. Measured results
 

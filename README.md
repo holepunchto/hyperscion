@@ -128,9 +128,11 @@ with `git pull --rebase`, as after a squash-merged pull request. Imports never l
 one twice does nothing. A folder can be both a git checkout and an hs worktree: hs ignores
 `.git`, and `hs init`/`hs clone` keep `.hs/` out of git's status.
 
-`--gip` works with `hs seed` in a single repo's hub; a hub home (`hs hubs serve`) doesn't have it
-yet. An encrypted repo is published only with `--public`, since anyone with the link can read a
-git+pear repo.
+In a hub home, a repo is published with `hs hubs gip <repo>` (or `hs hubs new <repo> --gip`): the
+home's server, its service included, publishes each changeset as it settles and serves the
+git+pear repo on the same connections as everything else. `hs hubs list` shows the link. An
+encrypted repo is published only with `--public`, since anyone with the link can read a git+pear
+repo.
 
 ### 3. Run your hubs for real
 
@@ -351,6 +353,7 @@ key, so finality, replacing a hub and `hs doctor` work per repo exactly as above
 | `hs hubs service install\|uninstall`                | run the home as a service, or stop doing so                         |
 | `hs hubs service status`, `hs hubs service logs -f` | is it running, and what it says                                     |
 | `hs hubs list`                                      | every repo's invite and how far it's settled; the hub's version     |
+| `hs hubs gip <repo> [--off]`                        | publish the repo's main to git+pear from the home (or stop)         |
 | `hs hubs restart [--now]`                           | restart the hub at the next quiet moment                            |
 | `hs hubs adopt <repo> <hub dir>`                    | move an existing repo's hub into the home                           |
 | `hs hubs add-writer <repo> <key> --as <h>`          | let a teammate write (`--indexer`: the repo's next hub)             |

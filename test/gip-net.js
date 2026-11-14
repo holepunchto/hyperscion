@@ -149,3 +149,101 @@ async function copyReachable(remote, oid, out) {
     for (const e of gx.decodeTree(obj.data)) await copyReachable(remote, e.oid, out)
   }
 }
+
+test(
+  'gip: a hub home publishes its repos to git+pear while served',
+  { timeout: 300000 },
+  async (t) => {
+    const createTestnet = require('hyperdht/testnet')
+    const { run, background } = helpers
+    const testnet = await createTestnet(3, t.teardown)
+    const dir = await tmp(t)
+    const home = path.join(dir, 'home')
+    const env = {
+      ...require('bare-process').env,
+      HS_BOOTSTRAP: testnet.bootstrap.map((b) => b.host + ':' + b.port).join(','),
+      HS_HUB_HOME: home,
+      USER: 'me'
+    }
+    const hs = (cwd, args) => run(cwd, args, env)
+
+    // r1 published from the start, before the home is served; r2 turned on while served
+    const made = await hs(dir, ['hubs', 'new', 'r1', '--gip'])
+    t.is(made.code, 0, made.stderr)
+    const link = made.stdout.match(/git\+pear (git\+pear:\/\/\S+)/)[1]
+    t.ok(link.endsWith('/r1'), 'named after the repo: ' + link)
+    const secret = await hs(dir, ['hubs', 'new', 's1', '--encrypt', '--gip'])
+    t.is(secret.code, 1, 'an encrypted repo needs --public: ' + secret.stderr.trim())
+    t.is((await hs(dir, ['hubs', 'new', 'r2'])).code, 0)
+
+    const server = background(dir, ['hubs', 'serve'], env)
+    t.teardown(() => server.stop(), { order: 1 })
+    hubOut.output = server.output
+    await waitFor(() => server.output().includes('hubs serving 2 repo(s)'), 30_000, 'the server')
+    await waitFor(() => server.output().includes(`r1: git+pear: ${link}`), 30_000, 'r1 published')
+
+    const owner = path.join(home, 'owners', 'r1')
+    fs.writeFileSync(path.join(owner, 'README.md'), 'hello from a hub home\n')
+    const landed = await hs(owner, ['land', '-m', 'first'])
+    t.is(landed.code, 0, landed.stderr)
+    const seq = Number(landed.stdout.match(/#(\d+) final/)[1])
+    await waitFor(
+      () => new RegExp(`r1: git\\+pear: published #\\d+\\.\\.#${seq}\\b`).test(server.output()),
+      60_000,
+      'the land published'
+    )
+
+    // a git+pear peer finds the home on the DHT and reads the branch
+    const bootstrap = env.HS_BOOTSTRAP.split(',').map((hp) => {
+      const [host, port] = hp.split(':')
+      return { host, port: Number(port) }
+    })
+    const store = new Corestore(await tmp(t))
+    const swarm = new Hyperswarm({ bootstrap })
+    swarm.on('connection', (conn) => store.replicate(conn))
+    t.teardown(
+      async () => {
+        await swarm.destroy()
+        await store.close()
+      },
+      { order: 2 }
+    )
+    const remote = new Remote(store, link)
+    await remote.ready()
+    swarm.join(remote.discoveryKey, { server: false, client: true })
+    await swarm.flush()
+    let readme = null
+    await waitFor(
+      async () => {
+        await remote.core.update({ wait: true }).catch(() => {})
+        await remote.update()
+        const ref = await remote.getBranchRef('main')
+        if (!ref) return false
+        const head = gx.parseCommit((await remote.getObject(ref.oid)).data)
+        const trailer = gx.parseTrailer(head.message)
+        if (!trailer || trailer.seq !== seq) return false
+        const tree = await gx.TreeBuilder.from(head.tree, (oid) => remote.getObject(oid))
+        const file = tree.files().find((f) => f.path === '/README.md')
+        readme = file && b4a.toString((await remote.getObject(file.oid)).data)
+        return true
+      },
+      60_000,
+      'the branch on the git peer'
+    )
+    t.is(readme, 'hello from a hub home\n', 'a git+pear peer reads main from the hub home')
+    await remote.close()
+
+    const listed = await hs(dir, ['hubs', 'list'])
+    t.ok(listed.stdout.includes(`git+pear ${link}  published #${seq}`), listed.stdout)
+
+    // on and off while served
+    const on = await hs(dir, ['hubs', 'gip', 'r2'])
+    t.is(on.code, 0, on.stderr)
+    t.ok(/git\+pear git\+pear:\/\/\S+\/r2/.test(on.stdout), on.stdout)
+    t.ok(server.output().includes('r2: git+pear: git+pear://'), 'served without a restart')
+    const off = await hs(dir, ['hubs', 'gip', 'r2', '--off'])
+    t.is(off.code, 0, off.stderr)
+    const after = await hs(dir, ['hubs', 'list'])
+    t.absent(/git\+pear \S+\/r2/.test(after.stdout), 'r2 not published any more')
+  }
+)
