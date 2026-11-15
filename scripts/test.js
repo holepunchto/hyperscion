@@ -31,7 +31,8 @@ const INTEGRATION = [
   'test/net.js',
   'test/reland.js',
   'test/ui-review.js',
-  'test/gip-net.js'
+  'test/gip-net.js',
+  'test/access.js'
 ]
 
 const argv = process.argv.slice(2)

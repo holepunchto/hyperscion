@@ -460,6 +460,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `seed [--admit dir] [--no-mirror] [--updates] [--gip]`                         | be the team's holder: stay online, hold everything, settle lands, admit writers (and publish to git+pear) |
 | `hubs new\|serve\|list\|adopt\|add-writer\|remove` (`--home dir`)              | host many repos' hubs from one process (a hub home), and move hubs in and out                             |
 | `info`, `doctor`, `add-writer <key> --as handle [--indexer]`                   | identity, connectivity and settlement, access                                                             |
+| `access [--json]`, `revoke <handle> [--force]`                                 | who can write (and who was removed), what reading takes; take a writer's write access away                |
 | `remove-writer <handle or key>`                                                | take out a writer gone for good (a dead hub): settlement stops waiting for it; add its replacement first  |
 | `blind-peer <key> [--remove]`, `import-git <gitdir> [--branch] [--limit]`      | configure blind peers; replay a git branch's first-parent history                                         |
 | `gip publish [--name n]`, `gip import <git+pear link> [--branch]`              | publish main as a git+pear repo; land commits git users pushed to theirs                                  |

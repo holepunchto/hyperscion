@@ -336,6 +336,23 @@ did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
   with approval, `hs inbox` (now `hs review`), standing grants, and "approve the plan" (an approved claim
   satisfies `/.hsreview` on its paths).
 
+### Access control
+
+`hs access` lists who can write, and `hs revoke` takes a writer out: every peer ignores what it
+writes after that, and a hub doesn't re-admit its key from an admit folder. What's still open:
+
+- **Only owners and hubs change writers.** Today `apply` lets any writer add or remove any
+  other, the owner included, so a revoke is only as strong as the least trusted writer. This
+  changes the rule every peer applies, so it's switched on by an op recorded in main (peers on
+  either side of it must agree), with tests for repos made before it.
+- **Read access.** Whatever a peer already replicated, it keeps, and the invite is the read
+  key. For an encrypted repo the remedy is rotation: `hs rotate` starts a new repo with a new
+  key from current main and re-invites the remaining writers, and the old repo stops getting
+  changes. The hub could also refuse connections from removed writers, which stops them
+  syncing from the hub, though teammates and blind peers still serve them.
+- **Admit folders.** Anyone who can write to one gets in with a fresh key. Closing it, or a
+  signed one-time invite instead of a folder, is the fix.
+
 ### The next big experiment (after M6–M8)
 
 It should test something git structurally can't do, not more of the same team size.
