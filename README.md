@@ -39,11 +39,12 @@ Installing gives you the `hs` command; setting up a repo is the next step.
 
 **Where is your code now, and what do you want from hs?**
 
-| your code is…                                                        | and you want…                                                                                           | read                                         |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| nowhere yet, or a folder that isn't in git                           | to start a repo in hs                                                                                   | **[Start a new repo](docs/start.md)**        |
-| in git (GitHub, GitLab, any remote, or [git+pear](docs/git-pear.md)) | the team (people and agents) working in hs from now on                                                  | **[Move a repo from git](docs/from-git.md)** |
-| in git, and staying there                                            | a swarm of agents on one feature or big chunk of work for a while, then the result back as a git branch | **[Try hs next to git](docs/trial.md)**      |
+| your code is…                                                        | and you want…                                                                                           | read                                                                        |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| nowhere yet, or a folder that isn't in git                           | to start a repo in hs                                                                                   | **[Start a new repo](docs/start.md)**                                       |
+| anywhere, and you already run a hub                                  | another repo on the same hub                                                                            | **[Another repo](docs/start.md#4-another-repo-when-you-already-run-a-hub)** |
+| in git (GitHub, GitLab, any remote, or [git+pear](docs/git-pear.md)) | the team (people and agents) working in hs from now on                                                  | **[Move a repo from git](docs/from-git.md)**                                |
+| in git, and staying there                                            | a swarm of agents on one feature or big chunk of work for a while, then the result back as a git branch | **[Try hs next to git](docs/trial.md)**                                     |
 
 Not sure? Start with the last one. A trial lives in a side folder next to your git checkout,
 needs nobody else on the team to install anything, and ends with an ordinary git branch and a

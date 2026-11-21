@@ -10,6 +10,9 @@ You'll go through three steps:
 2. **Run your hub for real**: one service on a machine that stays up hubs all your repos.
 3. **Bring in teammates and agents.**
 
+Already run a hub and want another repo? Skip to
+[step 4](#4-another-repo-when-you-already-run-a-hub).
+
 You need `hs` installed ([Install](install.md)).
 
 ## 1. Try it on your machine
@@ -88,6 +91,28 @@ how agents claim work so two of them don't build the same thing.
 
 `hs hubs new --encrypt` (or `hs init --encrypt`) encrypts all repo data at rest. The invite
 then carries the key.
+
+## 4. Another repo, when you already run a hub
+
+You don't set anything up again: one hub home hubs every repo on its machine. On that
+machine:
+
+```sh
+hs hubs list                              # the home this machine uses, and the repos it hubs
+hs hubs new second-project --as me        # a new repo, served at once; your worktree in ~/hubs/owners/
+hs hubs new notes --dir ~/notes           # or make a folder you already have the repo, in place
+```
+
+The running service picks the new repo up straight away (the command asks it to make the
+repo, since it holds the store). Bring teammates in as in step 3, with the new repo's admit
+directory, `~/hubs/admit/second-project`. For a folder that's a git checkout, see
+[Move a repo from git](from-git.md) to bring its history along.
+
+**If your first repo has a hub of its own** (made with `hs init --hub`, run with `hs seed`),
+you can make the second the same way, with another hub directory and another `hs seed` to keep
+running. One hub home is simpler for anything past a try: set one up (step 2), make the new
+repo there, and move the first repo's hub in with `hs hubs adopt <name> <hub dir>` (stop its
+`hs seed` first). Teammates change nothing; the invite stays the same.
 
 ## Everyday use
 
