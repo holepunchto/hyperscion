@@ -233,8 +233,19 @@ test(
     t.is(readme, 'hello from a hub home\n', 'a git+pear peer reads main from the hub home')
     await remote.close()
 
-    const listed = await hs(dir, ['hubs', 'list'])
-    t.ok(listed.stdout.includes(`git+pear ${link}  published #${seq}`), listed.stdout)
+    // the list shows the server's status snapshot (written every second): wait for it to
+    // catch up with what the git peer already read
+    const want = `git+pear ${link}  published #${seq}`
+    let listed = null
+    await waitFor(
+      async () => {
+        listed = await hs(dir, ['hubs', 'list'])
+        return listed.stdout.includes(want)
+      },
+      10_000,
+      'the list to show the publish'
+    ).catch(() => {})
+    t.ok(listed.stdout.includes(want), listed.stdout)
 
     // on and off while served
     const on = await hs(dir, ['hubs', 'gip', 'r2'])
