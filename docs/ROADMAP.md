@@ -324,7 +324,7 @@ did without the swarm. Data: `docs/experiments/quick/q2-hs-6`.
 
 ### M8: the coordination layer
 
-- **Claims ([TASKS.md](TASKS.md), proposal):** work is an item (a change request, a
+- **Claims ([history/tasks-design.md](history/tasks-design.md), proposal):** work is an item (a change request, a
   suggestion, a part). A claim travels as a signed signal over the swarm connections (in
   milliseconds, with a snapshot on connect) and as a record in main (for stragglers). The
   lead is computed from the claims' content, it never blocks, and lands close items.

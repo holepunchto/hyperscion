@@ -1,4 +1,4 @@
-// Claims (docs/TASKS.md), phase 1: items and claims as records in main, the board that
+// Claims (docs/history/tasks-design.md), phase 1: items and claims as records in main, the board that
 // merges them with signals, the lead rule, and signal signatures.
 const test = require('brittle')
 const b4a = require('b4a')
@@ -105,7 +105,7 @@ test('parts: the last part landing says so; the parent is closed by its lead', a
   t.ok((await a.item(parent)).done > 0, 'closed by its lead')
 })
 
-// phase 2 (docs/TASKS.md): humans approve the plan, not each diff. An item a human approved
+// phase 2 (docs/history/tasks-design.md): humans approve the plan, not each diff. An item a human approved
 // lets its author or claimant land into the paths /.hsreview protects, but only the paths the
 // item recorded, only as approved (its hash), and only once someone human exists to approve.
 test('approve the plan: an approved item covers protected paths; approvals bind to it', async (t) => {

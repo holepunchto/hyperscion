@@ -79,6 +79,7 @@ folder you delete.
 | [Tasks](docs/TASKS.md)                   | claiming work, splitting it, approvals                                 |
 | [Finality](docs/FINALITY.md)             | provisional, settled, final, and why                                   |
 | [Design](docs/DESIGN.md)                 | architecture, measurements, open problems                              |
+| [History](docs/history/README.md)        | design records and decisions behind hs, with the runs that drove them  |
 | [Development](docs/development.md)       | tests, benchmarks, building the binary, the library API                |
 
 ## License

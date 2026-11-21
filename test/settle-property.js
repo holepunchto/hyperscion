@@ -4,7 +4,7 @@
 //
 //   HS_SETTLE_SEED=<n> HS_SETTLE_ROUNDS=<n> brittle-bare test/settle-property.js
 //   HS_SETTLE_TOPOLOGY=handover|hub   the hub granted by a heavy genesis that steps down (what
-//   `hs init --hub` builds), or by a light owner (repos from milestone 7 to docs/FINALITY.md)
+//   `hs init --hub` builds), or by a light owner (repos from milestone 7 to docs/history/finality-site-split.md)
 const test = require('brittle')
 const b4a = require('b4a')
 const c = require('compact-encoding')
@@ -45,7 +45,7 @@ for (const TOPOLOGY of TOPOLOGIES) {
       return repo
     }
     // 'genesis': the hub is the heavy bootstrap writer (repos before milestone 7).
-    // 'handover': what `hs init --hub` builds (docs/FINALITY.md), a heavy genesis that grants the
+    // 'handover': what `hs init --hub` builds (docs/history/finality-site-split.md), a heavy genesis that grants the
     // hub weight 2 and steps down. 'hub': a light repo (milestone 7 until that fix), a light
     // owner (weight 1) that adds the hub; it steps down too, so settlement (every writer, since
     // the hub doesn't outweigh anyone) doesn't wait for it

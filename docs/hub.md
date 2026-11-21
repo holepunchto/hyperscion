@@ -79,7 +79,7 @@ deciding when a land is final. The rest of the work doesn't go through it.
   | a quorum of N nodes               | N always-on nodes and a consensus protocol     |
   | nobody                            | a "landed" change can be undone later          |
 
-  [FINALITY.md](FINALITY.md) shows what goes wrong when this is fudged.
+  [Finality](FINALITY.md) explains what the hub's ack guarantees, and why.
 
 - **It's your team's peer, and you can replace it.** Git teams agree on one remote as the true
   main too. Here the team runs the hub on its own machine, and it can be replaced (below)

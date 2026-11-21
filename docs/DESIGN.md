@@ -155,7 +155,7 @@ There is no finality signal in autobee today. In hyperscion:
 - `hs status` re-reads the last land's outcome from `hs-ops`.
 - Before a land, the workspace records its pre-land root, fork and base. If `sync` finds the
   land flipped, it moves the fork point back and rebases normally, so commits made after the
-  land survive. Since q0bs (docs/FINALITY.md) the fork point is the one from before the first
+  land survive. Since q0bs (docs/history/finality-site-split.md) the fork point is the one from before the first
   of our still-unsettled lands, so every undone land comes back, not only the last; and the
   rebase replays only the paths those lands changed plus commits since the last sync, so
   teammates' changes synced in after the land are not replayed as ours. Tested: the losing
@@ -722,7 +722,7 @@ from the writer's current view of main.
 
 **Why indexer acks are enough, when the indexer is heavier.** This holds only if the
 indexer's autobee weight exceeds the writers'. From milestone 7 until the fix in
-docs/FINALITY.md, `init --hub` hubs had weight 1 like every agent, and a site split reordered
+docs/history/finality-site-split.md, `init --hub` hubs had weight 1 like every agent, and a site split reordered
 a final land. The settlers are now the indexers of weight 2, or every writer when there are
 none (`lib/settle.js`). Autobee linearizes by indexer weight: once an indexer's node
 causally follows a changeset, a concurrent node from a non-indexer that the indexer hadn't seen
@@ -878,7 +878,7 @@ Short lists are unchanged. Probe: `test/incoming.js`.
   - When the hub was the bootstrap writer, a removed hub that came back got its land sorted
     ahead of an already-settled land, which took its number (#1 → #2). That was seen before
     the guards existed.
-  - **Superseded by docs/FINALITY.md:** `init --hub` now hands over from a throwaway heavy
+  - **Superseded by docs/history/finality-site-split.md:** `init --hub` now hands over from a throwaway heavy
     genesis, so the hub has weight 2. The next bullet describes repos made between milestone
     7 and that fix, which now settle on every writer.
   - **New repos are light.** autobee's `bootstrapWeight: 1` makes the repo's creator a plain
@@ -967,7 +967,7 @@ were invisible, and a stand-in that started during the outage saw an empty main.
 
 ## 14. Open design: work-in-progress intents (not built)
 
-**Superseded by [TASKS.md](TASKS.md)** (milestone 8 proposal): items, claims as signed
+**Superseded by [history/tasks-design.md](history/tasks-design.md)** (milestone 8 proposal): items, claims as signed
 signals over the swarm plus records in main, a content-determined lead, and humans in the
 loop through review and standing grants. The data and reasoning below still stand.
 

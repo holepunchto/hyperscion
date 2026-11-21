@@ -2,7 +2,7 @@
 // comes back with lands of its own (q0bs: a3's final #3 was undone by site B's chain).
 //
 // The hub outweighs the agents in autobee's order since `init --hub` hands over from a heavy
-// throwaway genesis (docs/FINALITY.md); before, its ack pinned nothing and this failed.
+// throwaway genesis (docs/history/finality-site-split.md); before, its ack pinned nothing and this failed.
 const test = require('brittle')
 const { team, waitFor, sleep } = require('./helpers/team')
 

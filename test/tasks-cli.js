@@ -1,4 +1,4 @@
-// Tasks through the real `hs` (docs/TASKS.md, phase 1): two agents start the same task in
+// Tasks through the real `hs` (docs/history/tasks-design.md, phase 1): two agents start the same task in
 // the same instant and agree who leads; the board, land notes, completing a task with
 // `land --task`, the 3-task limit and stopping.
 const test = require('brittle')

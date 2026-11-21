@@ -197,8 +197,7 @@ and what to do next).
 - Untracked files that `.gitignore` or `.hsignore` rules match never show up or land (git's
   syntax; `.hsignore` applies after `.gitignore`, so `!dist/` shares what git ignores).
   `hs status --ignored` lists them, and the files already tracked that a rule matches.
-- Every command that needs peers goes online by itself; `--offline` opts out. The old
-  `land -o` still works but isn't needed.
+- Every command that needs peers goes online by itself; `--offline` opts out.
 - Online commands (`sync`, `fetch`, `land`) spend about 2–3 s finding peers. Local commands
   (`status`, `show`, `log`, `cat` of fetched files) take milliseconds.
 - `hs status` shows your uncommitted edits, what's committed but not landed, and stale files.
