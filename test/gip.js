@@ -15,9 +15,20 @@ const gip = require('../lib/gip')
 
 const put = (p, s) => ({ path: p, content: b4a.from(s) })
 
+// a default identity, so commits work on a runner with no git config (env overrides it)
+const IDENTITY = {
+  GIT_AUTHOR_NAME: 'Test',
+  GIT_AUTHOR_EMAIL: 'test@x',
+  GIT_COMMITTER_NAME: 'Test',
+  GIT_COMMITTER_EMAIL: 'test@x'
+}
+
 function git(cwd, args, env = {}) {
   return new Promise((resolve, reject) => {
-    const p = spawn('git', args, { cwd, env: { ...require('bare-process').env, ...env } })
+    const p = spawn('git', args, {
+      cwd,
+      env: { ...require('bare-process').env, ...IDENTITY, ...env }
+    })
     const out = []
     const err = []
     p.stdout.on('data', (d) => out.push(d))
