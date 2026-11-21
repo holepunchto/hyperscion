@@ -15,12 +15,19 @@ const gip = require('../lib/gip')
 
 const put = (p, s) => ({ path: p, content: b4a.from(s) })
 
-// a default identity, so commits work on a runner with no git config (env overrides it)
+// a default identity, so commits work on a runner with no git config (env overrides it), and
+// git's object bytes as on Linux: Git for Windows turns LF into CRLF on checkout (autocrlf) and
+// symlinks into plain files unless told otherwise
 const IDENTITY = {
   GIT_AUTHOR_NAME: 'Test',
   GIT_AUTHOR_EMAIL: 'test@x',
   GIT_COMMITTER_NAME: 'Test',
-  GIT_COMMITTER_EMAIL: 'test@x'
+  GIT_COMMITTER_EMAIL: 'test@x',
+  GIT_CONFIG_COUNT: '2',
+  GIT_CONFIG_KEY_0: 'core.autocrlf',
+  GIT_CONFIG_VALUE_0: 'false',
+  GIT_CONFIG_KEY_1: 'core.symlinks',
+  GIT_CONFIG_VALUE_1: 'true'
 }
 
 function git(cwd, args, env = {}) {
@@ -84,6 +91,8 @@ test('gitexport: blobs, trees and commits hash as git does', async (t) => {
   fs.chmodSync(path.join(dir, 'run.sh'), 0o755)
   fs.symlinkSync('a.txt', path.join(dir, 'link'))
   await git(dir, ['add', '-A'])
+  // the exec bit in git's index too: Windows has no file modes for git to read
+  await git(dir, ['update-index', '--chmod=+x', 'run.sh'])
   const who = { NAME: 'me', EMAIL: 'me@hs', DATE: '1700000000 +0000' }
   const env = {}
   for (const role of ['AUTHOR', 'COMMITTER']) {
@@ -300,6 +309,7 @@ test('gip: a mode-only change imports', async (t) => {
   t.teardown(() => remote.close())
   const dir = await checkoutOf(t, remote, (await gip.publish(repo, remote)).tip)
   fs.chmodSync(path.join(dir, 'run.sh'), 0o755)
+  await git(dir, ['update-index', '--chmod=+x', 'run.sh']) // Windows: no file modes to read
   await git(dir, ['commit', '-q', '-am', 'make it runnable'], HUMAN)
   const theirs = new Remote(store.namespace('human'), 'fork')
   t.teardown(() => theirs.close())

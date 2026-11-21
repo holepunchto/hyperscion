@@ -8,6 +8,7 @@ const os = require('bare-os')
 const b4a = require('b4a')
 const tmp = require('test-tmp')
 const { spawn } = require('bare-subprocess')
+const { isWindows } = require('which-runtime')
 
 const ANDROID = path.join(__dirname, '..', 'lib', 'android.js')
 
@@ -50,28 +51,37 @@ Promise.reject(new Error('boom'))
   t.ok(res.stderr.startsWith('err 5\nhs: Error: boom'), res.stderr)
 })
 
-test('android: a libc++ the loader cannot see is found under $PREFIX/lib', async (t) => {
-  const prefix = await tmp(t)
-  fs.mkdirSync(path.join(prefix, 'lib'))
-  const { libraryPath } = require('../lib/android')
-  t.is(libraryPath({ PREFIX: prefix }), null, 'no libc++ there: nothing to do')
-  fs.writeFileSync(path.join(prefix, 'lib', 'libc++_shared.so'), '')
-  t.is(libraryPath({ PREFIX: prefix }), path.join(prefix, 'lib'))
-  t.is(
-    libraryPath({ PREFIX: prefix, LD_LIBRARY_PATH: '/x:' + path.join(prefix, 'lib') }),
-    null,
-    'already on LD_LIBRARY_PATH'
-  )
-})
+// the libc++ lookup is for Android's Linux loader (LD_LIBRARY_PATH, ':'-separated paths)
+test(
+  'android: a libc++ the loader cannot see is found under $PREFIX/lib',
+  { skip: isWindows },
+  async (t) => {
+    const prefix = await tmp(t)
+    fs.mkdirSync(path.join(prefix, 'lib'))
+    const { libraryPath } = require('../lib/android')
+    t.is(libraryPath({ PREFIX: prefix }), null, 'no libc++ there: nothing to do')
+    fs.writeFileSync(path.join(prefix, 'lib', 'libc++_shared.so'), '')
+    t.is(libraryPath({ PREFIX: prefix }), path.join(prefix, 'lib'))
+    t.is(
+      libraryPath({ PREFIX: prefix, LD_LIBRARY_PATH: '/x:' + path.join(prefix, 'lib') }),
+      null,
+      'already on LD_LIBRARY_PATH'
+    )
+  }
+)
 
-test('android: re-runs the command once with LD_LIBRARY_PATH set, and passes its exit code on', async (t) => {
-  const prefix = await tmp(t)
-  fs.mkdirSync(path.join(prefix, 'lib'))
-  fs.writeFileSync(path.join(prefix, 'lib', 'libc++_shared.so'), '')
-  const file = path.join(prefix, 'sim.js')
-  fs.writeFileSync(
-    file,
-    `const env = require(${JSON.stringify(require.resolve('bare-env'))})
+// the libc++ lookup is for Android's Linux loader (LD_LIBRARY_PATH, ':'-separated paths)
+test(
+  'android: re-runs the command once with LD_LIBRARY_PATH set, and passes its exit code on',
+  { skip: isWindows },
+  async (t) => {
+    const prefix = await tmp(t)
+    fs.mkdirSync(path.join(prefix, 'lib'))
+    fs.writeFileSync(path.join(prefix, 'lib', 'libc++_shared.so'), '')
+    const file = path.join(prefix, 'sim.js')
+    fs.writeFileSync(
+      file,
+      `const env = require(${JSON.stringify(require.resolve('bare-env'))})
 const fs = require(${JSON.stringify(require.resolve('bare-fs'))})
 if (env.HS_ANDROID_REEXEC) {
   fs.writeSync(1, 'child ' + env.LD_LIBRARY_PATH + '\\n')
@@ -80,9 +90,10 @@ if (env.HS_ANDROID_REEXEC) {
 const code = require(${JSON.stringify(ANDROID)}).reexec()
 fs.writeSync(1, 'parent ' + code + '\\n')
 `
-  )
-  const { env } = require('bare-process')
-  const res = await runScript(file, { ...env, PREFIX: prefix, LD_LIBRARY_PATH: '/old' })
-  t.is(res.code, 0, res.stderr)
-  t.is(res.stdout, `child ${path.join(prefix, 'lib')}:/old\nparent 7\n`)
-})
+    )
+    const { env } = require('bare-process')
+    const res = await runScript(file, { ...env, PREFIX: prefix, LD_LIBRARY_PATH: '/old' })
+    t.is(res.code, 0, res.stderr)
+    t.is(res.stdout, `child ${path.join(prefix, 'lib')}:/old\nparent 7\n`)
+  }
+)

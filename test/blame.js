@@ -251,7 +251,7 @@ test('blame: hs blame in a worktree, text and --json', { timeout: 120000 }, asyn
 
   const text = await run(dir, ['blame', '/f.js', '-L', '2,+2'], e)
   t.is(text.code, 0, text.stderr)
-  const lines = text.stdout.trim().split('\n')
+  const lines = text.stdout.trim().split(/\r?\n/) // CRLF on Windows
   t.is(lines.length, 2)
   t.ok(/^#2\s+me\s.*\s2\| B$/.test(lines[0]), lines[0])
   t.ok(/^-\s.*not landed\s+3\| mine$/.test(lines[1]), lines[1])
