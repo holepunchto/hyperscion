@@ -100,6 +100,27 @@ test('gitexport: blobs, trees and commits hash as git does', async (t) => {
   t.alike(reloaded.files().length, 5, 'a tree loads back from its objects')
 })
 
+test('gip: publish names the writer by its hs handle, and keeps git authors', async (t) => {
+  const { store, repo } = await setup(t)
+  await repo.addWriter(repo.writerKey, { handle: 'a1' })
+  await repo.ack()
+  await repo.update()
+  const ws = await repo.workspace('w')
+  await landAll(repo, ws, [put('/a.txt', 'a\n')], 'by a handle') // claims author 'me'
+  await ws.commit([put('/b.txt', 'b\n')])
+  await ws.land({ message: 'from git', author: 'Human <h@x>', time: 1_700_000_000_000 })
+  await repo.ack()
+  await repo.update()
+
+  const remote = gip.open(store, 'authors')
+  t.teardown(() => remote.close())
+  const res = await gip.publish(repo, remote)
+  const tip = gx.parseCommit((await remote.getObject(res.tip)).data)
+  const first = gx.parseCommit((await remote.getObject(tip.parents[0])).data)
+  t.is(first.author, 'a1 <a1@hs>', "the writer's handle, not the claimed author")
+  t.is(tip.author, 'Human <h@x>', 'a git author as it was')
+})
+
 test('gip: publish main as a git branch, resume from the tip, round trip through git', async (t) => {
   const { store, repo } = await setup(t)
   const ws = await repo.workspace('w')
