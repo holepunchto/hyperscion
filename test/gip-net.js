@@ -243,7 +243,16 @@ test(
     t.ok(server.output().includes('r2: git+pear: git+pear://'), 'served without a restart')
     const off = await hs(dir, ['hubs', 'gip', 'r2', '--off'])
     t.is(off.code, 0, off.stderr)
-    const after = await hs(dir, ['hubs', 'list'])
+    // the list reads the server's status file: give a write already under way a moment
+    let after = null
+    await waitFor(
+      async () => {
+        after = await hs(dir, ['hubs', 'list'])
+        return !/git\+pear \S+\/r2/.test(after.stdout)
+      },
+      10_000,
+      'r2 gone from the list'
+    ).catch(() => {})
     t.absent(/git\+pear \S+\/r2/.test(after.stdout), 'r2 not published any more')
   }
 )
