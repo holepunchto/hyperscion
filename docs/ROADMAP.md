@@ -30,7 +30,7 @@ small check with real agents.
 | M5            | CLI defaults (online by default, `fetch`, `land --check`, …)                                                                          | experiment 3: 4/5 from all five agents, all would choose hs                                  |
 | round 4       | git control team, 14 runs, scenarios S1–S3                                                                                            | EXPERIMENTS.md "Experiment 4"                                                                |
 | after round 4 | feeds as holders, outage and hub-stall signals, correctness fixes, fast feedback loop                                                 | `test/outage.js`, `test/fixes.js`, quick runs q1-hs-1/2                                      |
-| hub homes     | one hub process for many repos on `@holepunchto/replicator` (`hs hubs`, DESIGN.md §15)                                                | `test/hubs.js`; `bench/hubs.js`: 30 repos in 133 MB vs 3.3 GB as separate hubs, same latency |
+| hub homes     | one hub process for many repos on `hyperjoin` (`hs hubs`, DESIGN.md §15)                                                              | `test/hubs.js`; `bench/hubs.js`: 30 repos in 133 MB vs 3.3 GB as separate hubs, same latency |
 
 **What the experiments say:**
 

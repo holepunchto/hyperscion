@@ -1143,9 +1143,9 @@ corestore holding every repo's hub writer, each in its own namespace, so each re
 own hub key and can replace its hub on its own. `admit/<name>` and `owners/<name>` are as with
 `seed --admit` and `init --hub`. `status.json` is what the server last saw (for `hubs list`).
 
-**Network: `@holepunchto/replicator`.** Replicator (Holepunch's hyperswarm replacement for a
-root corestore, also landing in keet) keeps one connection per peer and replicates the whole
-root store on it. Agents still run a swarm per repo, so an agent on five of a home's repos
+**Network: `hyperjoin`.** Hyperjoin (formerly `@holepunchto/replicator`; Holepunch's
+hyperswarm replacement for a root corestore, also landing in keet) keeps one connection per
+peer and replicates the whole root store on it. Agents still run a swarm per repo, so an agent on five of a home's repos
 holds five connections to it (sharing those is the agent-side question, decided below). Why
 it fits, measured in the M0 spike:
 
