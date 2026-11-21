@@ -49,7 +49,7 @@ isn't yours to run: the team owner looks after it.
   owner's call, and a wrong move can stall settlement for the whole team.
 
 Why there's a hub in a peer-to-peer tool, and how to set it up, watch it, replace it and back
-it up: [The hub](../README.md#the-hub) in the README.
+it up: [The hub](hub.md).
 
 ## The loop
 

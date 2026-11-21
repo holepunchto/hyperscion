@@ -83,6 +83,7 @@ test('hubs new --dir: an existing folder becomes the worktree, files kept', asyn
   t.is(made.code, 0, made.stderr)
   t.ok(made.stdout.includes('your worktree ' + folder), made.stdout)
   t.ok(made.stdout.includes("its files aren't on main yet"), 'says the files are not landed')
+  t.ok(made.stdout.includes('hs import-git'), 'and that a git checkout can bring its history')
   t.is(fs.readFileSync(path.join(folder, 'todo.md'), 'utf8'), '- ship it\n', 'files untouched')
   t.ok(fs.existsSync(path.join(folder, '.hs', 'config.json')), 'the folder is a worktree')
   t.absent(fs.existsSync(path.join(dir, 'hubs', 'owners', 'notes')), 'nothing in owners/')

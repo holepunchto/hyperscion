@@ -32,6 +32,7 @@ const INTEGRATION = [
   'test/reland.js',
   'test/ui-review.js',
   'test/gip-net.js',
+  'test/trial.js',
   'test/access.js'
 ]
 
