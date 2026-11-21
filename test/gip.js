@@ -16,18 +16,15 @@ const gip = require('../lib/gip')
 const put = (p, s) => ({ path: p, content: b4a.from(s) })
 
 // a default identity, so commits work on a runner with no git config (env overrides it), and
-// git's object bytes as on Linux: Git for Windows turns LF into CRLF on checkout (autocrlf) and
-// symlinks into plain files unless told otherwise
+// files as written: Git for Windows turns LF into CRLF on checkout unless told otherwise
 const IDENTITY = {
   GIT_AUTHOR_NAME: 'Test',
   GIT_AUTHOR_EMAIL: 'test@x',
   GIT_COMMITTER_NAME: 'Test',
   GIT_COMMITTER_EMAIL: 'test@x',
-  GIT_CONFIG_COUNT: '2',
+  GIT_CONFIG_COUNT: '1',
   GIT_CONFIG_KEY_0: 'core.autocrlf',
-  GIT_CONFIG_VALUE_0: 'false',
-  GIT_CONFIG_KEY_1: 'core.symlinks',
-  GIT_CONFIG_VALUE_1: 'true'
+  GIT_CONFIG_VALUE_0: 'false'
 }
 
 function git(cwd, args, env = {}) {
@@ -89,10 +86,14 @@ test('gitexport: blobs, trees and commits hash as git does', async (t) => {
   const files = { 'a/b/x.txt': 'one\n', 'a.txt': 'two\n', 'a-b': 'z\n', 'run.sh': '#!/bin/sh\n' }
   for (const [p, s] of Object.entries(files)) fs.writeFileSync(path.join(dir, p), s)
   fs.chmodSync(path.join(dir, 'run.sh'), 0o755)
-  fs.symlinkSync('a.txt', path.join(dir, 'link'))
   await git(dir, ['add', '-A'])
-  // the exec bit in git's index too: Windows has no file modes for git to read
+  // the exec bit and the symlink go straight into git's index, so they mean the same on every
+  // platform: Windows has no file modes for git to read, and may not make real symlinks
   await git(dir, ['update-index', '--chmod=+x', 'run.sh'])
+  const target = path.join(dir, '.git', 'link-target')
+  fs.writeFileSync(target, 'a.txt')
+  const linkOid = await git(dir, ['hash-object', '-w', target])
+  await git(dir, ['update-index', '--add', '--cacheinfo', `120000,${linkOid},link`])
   const who = { NAME: 'me', EMAIL: 'me@hs', DATE: '1700000000 +0000' }
   const env = {}
   for (const role of ['AUTHOR', 'COMMITTER']) {
