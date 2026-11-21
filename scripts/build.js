@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 'use strict'
 // Builds the pear deployment folder (out/pear) from whatever binaries `npm run make:*` left in
-// out/<host>/. The staged package.json is not ours verbatim: pear install fetches one binary per
-// `bin` key from /by-arch/<host>/app/<key>, and our `bin` is create-hyperscion (the npm init
-// installer), so the staged copy maps `bin` to hs (productName) instead.
+// out/<host>/. pear install fetches one binary per `bin` key from /by-arch/<host>/app/<key>, so
+// the staged package.json maps exactly one `bin`, hs (productName), to them.
 const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')

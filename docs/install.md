@@ -3,6 +3,9 @@
 `hs` is one standalone binary. Install it once per machine; setting up a repo is a separate
 step ([pick your path](../README.md#get-started-pick-your-path)).
 
+hs is not published to npm, on purpose: there is no npm package for anyone to tamper with or
+impersonate. Install it with Pear, or build it from source.
+
 ## With the Pear CLI
 
 With the [Pear CLI](https://install.pears.com):
@@ -11,25 +14,32 @@ With the [Pear CLI](https://install.pears.com):
 pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry
 ```
 
-## With npm
+## From source
+
+You need git and [Node.js](https://nodejs.org) (for npm, which fetches the build tools and
+libraries).
 
 ```sh
-npm init hyperscion
+git clone https://github.com/holepunchto/hyperscion.git
+cd hyperscion
+npm ci --ignore-scripts        # exactly the versions in package-lock.json, no install scripts
+npm run make                   # a standalone binary for this machine: out/make/hs
 ```
 
-That's `npm init`, not `npm install`: npm runs the `create-hyperscion` package, which fetches
-the `hs` binary peer-to-peer with [pear-install](https://www.npmjs.com/package/pear-install)
-(what `pear install` uses) and puts it in `~/.local/bin/hs` on macOS and Linux, or
-`%LOCALAPPDATA%\Programs\hs\hs.exe` on Windows. `npm init -y hyperscion` skips the question.
-The npm package is only the installer (a few kB, no dependencies); the binary comes from peers.
+Then put `out/make/hs` on your `PATH`:
 
-## From a checkout of this repo
+- **macOS, Linux:** `mkdir -p ~/.local/bin && cp out/make/hs ~/.local/bin/` (add
+  `~/.local/bin` to your `PATH` if it isn't there yet).
+- **Windows:** copy `out\make\hs.exe` into a folder on your `PATH`.
 
-```sh
-npm install && alias hs="bare $PWD/bin.mjs"
-```
+The binary has everything it needs; the checkout can go once it's copied.
 
-[Development](development.md) has the tests and how to build the binary.
+**To update** a source install: `git pull`, then `npm ci --ignore-scripts && npm run make`
+again, and copy the new binary over the old one.
+
+**Working on hs itself?** Skip the build and run it straight from the checkout:
+`npm i -g bare-runtime && alias hs="bare $PWD/bin.mjs"`. [Development](development.md) has the
+tests.
 
 ## Check it
 
@@ -48,6 +58,5 @@ on a machine that doesn't run a hub, update by installing again.
 ## Uninstall
 
 If you ran a hub home as a service, run `hs hubs service uninstall` first. Then delete the
-`hs` binary: the npm installer puts it in `~/.local/bin/hs` (macOS, Linux) or
-`%LOCALAPPDATA%\Programs\hs\hs.exe` (Windows), and `which hs` shows where any install put it.
-Repos are plain folders: each worktree keeps its data in its own `.hs/`.
+`hs` binary (`which hs` shows where it is). Repos are plain folders: each worktree keeps its
+data in its own `.hs/`.

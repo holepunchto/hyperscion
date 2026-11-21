@@ -27,12 +27,21 @@ system can get without a server:
 
 ## Install
 
+With the [Pear CLI](https://install.pears.com):
+
 ```sh
-pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry   # with the Pear CLI
-npm init hyperscion                                                        # or with npm
+pear install pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry
 ```
 
-[docs/install.md](docs/install.md) has the details, installing from source, and uninstalling.
+Or build it from source (needs git and Node.js):
+
+```sh
+git clone https://github.com/holepunchto/hyperscion.git && cd hyperscion
+npm ci --ignore-scripts && npm run make   # a standalone binary for this machine: out/make/hs
+cp out/make/hs ~/.local/bin/              # or anywhere on your PATH
+```
+
+hs isn't published to npm. [docs/install.md](docs/install.md) has the details and uninstalling.
 Installing gives you the `hs` command; setting up a repo is the next step.
 
 ## Get started: pick your path

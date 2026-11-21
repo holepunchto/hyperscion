@@ -17,8 +17,9 @@ npm run build                # pear deployment folder from out/<host>/hs: out/pe
 pear stage <upgrade link> out/pear
 ```
 
-`npm run build` stages a copy of package.json with `bin` set to `hs`: `pear install` fetches
-one binary per `bin` key, and the real `bin` is the npm init installer.
+`npm run build` stages a copy of package.json for Pear: `pear install` fetches one binary per
+`bin` key, and the only one is `hs`. The package is private: hs is distributed through Pear and
+source builds, never published to npm.
 
 `npm test` runs the quick tier and `npm run test:integration` the files `scripts/test.js` lists
 as integration (each starts a hub, agents and feeds as separate processes). A new test file is

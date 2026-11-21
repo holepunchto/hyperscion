@@ -1,17 +1,12 @@
 {
-  "name": "create-hyperscion",
+  "name": "hyperscion",
+  "private": true,
   "productName": "hs",
   "version": "0.2.0",
   "description": "Peer-to-peer source control for agent-scale change volume, built on hyperbee2, autobee and blind peers.",
-  "main": "install.js",
   "bin": {
-    "create-hyperscion": "install.js"
+    "hs": "bin.mjs"
   },
-  "files": [
-    "install.js",
-    "README.md",
-    "LICENSE"
-  ],
   "upgrade": "pear://scioncigzgdpiwsr6een9suoj8irromdwor6ze9urfx9ya5sajry",
   "scripts": {
     "format": "prettier . --write",
