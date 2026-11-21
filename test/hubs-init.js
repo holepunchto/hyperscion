@@ -43,7 +43,11 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   if (!isWindows) {
     const printed = await hs(['hubs', 'service', 'install', '--print'])
     t.is(printed.code, 0, 'an empty home can be a service: ' + printed.stderr)
-    t.ok(printed.stdout.includes('--home ' + home), 'the service names the home')
+    // systemd: one ExecStart line; launchd: each argument its own <string> in the plist
+    const named =
+      printed.stdout.includes('--home ' + home) ||
+      printed.stdout.includes('<string>--home</string>\n    <string>' + home + '</string>')
+    t.ok(named, 'the service names the home: ' + printed.stdout)
   }
 
   // ~ as fish leaves it
