@@ -67,16 +67,19 @@ hs clone <invite> ../agent-1 --as a1 --admit ../admit   # app-trial/agent-1
 hs clone <invite> ../agent-2 --as a2 --admit ../admit
 ```
 
-An agent on another machine clones without `--admit`, sends you the writer key `hs clone`
-prints, and you add it: stop `hs seed`, run `hs add-writer <key> --as a3` in `app-trial/hub`, and
-start `hs seed` again.
-
 Give each agent its folder, the task, and the hs playbook: `hs agents` prints a short version
 to paste into its instructions (`hs agents --full` for the whole of [AGENTS.md](AGENTS.md)), or
 tell it to run `hs agents` first. Skip `hs agents --write` in a trial: the `AGENTS.md` it saves
 in the worktree would land, and end up in your branch. Agents land small changes as they go,
 follow each other with `hs watch`, and claim pieces of work with `hs task`
 ([TASKS.md](TASKS.md)).
+
+## 2a. Agents on other machines
+
+The swarm doesn't have to fit on one machine. An agent anywhere can join over the
+peer-to-peer network, with no server and no port forwarding: it needs `hs`, the invite, and
+write access, which you grant from the hub, since the admit folder only works on this machine.
+Your hub has to stay online for them. [Remote agents](trial-remote.md) walks through it.
 
 ## 3. While it runs
 

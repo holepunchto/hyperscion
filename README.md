@@ -79,6 +79,7 @@ folder you delete.
 | [Start a new repo](docs/start.md)        | try it on your machine, run your hub for real, bring in teammates      |
 | [Move a repo from git](docs/from-git.md) | import git history, move the team, mirror or retire the old remote     |
 | [Try hs next to git](docs/trial.md)      | a swarm of agents in a side folder; the result back as a git branch    |
+| [Remote agents](docs/trial-remote.md)    | a trial swarm with agents on other machines                            |
 | [git+pear](docs/git-pear.md)             | main as a git repo for git users and tools; landing their commits      |
 | [Commands](docs/commands.md)             | every command, `hs ui`, `hs --menu`, a git cheat sheet, ignoring files |
 | [The hub](docs/hub.md)                   | what it does, running it, failure, replacing it, backups               |
