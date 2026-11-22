@@ -19,7 +19,7 @@ Read `README.md`, `CONTRACTS.md` and `NOTES.md` (append-only team log: add `- [{
 ## How to work
 
 1. Read the playbook and project docs, start the background watcher, `hs sync`.
-2. Land small and early with `hs land -m "..." --check "npm test"`; write a few unit tests.
+2. Land small and early with `hs land -m "..."` (it runs the repo's checks first; `hs check` runs them without landing); write a few unit tests.
 3. Adapt to what teammates actually land (feed, `hs show <n>`, NOTES.md).
 4. {{STOP}} Stop your background watcher before you finish.
 

@@ -3,6 +3,7 @@
 // `-check` in /.hsattributes) lands on the checked state; a teammate's change the check could
 // see still re-runs it.
 const test = require('brittle')
+const fs = require('bare-fs')
 const os = require('bare-os')
 const path = require('bare-path')
 const { team, waitFor } = require('./helpers/team')
@@ -122,4 +123,78 @@ test('land --wait-final with nothing to land waits for the last land', async (t)
   t.ok(/nothing to land/.test(res.stdout))
   t.ok(new RegExp(`waiting for your last land #${seq} to be final`).test(res.stdout), res.stdout)
   t.ok(new RegExp(`#${seq} final`).test(res.stdout), res.stdout)
+})
+
+// /.hschecks: the repo says what "verified" means. `hs check` runs it without landing, and
+// every `hs land` runs its default line first (--skip-checks skips it)
+test('repo-declared checks: hs check, and land runs the default', async (t) => {
+  const tm = await team(t, {
+    agents: ['a1'],
+    files: {
+      '.hschecks': [
+        '# what hs check and hs land run',
+        'lint                    run test ! -f src/BAD',
+        'test                    run grep -q ok src/a.js',
+        'docs   paths=/docs/     run echo docs-check',
+        'slow   manual timeout=1 run sleep 30',
+        'default lint test docs',
+        ''
+      ].join('\n'),
+      'src/a.js': 'ok\n',
+      'docs/guide.md': '# guide\n'
+    }
+  })
+  await tm.as('a1', ['sync'])
+
+  const list = await tm.as('a1', ['check', '--list'])
+  t.is(list.code, 0, list.stderr)
+  t.ok(/^slow\s+run sleep 30\s+\(manual timeout=1s\)$/m.test(list.stdout), list.stdout)
+  t.ok(/^default: lint test docs$/m.test(list.stdout), list.stdout)
+
+  // nothing changed: the whole default line runs
+  const clean = await tm.as('a1', ['check'])
+  t.is(clean.code, 0, clean.stdout + clean.stderr)
+  t.ok(/checking main #\d+ \+ your changes: lint \(test ! -f src\/BAD\), test/.test(clean.stdout))
+  t.ok(/check docs passed/.test(clean.stdout), clean.stdout)
+  t.ok(/all 3 checks passed/.test(clean.stdout), clean.stdout)
+
+  // a failure: every check still runs, and the failing one is named
+  tm.write('a1', 'src/BAD', 'x\n')
+  const bad = await tm.as('a1', ['check'])
+  t.is(bad.code, 1, bad.stdout + bad.stderr)
+  t.ok(/!! check lint failed \(exit 1/.test(bad.stderr), bad.stderr)
+  t.ok(/check test passed/.test(bad.stdout), 'kept going: ' + bad.stdout)
+  t.ok(/!! failed on main #\d+ \+ your changes: lint/.test(bad.stderr), bad.stderr)
+
+  // land runs the default (docs left out: this change touches nothing under /docs/) and refuses
+  const refused = await tm.as('a1', ['land', '-m', 'bad'])
+  t.is(refused.code, 1, refused.stdout + refused.stderr)
+  t.ok(/skipping docs: this change touches none of its paths=/.test(refused.stdout))
+  t.ok(/!! not landed: check lint failed \(exit 1/.test(refused.stderr), refused.stderr)
+  t.absent(/landed #/.test(refused.stdout))
+
+  // fixed: land checks and lands
+  fs.unlinkSync(path.join(tm.agents.a1, 'src/BAD'))
+  tm.write('a1', 'src/b.js', 'b\n')
+  const good = await tm.as('a1', ['land', '-m', 'b'])
+  t.is(good.code, 0, good.stdout + good.stderr)
+  t.ok(/check lint passed/.test(good.stdout) && /check test passed/.test(good.stdout))
+  t.ok(/landed #\d+/.test(good.stdout), good.stdout)
+
+  // a manual check runs when named; timeout= kills it
+  tm.write('a1', 'src/c.js', 'c\n')
+  const slow = await tm.as('a1', ['land', '-m', 'c', '--check', 'slow'])
+  t.is(slow.code, 1, slow.stdout + slow.stderr)
+  t.ok(/!! not landed: check slow failed \(timed out after/.test(slow.stderr), slow.stderr)
+
+  // --skip-checks lands without them
+  const skipped = await tm.as('a1', ['land', '-m', 'c', '--skip-checks'])
+  t.is(skipped.code, 0, skipped.stderr)
+  t.absent(/checking main #/.test(skipped.stdout), skipped.stdout)
+  t.ok(/landed #\d+/.test(skipped.stdout))
+
+  // a typo is not a command
+  const typo = await tm.as('a1', ['check', 'lnit'])
+  t.not(typo.code, 0)
+  t.ok(/no check named lnit \(\/\.hschecks defines: lint, test, docs, slow\)/.test(typo.stderr))
 })

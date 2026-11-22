@@ -1,0 +1,6 @@
+# what `hs check` and every `hs land` run in this repo (docs/CHECKS.md); mirrors
+# .github/workflows/ci.yaml
+lint     run npm run lint
+test     run npm test
+integ    manual run npm run test:integration -- --jobs 3
+default  lint test

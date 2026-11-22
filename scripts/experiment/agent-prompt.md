@@ -20,9 +20,9 @@ Read `README.md` (domain rules, module ownership), `CONTRACTS.md` (interfaces, m
 ## How to work
 
 1. `cd` to your worktree, read the playbook and project docs, start the background watcher, `hs sync`.
-2. Build in small steps; land early and often with `hs land -m "..." --check "npm test"` (messages are read by teammates in their feeds); write unit tests for your module.
+2. Build in small steps; land early and often with `hs land -m "..."` (it runs the repo's checks first; `hs check` runs them without landing; messages are read by teammates in their feeds); write unit tests for your module.
 3. Learn from teammates as they land: their feed lines, `hs show <n>` for diffs, `hs cat`, NOTES.md. Adapt to what they actually built, not just the contracts. If blocked, code against the contract and use `hs watch --path ... --count 1` to wait.
-4. Before finishing: `hs sync`, run `npm test` and (if it exists) `node src/cli.js plan fixtures/day1.json`; fix problems in your area; land.
+4. Before finishing: `hs sync`, run `hs check` and (if it exists) `node src/cli.js plan fixtures/day1.json`; fix problems in your area; land.
 5. Stop when your module and tests are solid on the latest main, or after roughly 30 land/sync cycles. Stop your background watcher before you finish.
 
 ## Evaluation report (required)

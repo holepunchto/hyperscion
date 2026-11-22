@@ -22,9 +22,11 @@ control; never use git.
   before building.
 - `hs task stop <task>` when you step away from it.
 
-## Land small and tested
+## Land small and checked
 
-- `hs land -m "<what and why>" --check "npm test"` rebases and retries for you.
+- `hs land -m "<what and why>"` rebases, retries, and runs the repo's checks (`/.hschecks`)
+  on main + your changes first. `hs check` runs them without landing, while you work.
+  If the repo declares no checks, add `--check "npm test"`.
 - Untracked files your `.gitignore` or `.hsignore` match never land (`hs status --ignored`).
 - If the land finishes the task you lead, add `--done`.
 - A land is provisional, then settled, then final. `hs wait-final` waits for final and
