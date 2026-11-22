@@ -137,6 +137,9 @@ test('repo-declared checks: hs check, and land runs the default', async (t) => {
         'test                    run grep -q ok src/a.js',
         'docs   paths=/docs/     run echo docs-check',
         'slow   manual timeout=1 run sleep 30',
+        // each waits (up to 10s) for the other to start: they pass only if they overlap
+        'p1     manual parallel run touch ../p1.mark; for i in $(seq 100); do [ -f ../p2.mark ] && exit 0; sleep 0.1; done; exit 1',
+        'p2     manual parallel run touch ../p2.mark; for i in $(seq 100); do [ -f ../p1.mark ] && exit 0; sleep 0.1; done; exit 1',
         'default lint test docs',
         ''
       ].join('\n'),
@@ -196,5 +199,35 @@ test('repo-declared checks: hs check, and land runs the default', async (t) => {
   // a typo is not a command
   const typo = await tm.as('a1', ['check', 'lnit'])
   t.not(typo.code, 0)
-  t.ok(/no check named lnit \(\/\.hschecks defines: lint, test, docs, slow\)/.test(typo.stderr))
+  t.ok(
+    /no check named lnit \(\/\.hschecks defines: lint, test, docs, slow, p1, p2\)/.test(
+      typo.stderr
+    ),
+    typo.stderr
+  )
+
+  // a check that passed on exactly this tree isn't run again: hs check, then land, is one run
+  tm.write('a1', 'src/d.js', 'd\n')
+  const first = await tm.as('a1', ['check'])
+  t.is(first.code, 0, first.stdout + first.stderr)
+  t.ok(/check lint passed in/.test(first.stdout), first.stdout)
+  const again = await tm.as('a1', ['check'])
+  t.ok(/check lint passed on this tree \d+s ago \(not run again\)/.test(again.stdout), again.stdout)
+  const forced = await tm.as('a1', ['check', '--recheck'])
+  t.ok(/check lint passed in/.test(forced.stdout), '--recheck runs it: ' + forced.stdout)
+  const landed = await tm.as('a1', ['land', '-m', 'd'])
+  t.is(landed.code, 0, landed.stdout + landed.stderr)
+  t.ok(/check test passed on this tree \d+s ago \(not run again\)/.test(landed.stdout))
+  t.ok(/landed #\d+/.test(landed.stdout))
+
+  // a change since the pass: run again
+  tm.write('a1', 'src/d.js', 'd2\n')
+  const changed = await tm.as('a1', ['check', 'lint'])
+  t.ok(/check lint passed in/.test(changed.stdout), changed.stdout)
+
+  // parallel checks next to each other run at the same time (each waits for the other to
+  // start, so one at a time would fail both); output stays in order
+  const par = await tm.as('a1', ['check', 'p1', 'p2'])
+  t.is(par.code, 0, par.stdout + par.stderr)
+  t.ok(/check p1 passed in[^\n]*\ncheck p2 passed in/.test(par.stdout), par.stdout)
 })

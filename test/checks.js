@@ -174,3 +174,49 @@ test(
     t.ok(Date.now() - started < 5000, 'killed, not waited out')
   }
 )
+
+test('checks: parallel groups neighbours, the rest run one by one', (t) => {
+  const c = checks.parseChecks(
+    'a parallel run true\nb parallel run true\nc run true\nd parallel run true\ndefault a b c d\n'
+  )
+  t.alike(c.errors, [])
+  const order = checks.batches(checks.resolve(c, undefined)).map((b) => b.map((e) => e.name))
+  t.alike(order, [['a', 'b'], ['c'], ['d']])
+})
+
+test('checks: the tree id covers main as based on and every change, in any order', (t) => {
+  const b4a = require('b4a')
+  const base = b4a.alloc(32, 1)
+  const a = { path: '/a.js', value: b4a.from('A') }
+  const b = { path: '/b.js', value: b4a.from('B') }
+  const id = checks.treeId(base, [a, b])
+  t.is(checks.treeId(base, [b, a]), id, 'order of changes does not matter')
+  t.not(checks.treeId(base, [a, { path: '/b.js', value: b4a.from('B2') }]), id, 'content')
+  t.not(checks.treeId(b4a.alloc(32, 2), [a, b]), id, 'main it is based on')
+  t.not(checks.treeId(base, [a, { path: '/b.js', value: null }]), id, 'a deletion')
+  t.not(checks.treeId(base, [a]), id, 'one change fewer')
+})
+
+test('checks: the cache keeps the last pass per check, keyed by command too', async (t) => {
+  const path = require('bare-path')
+  const dir = await require('test-tmp')(t)
+  const file = path.join(dir, 'checks.json')
+  t.alike(checks.loadCache(file), { passed: {} }, 'missing file: empty')
+  const lint = { name: 'lint', command: 'npm run lint' }
+  const cache = checks.loadCache(file)
+  checks.rememberPass(cache, lint, 'tree1', 6.3, 1000)
+  checks.saveCache(file, cache)
+  const back = checks.loadCache(file)
+  t.alike(checks.cachedPass(back, lint, 'tree1'), { tree: 'tree1', at: 1000, secs: 6.3 })
+  t.is(checks.cachedPass(back, lint, 'tree2'), null, 'another tree')
+  t.is(
+    checks.cachedPass(back, { name: 'lint', command: 'npm run lint:fix' }, 'tree1'),
+    null,
+    'the command changed in /.hschecks'
+  )
+  require('bare-fs').writeFileSync(file, 'not json')
+  t.alike(checks.loadCache(file), { passed: {} }, 'a broken file is ignored')
+  t.is(checks.ago(40000), '40s ago')
+  t.is(checks.ago(180000), '3m ago')
+  t.is(checks.ago(3 * 3600000), '3h ago')
+})

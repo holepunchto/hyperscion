@@ -23,6 +23,9 @@ default  lint test docs
 - **Options** go before the kind:
   - `timeout=<n>[s|m|h]` kills the check, and everything it started, after that long.
   - `manual` runs the check only when it's named, never as part of `default`.
+  - `parallel` runs the check at the same time as the `parallel` checks next to it in the
+    list. Output still prints in list order, one check at a time. Only use it for checks that
+    don't write the same files.
   - `paths=<pattern>[,<pattern>]` runs the check only when a change touches one of these
     paths. Patterns work as in `/.hsattributes`: with no `/` a pattern matches the basename
     anywhere, `*` stays within one segment, and a trailing `/` matches everything under that
@@ -46,6 +49,7 @@ line on every command that reads the file. The rest of the file still works.
 | `hs check test integ`        | those checks                                                                        |
 | `hs check --list`            | what `/.hschecks` defines                                                           |
 | `hs check --no-sync`         | the checks on your files as they are, without bringing main in first                |
+| `hs check --recheck`         | every check, even one that already passed on this exact tree                        |
 
 **Both commands check the same tree.** They bring main into your files first, then run the
 checks in the worktree root, so a pass from `hs check` means `hs land` should pass too,
@@ -57,6 +61,22 @@ unless main moves in between.
   again. Changes outside your sparse checkout, or under paths `/.hsattributes` marks `-check`,
   don't trigger a re-run.
 - Land stops at the first failing check, while `hs check` runs them all.
+
+**A pass is remembered for this exact tree.** A check that already passed on the tree you're
+about to check isn't run again, by `hs check` or by land:
+`check test passed on this tree 40s ago (not run again)`. So `hs check` while you work,
+then `hs land`, costs one run, not two. On this repo that's 47 s, then 1 s.
+
+- **What "this tree" means:** main as your work is based on it (its hash, so a reordered main
+  counts as different), plus every changed path and its content.
+- **What re-runs a check:** a change to any file, main moving, or editing the check's command
+  in `/.hschecks`.
+- **Only passes are kept.** A failing check always runs again.
+- **Where it's stored:** `.hs/checks.json`, which is local to the worktree.
+
+**A hit can be stale.** The cache doesn't see what the tree doesn't hold (`node_modules`,
+tools, the environment), the same blind spot as any local test run. `hs check --recheck`
+runs everything regardless.
 
 **`paths=` applies only to the default set.** A check you name always runs. With nothing
 changed yet, `hs check` runs the whole default line.
@@ -97,6 +117,5 @@ on a peer that checks for others, where a clean environment is the point.
 
 ## Next
 
-- **A local result cache:** a check that passed on this exact tree doesn't run again at land.
 - **Shared check records:** `hs log` shows which checks passed on which changeset, and by
   whom. `/.hsreview` can require them.
