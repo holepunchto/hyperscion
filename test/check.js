@@ -231,3 +231,64 @@ test('repo-declared checks: hs check, and land runs the default', async (t) => {
   t.is(par.code, 0, par.stdout + par.stderr)
   t.ok(/check p1 passed in[^\n]*\ncheck p2 passed in/.test(par.stdout), par.stdout)
 })
+
+// /.hsreview checks= rules: land runs what they require (even with --skip-checks), records the
+// checks on the changeset, and hs log / hs show print them
+test('checks required by /.hsreview are run, recorded and shown', async (t) => {
+  const tm = await team(t, {
+    agents: ['a1'],
+    files: {
+      '.hschecks': 'lint run true\nsec run echo sec-ran\ndefault lint\n',
+      '.hsreview': '/src/ checks=sec\n',
+      'src/a.js': 'a\n'
+    }
+  })
+  await tm.as('a1', ['sync'])
+
+  tm.write('a1', 'src/b.js', 'b\n')
+  const checked = await tm.as('a1', ['check'])
+  t.is(checked.code, 0, checked.stdout + checked.stderr)
+  t.ok(/also running sec: \/\.hsreview requires it for \/src\/b\.js/.test(checked.stdout))
+  t.ok(/check sec passed/.test(checked.stdout), checked.stdout)
+
+  const landed = await tm.as('a1', ['land', '-m', 'b'])
+  t.is(landed.code, 0, landed.stdout + landed.stderr)
+  t.ok(
+    /check sec passed on this tree/.test(landed.stdout),
+    'cached from hs check: ' + landed.stdout
+  )
+  const seq = landed.stdout.match(/landed #(\d+)/)[1]
+
+  const log = await tm.as('a1', ['log', '-n', '1'])
+  t.ok(/^ {4}checked: lint,sec$/m.test(log.stdout), log.stdout)
+  const show = await tm.as('a1', ['show', seq])
+  t.ok(
+    /checked before landing, on main #\d+ \+ these changes: lint \(passed earlier on this tree\), sec \(passed earlier on this tree\)/.test(
+      show.stdout
+    ),
+    show.stdout
+  )
+
+  // --skip-checks skips the default, not what policy requires
+  tm.write('a1', 'src/c.js', 'c\n')
+  const skipped = await tm.as('a1', ['land', '-m', 'c', '--skip-checks'])
+  t.is(skipped.code, 0, skipped.stdout + skipped.stderr)
+  t.ok(/--skip-checks, but \/\.hsreview requires sec here: running them/.test(skipped.stdout))
+  t.ok(/check sec passed in/.test(skipped.stdout))
+  t.absent(/check lint/.test(skipped.stdout), 'the default is skipped')
+  const one = await tm.as('a1', ['log', '-n', '1', '--oneline'])
+  t.ok(/:: c|c {2}\(checked: sec\)/.test(one.stdout), one.stdout)
+
+  // a required check /.hschecks doesn't define: refused before anything runs
+  tm.write('a1', '.hsreview', '/src/ checks=sec\n/lib/ checks=missing\n')
+  t.is((await tm.as('a1', ['land', '-m', 'policy', '--skip-checks'])).code, 0)
+  tm.write('a1', 'lib/a.js', 'a\n')
+  const refused = await tm.as('a1', ['land', '-m', 'lib'])
+  t.not(refused.code, 0)
+  t.ok(
+    /\/lib\/a\.js needs check missing \(\/lib\/ in \/\.hsreview\), but \/\.hschecks doesn't define it/.test(
+      refused.stderr
+    ),
+    refused.stderr
+  )
+})

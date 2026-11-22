@@ -220,6 +220,79 @@ test('.hsreview: protected paths land only through approved proposals, including
   t.is(res.outcome.status, 'needs-review', 'changing the policy needs review too')
 })
 
+// /.hsreview check rules: a land touching covered paths must carry the named checks
+// (docs/CHECKS.md). Apply enforces it, so every peer agrees; the checks stay on the changeset
+test('policy: checks= rules need the named checks on the land', async (t) => {
+  const { a, b, settle } = await team(t)
+  const wa = await a.workspace('wa')
+  await wa.commit([put('/.hsreview', '/src/ checks=lint,test\n')])
+  t.is((await wa.land({ message: 'policy' })).outcome.status, 'accepted')
+
+  await wa.commit([put('/src/x.js', 'x\n')])
+  let res = await wa.land({ message: 'x' })
+  t.is(res.outcome.status, 'needs-check')
+  t.ok(
+    /\/src\/x\.js needs checks lint, test \(\/src\/ in \/\.hsreview\)/.test(res.outcome.reason),
+    res.outcome.reason
+  )
+
+  res = await wa.land({
+    message: 'x',
+    checks: [{ name: 'lint', command: 'npm run lint', ms: 6300 }]
+  })
+  t.is(res.outcome.status, 'needs-check')
+  t.ok(
+    /needs check test \(/.test(res.outcome.reason),
+    'only the missing one: ' + res.outcome.reason
+  )
+
+  // a command run with --check has no name: it can't stand in for a named check
+  res = await wa.land({
+    message: 'x',
+    checks: [
+      { name: 'lint', command: 'npm run lint' },
+      { name: '', command: 'test' }
+    ]
+  })
+  t.is(res.outcome.status, 'needs-check', 'unnamed checks satisfy no rule')
+
+  res = await wa.land({
+    message: 'x',
+    checks: [
+      { name: 'lint', command: 'npm run lint', ms: 6300 },
+      { name: 'test', command: 'npm test', ms: 0, cached: true }
+    ]
+  })
+  t.is(res.outcome.status, 'accepted')
+  const cs = await a.changeset(res.outcome.seq)
+  t.alike(cs.checks, [
+    { name: 'lint', command: 'npm run lint', ms: 6300, cached: false },
+    { name: 'test', command: 'npm test', ms: 0, cached: true }
+  ])
+
+  // paths no rule covers land without checks
+  await wa.commit([put('/docs/a.md', 'a\n')])
+  t.is((await wa.land({ message: 'docs' })).outcome.status, 'accepted')
+
+  // peers' data is bounded: at most 32 checks, names and commands cut, one per name
+  const many = []
+  for (let i = 0; i < 40; i++) many.push({ name: 'c' + i, command: 'x'.repeat(400) })
+  many.unshift({ name: 'n'.repeat(100), command: 'y' }, { name: 'c0', command: 'dup' })
+  await wa.commit([put('/docs/b.md', 'b\n')])
+  res = await wa.land({ message: 'many', checks: many })
+  t.is(res.outcome.status, 'accepted')
+  const big = await a.changeset(res.outcome.seq)
+  t.is(big.checks.length, 32)
+  t.is(big.checks[0].name.length, 64)
+  t.is(big.checks[1].command, 'dup', 'the first c0 is kept')
+  t.is(big.checks.filter((r) => r.name === 'c0').length, 1)
+  t.ok(big.checks.every((r) => r.command.length <= 300))
+
+  // every peer applies the same rule to the same result
+  await settle()
+  t.alike((await b.changeset(cs.seq)).checks, cs.checks, 'b sees the same checks')
+})
+
 async function team(t) {
   const repos = []
   for (let i = 0; i < 3; i++) {

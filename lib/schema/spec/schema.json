@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "schema": [
     {
       "name": "head",
@@ -148,6 +148,12 @@
           "array": true,
           "type": "@hs/text",
           "version": 16
+        },
+        {
+          "name": "checks",
+          "array": true,
+          "type": "@hs/check-result",
+          "version": 20
         }
       ]
     },
@@ -351,6 +357,12 @@
           "name": "blobsLength",
           "type": "uint",
           "version": 10
+        },
+        {
+          "name": "checks",
+          "array": true,
+          "type": "@hs/check-result",
+          "version": 20
         }
       ]
     },
@@ -1147,6 +1159,34 @@
           "name": "text",
           "type": "string",
           "version": 15
+        }
+      ]
+    },
+    {
+      "name": "check-result",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "version": 20
+        },
+        {
+          "name": "command",
+          "type": "string",
+          "version": 20
+        },
+        {
+          "name": "ms",
+          "type": "uint",
+          "version": 20
+        },
+        {
+          "name": "cached",
+          "type": "bool",
+          "version": 20
         }
       ]
     }

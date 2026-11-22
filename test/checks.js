@@ -220,3 +220,34 @@ test('checks: the cache keeps the last pass per check, keyed by command too', as
   t.is(checks.ago(180000), '3m ago')
   t.is(checks.ago(3 * 3600000), '3h ago')
 })
+
+test('checks: /.hsreview checks= rules, alongside approvals', (t) => {
+  const rules = require('../lib/rules')
+  const r = rules.parseCheckRules(
+    [
+      '/src/ checks=lint,test',
+      'contract.md approvals=1 checks=lint',
+      'task kind=idea approvals=1',
+      '*.md approvals=1',
+      '/bad/ checks=$nope'
+    ].join('\n')
+  )
+  t.alike(
+    r.map((x) => [x.pattern, x.checks]),
+    [
+      ['/src/', ['lint', 'test']],
+      ['contract.md', ['lint']]
+    ]
+  )
+  t.alike(
+    rules.requiredChecks(r, ['/src/deep/a.js', '/docs/contract.md']),
+    [
+      { name: 'lint', pattern: '/src/', path: '/src/deep/a.js' },
+      { name: 'test', pattern: '/src/', path: '/src/deep/a.js' }
+    ],
+    'one per name, the first rule that asks'
+  )
+  t.alike(rules.requiredChecks(r, ['/docs/a.md']), [], 'uncovered')
+  t.is(rules.parseReview('contract.md approvals=1 checks=lint')[0].approvals, 1, 'review rule kept')
+  t.is(rules.parseReview('/src/ checks=lint').length, 0, 'checks= alone is no review rule')
+})

@@ -91,6 +91,42 @@ the whole tree (`prettier .`, a linter, `find`) sees `.hs/`, hs's own state, the
 see `.git/`. Most tools skip `.git/` by default but not `.hs/`, so add `.hs/` to their
 ignore files (this repo's `.prettierignore` does).
 
+## What a land records, and requiring checks
+
+**Every land records the checks it passed.** `hs log` shows them under the message, and
+`hs log --oneline` at the end of the line. `hs show` gives names and times, and says which
+passes came from the cache. `hs watch --json` puts them in each changeset's `checks`. They
+are the checks run on the land's base plus its changes. A land that main moved under
+(outside what the check reads) is recorded with the checks of the state it checked.
+
+**`/.hsreview` can require checks** for paths, enforced when the land is applied, so every
+peer agrees:
+
+```
+/src/          checks=lint,test
+contract.md    approvals=1 checks=lint
+```
+
+- **A land touching a covered path must carry each named check.** Without them it's
+  refused as `needs-check`, naming the path, the missing checks and the rule.
+- **Patterns** work as in `/.hsattributes`: a trailing `/` covers everything under the
+  directory. A line can also say `approvals=`.
+- **`hs land` runs what the rules require** for the paths it touches, even when the default
+  line leaves those checks out, and even with `--skip-checks`. `hs check` does the same, so
+  its passes are the ones land reuses.
+- **A required check that `/.hschecks` doesn't define** is refused before anything runs.
+- **A `--check "<command>"` has no name,** so it can't stand in for a required check.
+
+**This is the lander's word.** A record says the lander's hs ran these checks and they
+passed. That keeps honest agents from forgetting, and lets teammates see what was verified.
+It can't stop a writer who lies, any more than a commit message can. Real attestation,
+peers that re-run checks and sign the result, is where the reserved `act` kind and a
+separate check op would come in.
+
+**Every peer must run an hs that knows `checks=` before a repo adds one.** An older peer
+would accept lands a newer peer refuses, and their views of main would differ. Peers that
+don't know the land's `checks` field simply ignore it.
+
 ## Why hs doesn't run the CI workflows (yet)
 
 The obvious alternative was to run the project's `.github/workflows` jobs locally with
@@ -117,5 +153,6 @@ on a peer that checks for others, where a clean environment is the point.
 
 ## Next
 
-- **Shared check records:** `hs log` shows which checks passed on which changeset, and by
-  whom. `/.hsreview` can require them.
+- **Check peers:** a peer that re-runs a changeset's checks (hermetically, perhaps with the
+  `act` kind) and records the result as its own op, an attestation rather than the lander's
+  word.
