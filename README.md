@@ -72,6 +72,15 @@ folder you delete.
 - **Agents** follow a playbook ([docs/AGENTS.md](docs/AGENTS.md)) and claim work with tasks
   ([docs/TASKS.md](docs/TASKS.md)) so two of them don't build the same thing.
 
+## From the experiments
+
+We test hs with teams of AI agents and keep the traces. One example: an Opus lead delegated
+a change to two Haiku workers. Without a check gate, a worker's contract-breaking change
+landed, the lead approved it about 10 seconds later without an `hs show` of it, and main
+stayed broken for 3.4 minutes. With the repo's checks declared in `/.hschecks`, a land like
+that is refused with the exact mismatch. [docs/WINS.md](docs/WINS.md) collects cases like
+this, with the runs they come from.
+
 ## Documentation
 
 | page                                     | what                                                                   |
@@ -87,6 +96,8 @@ folder you delete.
 | [Hub homes](docs/hub-homes.md)           | many repos from one hub process, as a service, with updates            |
 | [Agent playbook](docs/AGENTS.md)         | how an agent works in a team with hs                                   |
 | [Tasks](docs/TASKS.md)                   | claiming work, splitting it, approvals                                 |
+| [Checks](docs/CHECKS.md)                 | repo-declared checks: `/.hschecks`, `hs check`, required checks        |
+| [Wins](docs/WINS.md)                     | runs where hs changed the outcome, with the traces                     |
 | [Finality](docs/FINALITY.md)             | provisional, settled, final, and why                                   |
 | [Design](docs/DESIGN.md)                 | architecture, measurements, open problems                              |
 | [History](docs/history/README.md)        | design records and decisions behind hs, with the runs that drove them  |
