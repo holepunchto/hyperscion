@@ -56,6 +56,37 @@ test('checkout, edit, status, commit round-trip', async (t) => {
   await main.close()
 })
 
+// Windows CI (0.2.1): a checkout, then an edit to same-size content within one clock tick,
+// kept the mtime and size, and status trusted its stat cache: the edit went missing. An entry
+// recorded within RACY_MS of its file's mtime is re-hashed, not trusted. Pinning the mtime to
+// a whole second reproduces "same tick, same size" on any filesystem
+test('an edit with the same mtime and size as the cached stat is still seen', async (t) => {
+  const repo = await setup(t)
+  const seed = await repo.workspace('seed')
+  await seed.commit([put('/a.txt', 'a\n')])
+  await seed.land()
+
+  const dir = await tmp(t)
+  const wt = new Worktree(dir)
+  const ws = await repo.workspace('w')
+  await wt.checkout(ws)
+  const abs = path.join(dir, 'a.txt')
+  const tick = Math.floor(Date.now() / 1000)
+
+  fs.utimesSync(abs, tick, tick)
+  t.is((await wt.checkout(ws)).skipped, 1, 'checkout re-hashes it and records the pinned mtime')
+
+  fs.writeFileSync(abs, 'A\n')
+  fs.utimesSync(abs, tick, tick)
+  const st = await wt.status(ws)
+  t.alike(
+    st.map((c) => c.status + ' ' + c.path),
+    ['modified /a.txt'],
+    'same mtime and size, different content: modified'
+  )
+  t.is((await wt.commit(ws)).committed, 1)
+})
+
 test('sparse checkout only materializes prefixes and never deletes outside them', async (t) => {
   const repo = await setup(t)
   const seed = await repo.workspace('seed')
