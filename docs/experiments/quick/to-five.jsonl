@@ -81,3 +81,6 @@
 {"run":"q0m-hs-1","agent":"a1","usefulness":4,"to_five":"hs task split <id> <title> --paths a,b (or variadic) plus -m/--spec-file whose text 'hs task start <sub>' prints to the worker, so the spec lives with the subtask instead of only in NOTES.md"}
 {"run":"q0m-hs-1","agent":"a2","usefulness":4,"to_five":"hs land --done should close the task it names (or say it did not), so the lead does not need a second command; that is the only gap for this task"}
 {"run":"q0m-hs-1","agent":"a3","usefulness":4,"to_five":"A working 'hs task show <id>' that lists the task's subtasks, leads and linked lands in one command"}
+{"run":"q0m-nogate-1","agent":"a1","usefulness":4,"to_five":"hs task split --paths accepting multiple files, and hs task done T... showing the subtasks' lands plus a check run (npm test) on main before closing the change request"}
+{"run":"q0m-nogate-1","agent":"a2","usefulness":4,"to_five":"hs land in a repo with no /.hschecks should print a loud untested warning (or require --check \"npm test\"), so the land itself says whether it was verified."}
+{"run":"q0m-nogate-1","agent":"a3","usefulness":4,"to_five":"A working `hs task show T60f387` that prints the subtask's title, lead, status and linked changesets, plus a land line saying which checks ran and passed (e.g. `checks: npm test passed`)."}
