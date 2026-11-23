@@ -109,7 +109,9 @@ for (const r of runs) {
   if (r.exit === 1 && !notLanded) a.errors++
   if (r.exit === 2) a.warnings++
   if (r.argv.includes('--help') || r.argv.includes('-h') || cmd === 'help') a.helps++
-  if (has(r, /UNKNOWN_FLAG|unknown flag|UNKNOWN_COMMAND|unknown command/i)) a.unknownFlags++
+  if (has(r, /UNKNOWN_FLAG|unknown flag|UNKNOWN_COMMAND|unknown command|unexpected argument/i)) {
+    a.unknownFlags++
+  }
   if (cmd === 'pull' || (['land', 'propose'].includes(cmd) && r.argv.includes('-o'))) a.oldHabits++
   // asks and reviews: `hs review ask|approve|changes|comment`, and in archived runs the old
   // `hs propose` and `hs review <target> <verdict>`

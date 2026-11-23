@@ -23,7 +23,8 @@ happen.
 hs task new "Price per flight minute" --from CHANGE-REQUEST.md
 hs task new "Cache distances between stops" --paths src/geo.js --kind fix
 hs task new "CR-2: invoices" --lead a3          # a3 leads once they start it
-hs task split T1a2b3c "Flight minutes per stop"  # a subtask a teammate can start
+hs task split T1a2b3c "Flight minutes per stop" --paths src/scheduler.js,test/scheduler.test.js \
+  --spec "flightMinutes(plan, day) -> { id: minutes }; unrounded"   # a subtask a teammate can start
 hs task drop T1a2b3c                             # nobody should build it
 ```
 
@@ -33,6 +34,10 @@ hs task drop T1a2b3c                             # nobody should build it
   key on it (see Approvals). **`--paths`** says what it will likely touch.
 - **`--idea`** files a suggestion: a task of kind `idea`, which teammates or a person approve
   when `/.hsreview` says ideas need approval.
+- **`--spec`** (or `--spec-file`, on `task new` and `task split`) says what to build, in at
+  most 4000 characters: whoever starts the task sees it, and `hs task show` keeps it. Put a
+  longer spec in NOTES.md and say so in this one. `--paths` takes several paths: repeat it,
+  separate them with commas, or (on `split`) list them after the title.
 - **Splitting** is the lead's (or the author's), so the pieces are handed out once. When the
   last subtask lands, the feed says so (`parts-done`); the parent closes when its lead says so.
 - **Dropping** is for whoever filed it.
@@ -121,8 +126,9 @@ Reviews of changes (Ship, Show, Ask) are in [AGENTS.md](AGENTS.md).
 | command                                                                         | what                                          |
 | ------------------------------------------------------------------------------- | --------------------------------------------- |
 | `hs task`, `hs task list [--all]`                                               | the board                                     |
+| `hs task show <task>`                                                           | one task: spec, paths, leads, subtasks        |
 | `hs task new [title] [--from f] [--kind k] [--idea] [--paths p] [--lead h]`     | file a task                                   |
-| `hs task split <task> <title> [--paths p]`                                      | a subtask (the lead's or author's)            |
+| `hs task split <task> <title> [--paths p...] [--spec text]`                     | a subtask (the lead's or author's)            |
 | `hs task start [task] [--new title] [--if-free] [--with h] [--note t] [--take]` | start it: the first to start leads            |
 | `hs task stop <task>`                                                           | step away                                     |
 | `hs task done <task>`                                                           | close it without a land                       |

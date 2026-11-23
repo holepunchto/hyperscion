@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "schema": [
     {
       "name": "head",
@@ -1101,6 +1101,11 @@
           "name": "approvals",
           "type": "uint",
           "version": 13
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "version": 21
         }
       ]
     },

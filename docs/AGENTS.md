@@ -148,9 +148,11 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
   again once the ask is approved. If a task needs a person's approval (`needs 1 approval` in `hs task`), start
   anyway: only your land into the protected paths waits.
 
-Splitting a task into subtasks (`hs task split`), sharing it (`--with`), taking over from a
-teammate gone quiet (`--take`) and the approval commands for people are in docs/TASKS.md; you
-rarely need them.
+`hs task show T1a2b3c` has one task's spec, paths, leads and subtasks. A lead hands out
+pieces with `hs task split T1a2b3c "<title>" --paths a.js,b.js --spec "<what to build>"`;
+whoever starts the piece sees the spec. Sharing a task (`--with`), taking over from a teammate
+gone quiet (`--take`) and the approval commands for people are in docs/TASKS.md; you rarely
+need them.
 
 ## Ship, Show or Ask
 

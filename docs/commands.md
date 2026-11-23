@@ -33,7 +33,7 @@ Every command that talks to peers does so by default; `--offline` opts out. A la
 | `log [path] [-n n] [--oneline]`, `show <n\|An> [--stat] [--path p]`            | history with files and states; a changeset or an ask with its diff                                           |
 | `review` (alone: what waits on you), `review ask [-m] [-r handles] [-q n]`     | ask before landing (Ship / Show / Ask, see [AGENTS.md](AGENTS.md))                                           |
 | `review approve\|changes\|comment <An\|n\|Tid> [-m]`, `review list [--all]`    | approve, submit feedback suggesting changes, or comment; every open ask                                      |
-| `task` (the board), `task new\|split\|start\|stop\|done\|drop`                 | who builds what: start a task before building it ([TASKS.md](TASKS.md))                                      |
+| `task` (the board), `task show\|new\|split\|start\|stop\|done\|drop`           | who builds what: start a task before building it ([TASKS.md](TASKS.md))                                      |
 | `ls [prefix]`, `cat <path>`                                                    | read main (or `--ws`, your workspace) without a checkout                                                     |
 | `commit`, `restore <path…>`, `checkout [prefix…]`                              | checkpoint edits, discard edits, materialize files (optionally sparse)                                       |
 | `export <dir> [--at n]`                                                        | write main as it was at changeset #n into a directory (like `git archive`)                                   |

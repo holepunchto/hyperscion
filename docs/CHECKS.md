@@ -37,6 +37,10 @@ default  lint test docs
 Mistakes (an unknown option, a `default` naming a check that doesn't exist) are reported by
 line on every command that reads the file. The rest of the file still works.
 
+**A repo without `/.hschecks`** lands as before, with no checks run. A land that changes more
+than `NOTES.md` says so (`no checks ran: this repo declares none`), so whoever reads the
+output knows that nothing verified it.
+
 ## Using it
 
 | Command                      | What it runs                                                                        |

@@ -418,3 +418,75 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     failed.stderr
   )
 })
+
+// q0m friction: a lead splits with several paths and a spec, the worker sees the spec when it
+// starts, `hs task show` has the whole picture, and help and parse mistakes say what to type
+test('tasks: split with several paths and a spec, task show, hs help, usage errors (q0m)', async (t) => {
+  t.timeout(240_000)
+  const tm = await team(t, { files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' } })
+  await tm.as('a1', ['sync'])
+  await tm.as('a2', ['sync'])
+
+  const made = await tm.as('a1', ['task', 'new', 'CR-2: pricing v2'])
+  const id = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
+  await tm.as('a1', ['task', 'start', id])
+  // `--paths a b,c`: the leads in q0m typed it both ways
+  const split = await tm.as('a1', [
+    'task',
+    'split',
+    id,
+    'pricing',
+    '--paths',
+    'src/pricing.js',
+    'src/report.js,src/cli.js',
+    '--spec',
+    'weight: 0.40/kg to 2 kg, 1.00/kg above'
+  ])
+  t.is(split.code, 0, split.stdout + split.stderr)
+  const sub = split.stdout.match(/task (T[0-9a-f]{6})/)[1]
+
+  const long = await tm.as('a1', ['task', 'split', id, 'too much', '--spec', 'x'.repeat(4001)])
+  t.is(long.code, 1)
+  t.ok(/at most 4000 characters/.test(long.stderr), long.stderr)
+
+  await tm.as('a2', ['sync'])
+  const started = await tm.as('a2', ['task', 'start', sub])
+  t.ok(/you lead/.test(started.stdout), started.stdout + started.stderr)
+  t.ok(/spec: weight: 0\.40\/kg to 2 kg/.test(started.stdout), started.stdout)
+
+  const shown = await tm.as('a2', ['task', 'show', sub])
+  t.is(shown.code, 0, shown.stderr)
+  t.ok(
+    /paths: \/src\/pricing\.js \/src\/report\.js \/src\/cli\.js/.test(shown.stdout),
+    shown.stdout
+  )
+  t.ok(new RegExp(`subtask of ${id} "CR-2: pricing v2"`).test(shown.stdout), shown.stdout)
+  t.ok(/spec: weight/.test(shown.stdout), shown.stdout)
+  t.ok(/lead a2/.test(shown.stdout), shown.stdout)
+
+  // no /.hschecks here: the land says nothing verified it (q0m-nogate)
+  tm.write('a2', 'src/pricing.js', '// v2\n')
+  const landed = await tm.as('a2', ['land', '-m', 'pricing v2', '--done'])
+  t.ok(/no checks ran: this repo declares none/.test(landed.stdout), landed.stdout)
+  t.ok(new RegExp(`completes ${sub}`).test(landed.stdout), landed.stdout + landed.stderr)
+  const seq = landed.stdout.match(/landed #(\d+)/)[1]
+
+  await tm.as('a1', ['sync'])
+  const parent = await tm.as('a1', ['task', 'show', id])
+  t.ok(new RegExp(`subtask ${sub} "pricing": done #${seq}`).test(parent.stdout), parent.stdout)
+  t.ok(/lead a1/.test(parent.stdout), parent.stdout)
+  // the spec is on main too, not just in the signal that carried it
+  const fromMain = await tm.as('a1', ['task', 'show', sub])
+  t.ok(/spec: weight/.test(fromMain.stdout), fromMain.stdout)
+  t.ok(new RegExp(`done in #${seq} by a2`).test(fromMain.stdout), fromMain.stdout)
+
+  const helped = await tm.as('a1', ['help', 'task', 'split'])
+  t.is(helped.code, 0, helped.stderr)
+  t.ok(/hs task split \[flags\] <task> <title>/.test(helped.stdout), helped.stdout)
+  const missing = await tm.as('a1', ['task', 'show'])
+  t.is(missing.code, 1)
+  t.ok(/hs task show needs <task>/.test(missing.stderr), missing.stderr)
+  t.ok(/usage: hs task show \[flags\] <task>/.test(missing.stderr), missing.stderr)
+  const unknown = await tm.as('a1', ['task', 'frob'])
+  t.ok(/unknown command "frob" for hs task: one of list, show/.test(unknown.stderr), unknown.stderr)
+})

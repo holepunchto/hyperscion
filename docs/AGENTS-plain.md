@@ -29,9 +29,8 @@ hub.
   **final** once it is also accepted by review (see below).
 - **Holders** keep landed files available when their author is offline. The team's hub
   (`hs seed`, or a blind peer) is the one that's always on. Every running `hs watch` feed is a
-  holder too: it announces itself and keeps a copy of everything landed, so while the hub is
-  down, teammates still land and sync through each other's feeds. Only the hub survives your
-  machine going away, though. Don't run `hs seed` in your own worktree.
+  holder too: it announces itself and keeps a copy of everything landed. Only the hub survives
+  your machine going away, though.
 
 ## The loop
 
