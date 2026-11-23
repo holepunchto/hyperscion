@@ -3,6 +3,7 @@
 // `-check` in /.hsattributes) lands on the checked state; a teammate's change the check could
 // see still re-runs it.
 const test = require('brittle')
+const fs = require('bare-fs')
 const os = require('bare-os')
 const path = require('bare-path')
 const { team, waitFor } = require('./helpers/team')
@@ -73,7 +74,16 @@ test('read-only commands work while a land holds the worktree', async (t) => {
   const tm = await team(t, { files: { 'src/a.js': 'a\n', 'NOTES.md': '# notes\n' } })
   await tm.as('a1', ['sync'])
   tm.write('a1', 'src/slow.js', 'slow\n')
-  const landing = tm.bgAs('a1', ['land', '-m', 'slow', '--check', 'sleep 8'])
+  // the check holds the worktree until the test releases it (a fixed `sleep 8` ran out on a
+  // slow CI runner before the last command below, and `sync` then found the worktree free)
+  const release = path.join(tm.dir, 'release')
+  const landing = tm.bgAs('a1', [
+    'land',
+    '-m',
+    'slow',
+    '--check',
+    `i=0; while [ ! -f '${release}' ] && [ $i -lt 1200 ]; do sleep 0.1; i=$((i+1)); done`
+  ])
   await waitFor(() => /checking main #/.test(landing.output()), 60_000)
 
   const busy = /`hs land` \(pid \d+\) is using this worktree: showing local data, offline/
@@ -103,6 +113,7 @@ test('read-only commands work while a land holds the worktree', async (t) => {
   )
   t.absent(/seed/.test(sync.stderr), 'no misleading seed hint')
 
+  fs.writeFileSync(release, '')
   await waitFor(() => landing.exited(), 60_000)
   t.ok(/landed #\d+/.test(landing.output()), 'the land finished: ' + landing.output())
   const after = await tm.as('a1', ['status'])
