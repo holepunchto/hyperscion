@@ -11,12 +11,14 @@ set -e
 DIR=$1
 ARM=$2
 SCENARIO=$3
-[ -n "$SCENARIO" ] || { echo "usage: $0 <teamdir> <hs|hs-min|hs-plain|git> <scenario>"; exit 1; }
+[ -n "$SCENARIO" ] || { echo "usage: $0 <teamdir> <hs|hs-min|hs-plain|hs-nogate|git> <scenario>"; exit 1; }
 # hs arms of the q0 experiment: the surface agents get (pm and people keep the full one)
 case "$ARM" in
   hs) SURFACE= ;;
   hs-min) SURFACE=minimal ;;
   hs-plain) SURFACE=plain ;;
+  # q0m: the full surface without the check gate (no /.hschecks or /.hsreview)
+  hs-nogate) SURFACE= ;;
   git) ;;
   *) echo "unknown arm $ARM"; exit 1 ;;
 esac
@@ -32,7 +34,11 @@ DIR=$(cd "$DIR" && pwd)
 # the skeleton: the shared one plus the scenario's overlay
 mkdir -p "$DIR/skeleton"
 cp -r "$HERE/skeleton/." "$DIR/skeleton/"
+# a scenario can build on another one's overlay ("base": "q0")
+BASE=$(node -p "require('$SC/scenario.json').base || ''")
+if [ -n "$BASE" ]; then cp -r "$HERE/scenarios/$BASE/skeleton/." "$DIR/skeleton/"; fi
 if [ -d "$SC/skeleton" ]; then cp -r "$SC/skeleton/." "$DIR/skeleton/"; fi
+if [ "$ARM" = hs-nogate ]; then rm -f "$DIR/skeleton/.hschecks" "$DIR/skeleton/.hsreview"; fi
 
 EXTRA=$(node -p "require('$SC/scenario.json').extra.join(' ')")
 N=$(node -p "require('$SC/scenario.json').agents || 5")
@@ -84,7 +90,8 @@ if [ "$ARM" != git ]; then
   done
 fi
 
-printf '{ "arm": "%s", "scenario": "%s", "bootstrap": "%s", "siteB": "%s" }\n' "$ARM" "$SCENARIO" "${HS_BOOTSTRAP:-}" "$SITE_B" > "$DIR/run.json"
+MODELS=$(node -p "JSON.stringify(require('$SC/scenario.json').models || null)")
+printf '{ "arm": "%s", "scenario": "%s", "bootstrap": "%s", "siteB": "%s", "models": %s }\n' "$ARM" "$SCENARIO" "${HS_BOOTSTRAP:-}" "$SITE_B" "$MODELS" > "$DIR/run.json"
 # the playbook is copied in: next to docs/AGENTS-git.md, Claude Code also loads
 # docs/AGENTS.md (the hs playbook) as directory instructions, which leaks hs into the git arm
 case "$ARM" in

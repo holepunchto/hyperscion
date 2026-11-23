@@ -196,7 +196,9 @@ const actions = {
     const src = path.join(SC, files)
     const cwd = path.join(dir, 'agents', 'pm')
     const line = fs.readFileSync(path.join(src, 'NOTES.line'), 'utf8')
-    const message = 'CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)'
+    const message =
+      scenario.changeRequestMessage ||
+      'CR-1: pricing becomes per flight-minute (see CHANGE-REQUEST.md)'
     let item = null
     // keep trying for up to 10 minutes: the origin may be down when the request is due
     for (let attempt = 1; attempt <= 60; attempt++) {

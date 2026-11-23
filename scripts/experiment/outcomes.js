@@ -88,6 +88,10 @@ for (const s of states().filter(
     continue
   }
   const test = sh('npm', ['test', '--silent'], { cwd: to })
+  // q0m: CONTRACTS.md agrees with the code (the repo's own check), where the repo has one
+  const contracts = fs.existsSync(path.join(to, 'scripts', 'contracts.js'))
+    ? sh('node', ['scripts/contracts.js'], { cwd: to })
+    : null
   const acc = sh('node', [acceptance, to, ...(scenario.acceptance || [])])
   let a = { passed: 0, total: 0, failures: [] }
   try {
@@ -101,6 +105,7 @@ for (const s of states().filter(
     minute: minute(s.t),
     author: s.author,
     green: test.code === 0,
+    ...(contracts ? { contracts: contracts.code === 0 } : {}),
     acceptance: a.total ? Number((a.passed / a.total).toFixed(3)) : 0,
     ...(scenario.acceptance ? { perMinute: perMinute && a.total > 0 } : {}),
     ...(duplicates !== undefined ? { duplicates, fallbacks: impl.fallbacks } : {})

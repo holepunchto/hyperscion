@@ -69,6 +69,12 @@ for (const r of runs) {
     oldHabits: 0,
     pushRejected: 0,
     notLanded: 0,
+    checkRefused: 0,
+    checkRuns: 0,
+    checkFailed: 0,
+    checkSkips: 0,
+    needsCheck: 0,
+    shows: 0,
     waitMs: 0,
     vcsMs: 0,
     first: r.t,
@@ -90,6 +96,16 @@ for (const r of runs) {
   // round 4 fixes; that's a normal outcome, not a tool error
   const notLanded = has(r, /^!! not landed:/)
   if (notLanded) a.notLanded++
+  // the check gate (docs/CHECKS.md): lands a failing check stopped, `hs check` runs that
+  // failed, lands opting out, and lands the apply-time rules refused
+  if (has(r, /^!! not landed: check/)) a.checkRefused++
+  if (cmd === 'check') {
+    a.checkRuns++
+    if (r.exit !== 0) a.checkFailed++
+  }
+  if (r.argv.includes('--skip-checks')) a.checkSkips++
+  if (has(r, /needs-check/)) a.needsCheck++
+  if (cmd === 'show') a.shows++
   if (r.exit === 1 && !notLanded) a.errors++
   if (r.exit === 2) a.warnings++
   if (r.argv.includes('--help') || r.argv.includes('-h') || cmd === 'help') a.helps++
@@ -153,6 +169,9 @@ function countGit(a, r, cmd) {
 }
 
 const rows = Object.entries(agents).sort()
+const runInfo = fs.existsSync(path.join(dir, 'run.json'))
+  ? JSON.parse(fs.readFileSync(path.join(dir, 'run.json'), 'utf8'))
+  : {}
 const total = (k) => rows.reduce((n, [, a]) => n + a[k], 0)
 
 console.log(`# hs usage: ${runs.length} calls since ${new Date(started).toISOString()}\n`)
@@ -257,6 +276,27 @@ const metrics = {
   reviews_given: total('reviewsGiven'),
   shows_sent: total('showsSent'),
   needs_review_rejections: total('needsReview'),
+  check_refused_lands: total('checkRefused'),
+  check_runs: total('checkRuns'),
+  check_runs_failed: total('checkFailed'),
+  check_skips: total('checkSkips'),
+  needs_check_rejections: total('needsCheck'),
+  // q0m: the lead's review work and each agent's model (run.json)
+  shows: total('shows'),
+  per_agent: Object.fromEntries(
+    rows.map(([name, a]) => [
+      name,
+      {
+        model: (runInfo.models || {})[name] || null,
+        calls: Object.values(a.cmds).reduce((x, y) => x + y, 0),
+        lands: a.lands,
+        check_refused: a.checkRefused,
+        check_runs: a.checkRuns,
+        shows: a.shows,
+        reviews: a.reviewsGiven
+      }
+    ])
+  ),
   exit_errors: total('errors'),
   exit_warnings: total('warnings'),
   help_calls: total('helps'),

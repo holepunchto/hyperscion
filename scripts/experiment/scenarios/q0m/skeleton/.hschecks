@@ -1,0 +1,5 @@
+# what `hs check` and every `hs land` run (hs help check); a land that touches none of a
+# check's paths skips it
+test       paths=/src/,/test/,/fixtures/,/package.json          run npm test
+contracts  paths=/src/,/CONTRACTS.md,/scripts/,/fixtures/       run node scripts/contracts.js
+default    test contracts

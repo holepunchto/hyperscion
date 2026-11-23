@@ -1,0 +1,31 @@
+{
+  "name": "Q0m: mixed model sizes, with and without the check gate",
+  "about": "A large-model lead (a1) hands a trap-laden change request (CR-2: pricing v2 with weight tiers, a minimum, express, rush hour, and flight minutes in --json and the report) to two small-model workers (a2, a3). The repo declares `test` and `contracts` checks (/.hschecks) and /.hsreview requires them on src/ and CONTRACTS.md. Arms (setup.sh): hs (the gate) and hs-nogate (same repo and scripts/contracts.js, no /.hschecks or /.hsreview; the prompt only says to verify). Question: does the gate cut the bugs that reach main, or the lead's review work? Models per agent are in `models`; start each agent with that model.",
+  "base": "q0",
+  "agents": 3,
+  "models": { "a1": "opus", "a2": "haiku", "a3": "haiku" },
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--pricing-v2"],
+  "claims": true,
+  "changeRequestLead": "a1",
+  "changeRequestMessage": "CR-2: pricing v2 (see CHANGE-REQUEST.md)",
+  "brief": "\n**This is a short run (about 6 minutes of work).** The planner works and `npm test` passes. Shortly after you start, the product manager lands change request CR-2 (`CHANGE-REQUEST.md` on main, a `- [pm] CHANGE REQUEST ...` line in NOTES.md, and a task that a1 leads). a1 leads the team: a1 splits the change request into pieces and hands them out, a2 and a3 build them, a1 reviews.\n",
+  "roles": {
+    "a1": "**a1 leads the team.** You don't write code under `src/` yourself. When CR-2 lands: start its task (`hs task start <id>`), split it into one subtask per worker (`hs task split <id> \"<title>\" --paths <files>`), and write each worker's spec in NOTES.md (`- [a1] a2: ...`): which files, which functions, the exact rules and the worked examples that apply. Then review what a2 and a3 land (`hs show <n>`, `hs review approve <n>` or `hs review changes <n> -m \"...\"`). You may add tests. Close the change request (`hs task done <id>`) once main does everything it asks.",
+    "a2": "**a2 maintains `src/model.js`, `src/geo.js` and `src/scheduler.js`.** a1 leads CR-2 and hands out its pieces (`hs task`, NOTES.md): start the subtask a1 gives you (`hs task start <id>`), build it, and land it with `hs land --done -m \"...\"`. If a1 asks for changes, fix them and land again.",
+    "a3": "**a3 maintains `src/pricing.js`, `src/report.js`, `src/cli.js` and `test/integration.test.js`.** a1 leads CR-2 and hands out its pieces (`hs task`, NOTES.md): start the subtask a1 gives you (`hs task start <id>`), build it, and land it with `hs land --done -m \"...\"`. If a1 asks for changes, fix them and land again."
+  },
+  "schedule": [{ "at": 0.5, "do": "change-request", "files": "change-request" }],
+  "duplication": {
+    "label": "CR-2 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "verify": {
+    "hs": "(it runs the repo's checks first; `hs check` runs them without landing)",
+    "hs-nogate": "(verify your work before you land)"
+  },
+  "stop": "Stop as soon as CR-2 is on main and a1 has closed its task, or at minute 8 (`date` against when you started), whichever comes first. a2 and a3: once your piece is on main and a1 has nothing more for you, stop."
+}

@@ -91,6 +91,23 @@ Use it before a full round. There are two tiers.
      `first_land_min`, `round_trips_per_land`) and `duplicate_implementations` against
      `fallback_computations`.
 
+   - **Mixed model sizes, `q0m` (about 6 min):** does the check gate let a large model hand
+     work to small ones? a1 (Opus) leads, splits change request CR-2 and reviews; a2 and a3
+     (Haiku) build it. CR-2 is pricing v2 with traps small models miss: weight tiers, a
+     minimum, express before a rush-hour surcharge, and flight minutes in `--json` and the
+     report, which also changes CONTRACTS.md.
+     - Start each agent with the model in `scenario.json` `models` (also in run.json).
+     - Arms:
+       - `hs`: `/.hschecks` runs `test` and `contracts` (`scripts/contracts.js`: CONTRACTS.md
+         against the exports and `--json` keys), with `paths=`, and `/.hsreview` requires both
+         on `src/` and CONTRACTS.md;
+       - `hs-nogate`: the same repo without `/.hschecks` or `/.hsreview`; the prompt only says
+         to verify.
+     - Score:
+       - acceptance (`--pricing-v2`), and `contracts` per main state in outcomes.json;
+       - `check_refused_lands` and `per_agent` (model, lands, refusals, shows, reviews) in
+         metrics.json.
+
    - **Before any LLM run, the scripted tiers:** `npm run flows` (test/flows.js runs the real
      CLI through claim, split, approve, merge, waits and re-land flows, about 100 s, and
      writes flows.json; test/coordination-props.js holds the pure properties). A flow change

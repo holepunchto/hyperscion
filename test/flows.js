@@ -285,6 +285,25 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     t.ok(new RegExp(`completes ${id3}`).test(landed.stdout), landed.stdout)
   })
 
+  // F10b: the land also touches a file in a teammate's task (q0m-hs-1: a2 updated
+  // CONTRACTS.md, which was in a3's subtask's paths; here API.md): it still links to the one task its
+  // author leads, and --done closes it
+  await flow('F10b land --done across tasks', async () => {
+    const [x] = others
+    const mineT = await ownerHs(['task', 'new', 'CR-5: flight minutes', '--paths', '/src/fm.js'])
+    const idMine = mineT.stdout.match(/task (T[0-9a-f]{6})/)[1]
+    const theirs = await ownerHs(['task', 'new', 'CR-5: api doc', '--paths', '/API.md'])
+    const idTheirs = theirs.stdout.match(/task (T[0-9a-f]{6})/)[1]
+    await tm.as(x, ['sync'])
+    await tm.as(x, ['task', 'start', idMine])
+    tm.write(x, 'src/fm.js', '// flight minutes\n')
+    tm.write(x, 'API.md', '- `flightMinutes(plan, day)`\n')
+    const landed = await tm.as(x, ['land', '-m', 'flight minutes', '--done'])
+    t.ok(new RegExp(`linked to ${idMine}`).test(landed.stdout), landed.stdout + landed.stderr)
+    t.ok(new RegExp(`completes ${idMine}`).test(landed.stdout), landed.stdout)
+    await ownerHs(['task', 'drop', idTheirs])
+  })
+
   // F11: a site split. x and y meet each other but not the hub or z; a claim on either side
   // is heard there, so each side has a lead until the sites meet. On heal the earlier claim
   // leads everywhere and the later side is told to stand down (q0bs)

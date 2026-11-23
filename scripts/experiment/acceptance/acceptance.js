@@ -9,6 +9,8 @@ const path = require('path')
 const args = process.argv.slice(2)
 const tree = path.resolve(args.find((a) => !a.startsWith('--')))
 const perMinute = args.includes('--per-minute')
+// q0m's change request CR-2: weight tiers, a minimum, express, rush hour, `minutes` in --json
+const pricingV2 = args.includes('--pricing-v2')
 const FIX = path.join(__dirname, 'fixtures')
 
 const results = []
@@ -63,6 +65,12 @@ function failAll(file, mustUnassign, why) {
     'report'
   ]
   if (perMinute) names.push('per-minute prices (change request)')
+  if (pricingV2) {
+    names.push(
+      'per-minute prices v2 (change request)',
+      'per-minute minutes in --json (change request)'
+    )
+  }
   for (const n of names) results.push({ name: `${file}: ${n}`, ok: false, why })
 }
 
@@ -183,6 +191,48 @@ function checkDay(file, { mustUnassign = [] } = {}) {
           want = Math.round(want * 100) / 100
           if (Math.abs(plan.prices[id] - want) > 0.011) {
             return `${id}: ${plan.prices[id]} != ${want}`
+          }
+        }
+      }
+    })
+  }
+  if (pricingV2) {
+    // CR-2: 2.00 + 0.25/flight min; 0.40/kg to 2 kg, 1.00/kg above; min 4.00; express x1.5;
+    // +1.00 when the trip starts before minute 60 (after express); cents
+    check(`${file}: per-minute prices v2 (change request)`, () => {
+      if (!delivered.length) return 'nothing delivered'
+      for (const t of trips) {
+        const d = drone.get(t.drone)
+        let at = depot.get(d.depot)
+        let mins = 0
+        for (const id of t.packages || []) {
+          const p = pkg.get(id)
+          mins += (km(at, p.destination) / d.speedKmh) * 60
+          at = p.destination
+          let want = 2 + 0.25 * mins + 0.4 * Math.min(p.weightKg, 2) + Math.max(p.weightKg - 2, 0)
+          want = Math.max(want, 4)
+          if (p.priority === 'express') want *= 1.5
+          if (t.start < 60) want += 1
+          want = Math.round(want * 100) / 100
+          if (Math.abs(plan.prices[id] - want) > 0.011) {
+            return `${id}: ${plan.prices[id]} != ${want}`
+          }
+        }
+      }
+    })
+    check(`${file}: per-minute minutes in --json (change request)`, () => {
+      const minutes = plan.minutes
+      if (!minutes || typeof minutes !== 'object') return 'no minutes in --json'
+      for (const t of trips) {
+        const d = drone.get(t.drone)
+        let at = depot.get(d.depot)
+        let mins = 0
+        for (const id of t.packages || []) {
+          const p = pkg.get(id)
+          mins += (km(at, p.destination) / d.speedKmh) * 60
+          at = p.destination
+          if (typeof minutes[id] !== 'number' || Math.abs(minutes[id] - mins) > 0.051) {
+            return `${id}: ${minutes[id]} != ${mins.toFixed(1)}`
           }
         }
       }

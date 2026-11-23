@@ -48,6 +48,10 @@ const vars = {
     : path.join(repo, 'docs', arm === 'git' ? 'AGENTS-git.md' : 'AGENTS.md'),
   REPORT: path.join(dir, 'reports', agent + '.md'),
   SCENARIO: scenario.brief || '',
+  // how landing verifies: the repo's checks, or (q0m's no-gate arm) the agent's own judgement
+  VERIFY:
+    (scenario.verify && scenario.verify[arm]) ||
+    "(it runs the repo's checks first; `hs check` runs them without landing)",
   // when to stop; short scenarios (q2s) stop as soon as the part under test is exercised
   STOP:
     scenario.stop ||
