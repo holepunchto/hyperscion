@@ -34,20 +34,25 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   const other = lead === 'a1' ? 'a2' : 'a1'
   const loser = leads[0] === c1 ? c2 : c1
   t.ok(new RegExp(`${lead} leads ${id}`).test(loser.stdout), loser.stdout)
-  t.ok(
-    new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
-    loser.stdout
-  )
+
   // a fair start (lib/claims.js backoffMs): the later writer sees the lead's start while it
   // waits its turn and makes no claim; only when both turns end within network latency do
   // both claim, and then the lead hears who started after it (q0-v030-1)
-  const stoodAside = /you're not on it: they started it while you waited your turn/.test(
+  const stoodAside = /you're not on it \(they started it while you waited your turn/.test(
     loser.stdout
   )
   const tie = new RegExp(
     `also started it: ${other}, [0-9.]+ s after you: they're told you lead`
   ).test(leads[0].stdout)
   t.ok(stoodAside || tie, 'stood aside, or a true tie:\n' + loser.stdout + '\n' + leads[0].stdout)
+  if (stoodAside) {
+    t.ok(/you review it: .* will ask you/.test(loser.stdout), loser.stdout)
+  } else {
+    t.ok(
+      new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
+      loser.stdout
+    )
+  }
 
   // parts are the lead's to hand out (q2s-claims-1); the item's author (a1) may split it too
   const notMine = await tm.as(other, ['task', 'split', id, 'flight minutes helper'])
@@ -493,12 +498,15 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   // it already has a lead: no claim at all, and --if-free makes that exit 0
   const freeOnly = await tm.as('a1', ['task', 'start', sub, '--if-free'])
   t.is(freeOnly.code, 0, 'staying off is what --if-free asked for: ' + freeOnly.stderr)
-  t.ok(/you're not on it: it already has a lead/.test(freeOnly.stdout), freeOnly.stdout)
+  t.ok(/you're not on it \(it already had a lead/.test(freeOnly.stdout), freeOnly.stdout)
   // a co-lead who steps away is named as such
   t.is((await tm.as('a1', ['task', 'start', sub, '--with', 'a2'])).code, 0)
   await tm.as('a1', ['task', 'stop', sub])
   const again = await tm.as('a2', ['task', 'start', sub])
-  t.ok(/stepped away: a1/.test(again.stdout), 'the lead sees who stepped away: ' + again.stdout)
+  t.ok(
+    /standing by to review: a1/.test(again.stdout),
+    'the lead sees who stands by: ' + again.stdout
+  )
 
   const shown = await tm.as('a2', ['task', 'show', sub])
   t.is(shown.code, 0, shown.stderr)

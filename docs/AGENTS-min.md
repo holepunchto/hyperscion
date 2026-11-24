@@ -91,7 +91,7 @@ hub.
    combination; it says so (`your land sits on these untested`).
 4. **Learn from teammates' changes:**
    - `hs show 27` — the changeset's message plus a unified diff of every file;
-     `hs show 27 --path src/geo.js` for just that file.
+     `hs show 27 --path src/geo.js` for just that file, `-U 0` for the changed lines only.
    - `hs log -n 10` — recent changesets with their files; `--oneline` for one line each.
      `hs log src/geo.js` is the history of one file. If your feed knows main is further
      ahead, `log` and `status` say so.

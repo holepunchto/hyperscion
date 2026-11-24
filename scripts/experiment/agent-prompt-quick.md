@@ -42,6 +42,8 @@ Write `{{REPORT}}` (NOT inside the repo) with three bullets (best thing about hs
 }
 ```
 
+**On rating:** rate hs as a tool, not the size of the task. In a run this short, the work is often all taken within a minute, and an agent can end with nothing to build. That's expected here, not a shortcoming of hs; being able to tell quickly and clearly that nothing is left is part of what it should do.
+
 Scales 1–5: `usefulness_vs_git` (1 much worse than git, 3 same, 5 much better), `output_clarity` (1 often unsure, 5 always clear), `knew_when_my_land_was_safe` (1 never, 5 always). `to_five`: if `usefulness_vs_git` is below 5, the one concrete change to hs (the command and what it would do) that would have made it a 5 for this task; if nothing in hs could, say what would instead.
 
 Your final message to me: 2–3 sentences: what you built, the state of main, your verdict on hs.

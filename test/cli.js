@@ -273,6 +273,10 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.is(one.stdout.trim().split('\n').length, 2, 'log --oneline is one line per changeset')
   const sp = await hs(A1, ['show', String(finSeq), '--path', 'src'], 'a1')
   t.ok(sp.stdout.includes('+++ b/src/final.js'), 'show --path keeps matching files')
+  // -U 0: the changed lines only, no context (q0b-to5-1: skimming a diff took a grep)
+  const u0 = await hs(A1, ['show', String(finSeq), '-U', '0'], 'a1')
+  t.is(u0.code, 0, u0.stderr)
+  t.absent(/^ [^ ]/m.test(u0.stdout.split('--- ')[1] || ''), 'no context lines with -U 0')
   t.absent(sp.stdout.includes('NOTES.md\n@@'), 'and drops the rest')
   t.ok(sp.stdout.includes('other path(s) not shown'))
 
