@@ -43,9 +43,11 @@ The project is scaffolded from [hello-pear-bare](https://github.com/holepunchto/
 
 ## Library
 
+From a checkout (hs isn't published to npm):
+
 ```js
 const Corestore = require('corestore')
-const Repo = require('hyperscion/lib/repo')
+const Repo = require('./lib/repo')
 
 const repo = new Repo(new Corestore('./store'))
 const ws = await repo.workspace('agent-42') // O(1) fork

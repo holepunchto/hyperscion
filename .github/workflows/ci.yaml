@@ -41,6 +41,9 @@ jobs:
       - name: Build Local Runtime
         run: npm run make
 
+      - name: Smoke test the binary
+        run: node scripts/smoke.js
+
       - name: Install Bare
         run: npm i -g bare-runtime
 

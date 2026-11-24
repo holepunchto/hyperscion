@@ -8,7 +8,7 @@ Peer-to-peer source control for agent-scale change volume, built on the Holepunc
 [Bare](https://github.com/holepunchto/bare) binary, `hs`.
 
 > [!NOTE]
-> This is an experimental Pear Labs project. It works and is safe to try, but it is not officially supported by Tether/Holepunch and may change, break, or disappear at any time.
+> This is an experimental Pear Labs project, ready for experiments on non-sensitive code. It is not officially supported by Tether/Holepunch and may change, break, or disappear at any time. Before inviting a team, read what an invite gives away and who can change who writes: [The hub: encryption, invites and who can write](docs/hub.md#encryption-invites-and-who-can-write).
 
 hyperscion takes the ideas behind Anthropic's
 [Scion](https://www.anthropic.com/engineering/redesigning-source-control) and asks how far a
@@ -23,7 +23,8 @@ system can get without a server:
 - **Reads are lazy and verifiable.** Peers fetch exactly the blocks they read, from anyone,
   and merkle proofs mean no cache can lie.
 - **Data stays available without a server.** Mirror peers (`hs seed`) or blind peers
-  that hold encrypted blocks they cannot read.
+  that hold encrypted blocks they cannot read (repos are encrypted unless made with
+  `--no-encrypt`).
 
 ## Install
 
@@ -59,6 +60,18 @@ Not sure? Start with the last one. A trial lives in a side folder next to your g
 needs nobody else on the team to install anything, and ends with an ordinary git branch and a
 folder you delete.
 
+## For experimenters
+
+This first release (0.3) is for teams trying hs on real, non-sensitive work. Start with
+**[Try hs next to git](docs/trial.md)**: it needs no one else to install anything and ends with
+a git branch. Repos are encrypted by default, and the invite works like a password.
+
+What helps most is what an agent or a person found confusing, slow or wrong: the command, what
+it printed, and what you expected. Open an issue on the repository. `hs doctor` output and
+`hs --version` help us reproduce it. Repos keep working across hs updates: new rules ship
+switched off until a repo owner runs `hs upgrade-repo`
+([Versions](docs/hub.md#versions-hs-releases-and-the-repo-abi)).
+
 ## How it works, briefly
 
 - **main** is the shared history: numbered changesets (`#27`), each with an author, a message
@@ -85,7 +98,7 @@ this, with the runs they come from.
 
 | page                                     | what                                                                   |
 | ---------------------------------------- | ---------------------------------------------------------------------- |
-| [Install](docs/install.md)               | Pear, npm, from source; updates; uninstalling                          |
+| [Install](docs/install.md)               | Pear or from source; updates; privacy; uninstalling                    |
 | [Start a new repo](docs/start.md)        | try it on your machine, run your hub for real, bring in teammates      |
 | [Move a repo from git](docs/from-git.md) | import git history, move the team, mirror or retire the old remote     |
 | [Try hs next to git](docs/trial.md)      | a swarm of agents in a side folder; the result back as a git branch    |

@@ -31,6 +31,12 @@ small check with real agents.
 | round 4       | git control team, 14 runs, scenarios S1–S3                                                                                            | EXPERIMENTS.md "Experiment 4"                                                                |
 | after round 4 | feeds as holders, outage and hub-stall signals, correctness fixes, fast feedback loop                                                 | `test/outage.js`, `test/fixes.js`, quick runs q1-hs-1/2                                      |
 | hub homes     | one hub process for many repos on `hyperjoin` (`hs hubs`, DESIGN.md §15)                                                              | `test/hubs.js`; `bench/hubs.js`: 30 repos in 133 MB vs 3.3 GB as separate hubs, same latency |
+| M7            | scale: swarm benchmark, cheaper per-agent model (star mesh), settlement findings (below)                                              | 50 agents per machine, land p90 289 ms; q2-hs-6 with a 20-writer swarm and an outage         |
+| M8            | coordination: tasks and claims (`hs task`), people in the loop (`hs review`, `/.hsreview` task rules)                                 | docs/TASKS.md, docs/history/coordination-decision.md; q0/q2h runs                            |
+| checks        | repo-declared checks (`/.hschecks`, `hs check`), a result cache, required checks in `/.hsreview`                                      | docs/CHECKS.md; q0m: the gate caught contract drift a lead's review let through (WINS.md)    |
+| git+pear      | main as a git repo for git users (`seed --gip`, `hubs gip`, `gip import`); `export-git`                                               | docs/git-pear.md, `test/gip.js`, `test/gip-net.js`                                           |
+| tools         | `hs ui`, `hs access` / `hs revoke`, `hs export`, `hs agents --write`, hub-home service with updates                                   | docs/commands.md, docs/hub-homes.md                                                          |
+| format freeze | the repo ABI (rules versioning), genesis, owner-only writer changes, encryption by default, versioned invite (DESIGN.md §16)          | `test/abi-upgrade.js`, `test/writer-rules.js`, `test/spike-interrupt.js`                     |
 
 **What the experiments say:**
 
@@ -47,6 +53,19 @@ small check with real agents.
 **The gap:** we've tuned a small team on a toy task, where git is "adequate". The scale that
 motivated Scion (many writers, high change volume, no server) is where hs's design should beat
 git, and it hasn't been exercised since M1's benchmarks.
+
+## Released, and next
+
+**First release (0.3.0, for invited experimenters).** The formats are frozen: the schema starts
+over at version 1, repo ABI 1, and every later consensus change is a new ABI that owners switch
+on (`hs upgrade-repo`). Not in it yet, all possible later without breaking repos:
+
+- keyless invites (keet's mailbox model) as a new invite kind;
+- `hs rotate` (re-keying after a removal) and closing admit folders with one-time invites;
+- attested checks (peers that re-run checks and sign them; the reserved `act` kind);
+- a rename op, compression, a Windows hub service, a launchd test.
+
+The milestones below are the history of how hs got here.
 
 ## Next
 
