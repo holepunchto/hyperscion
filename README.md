@@ -87,9 +87,14 @@ switched off until a repo owner runs `hs upgrade-repo`
 
 ## From the experiments
 
-We test hs with teams of AI agents and keep the traces. One example: an Opus lead delegated
-a change to two Haiku workers. Without a check gate, a worker's contract-breaking change
-landed, the lead approved it about 10 seconds later without an `hs show` of it, and main
+We test hs with teams of AI agents and keep the traces. In the latest runs, three agents
+sharing a change request rated hs **5/5 against plain git**, all three, in two runs in a
+row (`q0b-to5-3` and `q0b-to5-5`): it was built once, main stayed green, and the two who didn't
+build it were told at once that they were its reviewers and what to run next
+([how it got there](docs/WINS.md#three-agents-rated-hs-55-against-git-twice-in-a-row)).
+
+Another example: an Opus lead delegated a change to two Haiku workers. Without a check gate, a
+worker's contract-breaking change landed, the lead approved it about 10 seconds later without an `hs show` of it, and main
 stayed broken for 3.4 minutes. With the repo's checks declared in `/.hschecks`, a land like
 that is refused with the exact mismatch. [docs/WINS.md](docs/WINS.md) collects cases like
 this, with the runs they come from.

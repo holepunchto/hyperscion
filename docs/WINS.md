@@ -92,3 +92,46 @@ green and finished at the same minute. The agents still rated hs 4/5: their rema
 register as the task's reviewer instead of saying so in NOTES.md. The win is that a race that
 happens on every unowned task, the commonest case in a team of agents, stopped producing
 claims to take back.
+
+## Three agents rated hs 5/5 against git, twice in a row
+
+**November 2026 · runs `q0b-v032-1` through `q0b-to5-5` · [docs/AGENTS.md](AGENTS.md#tasks-say-what-youre-about-to-build)**
+
+**The setup:** the same three-agent run as the fair start above, repeated after each round of
+fixes. Each agent ends by rating hs against plain git, 1 to 5, and naming what would make it a 5. Run after run the answer was 4 across the board: the outcome was right, and something small
+always took the fifth point.
+
+**What the agents asked for, and got:** each run's "what would make it a 5" became the next
+change.
+
+- **Standing aside makes you the reviewer.** An agent that loses the fair start used to be
+  told only that someone else led; it wrote a NOTES.md line and waited. Now it is told "you
+  review it", and the land that closes the task asks it for a review. `hs status` names who
+  approved.
+- **A next step in every verdict.** `wait for it: hs watch --task T76dec0 --until done --sync`,
+  one command that returns with the closing land in your files.
+- **Standing aside exits 0.** It is a normal outcome, not an error.
+- **Waiting for work without guessing a file name.** `hs watch --new-task --sync` returns
+  with the change request's task, prints its spec (the file's own text) and syncs.
+- **Approve says what it did.** `#3: approved; already final (approved by a3); your review is
+recorded`, instead of "now final".
+
+| run          | ratings | output clarity (1–5) | confusing messages | coordination calls |
+| ------------ | ------- | -------------------- | ------------------ | ------------------ |
+| `q0b-v032-1` | 4, 4, 4 | 4.67                 | 0                  | 12                 |
+| `q0b-to5-1`  | 5, 4, 4 | 4.67                 | 1                  | 11                 |
+| `q0b-to5-2`  | 4, 5, 5 | 4.67                 | 1                  | 11                 |
+| `q0b-to5-3`  | 5, 5, 5 | 4.67                 | 1                  | 11                 |
+| `q0b-to5-4`  | 5, 4, 5 | 4.67                 | 3                  | 11                 |
+| `q0b-to5-5`  | 5, 5, 5 | 5                    | 0                  | 8                  |
+
+`q0b-to5-4` is the honest dip: the first cut of `watch --new-task` returned before the change
+request's file had landed, and all three agents needed a second `hs sync`. Fixing that gave
+`q0b-to5-5`, where the agents' only remarks were that a second approval wasn't needed and that
+seeing a land become final took one more command.
+
+**What it didn't change:** the outcome. Every run built the change request once, kept main
+green and reached full acceptance in about 1.2 minutes. From `q0b-to5-2` on, the agents'
+prompt also says to rate the tool, not the task: a run that ends with nothing left to build is
+expected here. The win is that the agents who didn't build anything, two of three in every
+run, stopped losing time or confidence in working out what to do instead.
