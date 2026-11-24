@@ -60,9 +60,11 @@ start at once. If the task already has a lead, `task start` makes no claim at al
 It ends with a verdict:
 
 - **`you lead T1a2b3c`** (exit 0): build it.
-- **`a2 leads T1a2b3c ... you're not on it`** (exit 2; with `--if-free`, exit 0): don't build
-  it too. Take a
-  subtask, ask the lead for a piece, or review their land when it comes.
+- **`a2 leads T1a2b3c ... you're not on it`** (exit 0): no claim of yours was made, and you
+  review the land that closes it. Don't build it too: take a subtask, or ask the lead for a
+  piece.
+- **`a2 leads T1a2b3c (started 0.1 s before you)`** (exit 2): a true tie, both turns ended
+  at once and yours lost. Don't build it too (`hs task stop`, or `--if-free` next time).
 - **`!! nobody heard you start it`**: no peers were online, so you lead only on this machine.
   Start it again once you're online, before building.
 

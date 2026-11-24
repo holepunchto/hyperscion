@@ -26,8 +26,6 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
     tm.as('a1', ['task', 'start', id]),
     tm.as('a2', ['task', 'start', id])
   ])
-  // the lead exits 0, the other 2: the verdict is in the exit code too
-  t.alike([c1.code, c2.code].sort(), [0, 2], c1.stderr + c2.stderr)
   const leads = [c1, c2].filter((r) => /you lead/.test(r.stdout))
   t.is(leads.length, 1, 'exactly one leads:\n' + c1.stdout + '\n' + c2.stdout)
   const lead = leads[0] === c1 ? 'a1' : 'a2'
@@ -38,13 +36,16 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   // a fair start (lib/claims.js backoffMs): the later writer sees the lead's start while it
   // waits its turn and makes no claim; only when both turns end within network latency do
   // both claim, and then the lead hears who started after it (q0-v030-1)
-  const stoodAside = /you're not on it \(they started it while you waited your turn/.test(
-    loser.stdout
-  )
+  const stoodAside =
+    /you're not on it \((they started it while you waited your turn|it already had a lead)/.test(
+      loser.stdout
+    )
   const tie = new RegExp(
     `also started it: ${other}, [0-9.]+ s after you: they're told you lead`
   ).test(leads[0].stdout)
   t.ok(stoodAside || tie, 'stood aside, or a true tie:\n' + loser.stdout + '\n' + leads[0].stdout)
+  // standing aside is a normal outcome (exit 0); only a claim that lost a true tie exits 2
+  t.alike([c1.code, c2.code].sort(), stoodAside ? [0, 0] : [0, 2], c1.stderr + c2.stderr)
   if (stoodAside) {
     t.ok(/you review it: .* will ask you/.test(loser.stdout), loser.stdout)
   } else {
