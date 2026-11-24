@@ -62,8 +62,8 @@ unless main moves in between.
 **What land does that `hs check` doesn't:**
 
 - If main moves while a check runs, and the change is somewhere the check reads, land checks
-  again. Changes outside your sparse checkout, or under paths `/.hsattributes` marks `-check`,
-  don't trigger a re-run.
+  again. Changes outside your sparse checkout, under paths `/.hsattributes` marks `-check`, or to
+  `merge=union` files such as NOTES.md (unless marked `check`), don't trigger a re-run.
 - Land stops at the first failing check, while `hs check` runs them all.
 
 **A pass is remembered for this exact tree.** A check that already passed on the tree you're

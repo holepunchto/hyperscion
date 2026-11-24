@@ -490,8 +490,22 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.ok(/no checks ran: this repo declares none/.test(landed.stdout), landed.stdout)
   t.ok(new RegExp(`completes ${sub}`).test(landed.stdout), landed.stdout + landed.stderr)
   const seq = landed.stdout.match(/landed #(\d+)/)[1]
-  const closed = await tm.as('a1', ['watch', '--task', sub, '--until', 'done', '--timeout', '20'])
-  t.ok(new RegExp(`${sub} done in #${seq}`).test(closed.stdout), closed.stdout + closed.stderr)
+  // a reviewer waits for the closing land and takes it in, in one command (q0-v031-1)
+  const closed = await tm.as('a1', [
+    'watch',
+    '--task',
+    sub,
+    '--until',
+    'done',
+    '--sync',
+    '--timeout',
+    '20'
+  ])
+  t.ok(
+    new RegExp(`${sub} done in #${seq} \\(\`hs show ${seq}\` for the diff\\)`).test(closed.stdout),
+    closed.stdout + closed.stderr
+  )
+  t.is(tm.read('a1', 'src/pricing.js'), '// v2\n', 'and synced it in')
 
   await tm.as('a1', ['sync'])
   const parent = await tm.as('a1', ['task', 'show', id])
