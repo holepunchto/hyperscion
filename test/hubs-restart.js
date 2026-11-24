@@ -10,13 +10,17 @@ const { HubHome, HubServer } = require('../lib/hubs')
 const { run, waitFor, sleep } = require('./helpers/team')
 
 const QUIET = 3000
+// long next to a land (a whole `hs land` process): on a slow CI runner the second land took
+// over 2 s to reach the hub and the 3 s window had closed (linux-arm64)
+const QUIET_LANDS = 10_000
 
 test('hubs restart: an update waits for a quiet moment', async (t) => {
+  t.timeout(90_000)
   const { home, env, owner, land } = await setup(t)
   const server = new HubServer(home, {
     bootstrap: env.bootstrap,
     restartOnUpdate: true,
-    quietMs: QUIET
+    quietMs: QUIET_LANDS
   })
   await server.start()
   t.teardown(() => server.stop(), { order: 0 })
@@ -29,11 +33,16 @@ test('hubs restart: an update waits for a quiet moment', async (t) => {
   server.updateApplied()
   await sleep(1000)
   // a land in the quiet window pushes the restart back
-  const landed = await land(owner, 'two', 'during the wait')
+  await land(owner, 'two', 'during the wait')
   t.absent(exited, 'not while lands are coming in')
-  await waitFor(() => exited, 30_000)
+  // the hub's own clock: when it saw main move, not when the lander's process returned
+  const seen = server.lastActivity
+  await waitFor(() => exited, 60_000)
   t.is(exited.reason, 'update')
-  t.ok(exited.at - landed >= QUIET - 500, `waited ${exited.at - landed} ms after the last land`)
+  t.ok(
+    exited.at - seen >= QUIET_LANDS,
+    `waited ${exited.at - seen} ms after the hub saw the last land`
+  )
 })
 
 test('hubs restart: without --restart-on-update an update only says so; hs hubs restart asks', async (t) => {
