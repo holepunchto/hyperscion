@@ -62,6 +62,29 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   const other = await hs(['hubs', 'init', path.join(user, 'work-hubs'), '--no-default'])
   t.is(other.code, 0, other.stderr)
   t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), home)
+
+  // a second home without --default keeps the working default (another session's scratch
+  // `hubs init` replaced a real hub's default, and its service install then failed)
+  const scratch = path.join(user, 'scratch-hubs')
+  const side = await hs(['hubs', 'init', scratch])
+  t.is(side.code, 0, side.stderr)
+  t.ok(side.stdout.includes("this machine's default stays " + home), side.stdout)
+  t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), home)
+  const switched = await hs(['hubs', 'init', scratch, '--default'])
+  t.ok(switched.stdout.includes("it's this machine's default"), switched.stdout)
+  t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), scratch)
+
+  // the default is gone: say where it was recorded, never recreate it there
+  fs.rmSync(scratch, { recursive: true, force: true })
+  const gone = await hs(['hubs', 'list'])
+  t.is(gone.code, 1)
+  t.ok(gone.stderr.includes("this machine's default hub home is " + scratch), gone.stderr)
+  t.ok(gone.stderr.includes(path.join(user, '.config', 'hs', 'hub-home')), 'names the file')
+  t.absent(fs.existsSync(scratch), 'not recreated')
+  // and init puts a working one back
+  const back = await hs(['hubs', 'init'])
+  t.ok(back.stdout.includes("it's this machine's default"), back.stdout)
+  t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), home)
 })
 
 test('hubs new --dir: an existing folder becomes the worktree, files kept', async (t) => {

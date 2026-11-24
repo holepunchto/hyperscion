@@ -37,7 +37,7 @@ so finality, replacing a hub and `hs doctor` work per repo exactly as in [The hu
 
 | command                                             | what                                                                |
 | --------------------------------------------------- | ------------------------------------------------------------------- |
-| `hs hubs init [dir]`                                | make a hub home (default `~/hubs`) and this machine's default       |
+| `hs hubs init [dir] [--default\|--no-default]`      | make a hub home (default `~/hubs`) and this machine's default       |
 | `hs hubs new <repo>`                                | a new repo with its hub in the home, and your worktree in `owners/` |
 | `hs hubs service install\|uninstall`                | run the home as a service, or stop doing so                         |
 | `hs hubs service status`, `hs hubs service logs -f` | is it running, and what it says                                     |
@@ -49,8 +49,10 @@ so finality, replacing a hub and `hs doctor` work per repo exactly as in [The hu
 | `hs hubs remove <repo>`                             | stop hubbing a repo here                                            |
 | `hs hubs serve`                                     | run the home in the foreground, without a service                   |
 
-They use the home `hs hubs init` made this machine's default. For another one, pass
-`--home <dir>` or set `HS_HUB_HOME` (or run the command inside it). While the home is served,
+They use the home `hs hubs init` made this machine's default (recorded in
+`~/.config/hs/hub-home`). A later `hs hubs init <dir>` leaves a working default alone unless
+you pass `--default`. For another home, pass `--home <dir>` or set `HS_HUB_HOME` (or run the
+command inside it). While the home is served,
 they ask the server to do the work, since it holds the store.
 
 What changes from one hub per repo:
