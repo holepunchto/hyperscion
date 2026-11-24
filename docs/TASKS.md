@@ -53,7 +53,8 @@ hs task start --new "Cache the distance matrix"   # file it and start it
 It ends with a verdict:
 
 - **`you lead T1a2b3c`** (exit 0): build it.
-- **`a2 leads T1a2b3c (started 0.4 s before you)`** (exit 2): don't build it too. Take a
+- **`a2 leads T1a2b3c (started 0.4 s before you)`** (exit 2; with `--if-free`, exit 0 once it
+  has stepped away): don't build it too. Take a
   subtask, ask the lead for a piece, or review their land when it comes.
 - **`!! nobody heard you start it`**: no peers were online, so you lead only on this machine.
   Start it again once you're online, before building.

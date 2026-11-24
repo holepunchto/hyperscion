@@ -41,6 +41,13 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
     new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
     loser.stdout
   )
+  // the lead hears who started after it, and that they were told (q0-v030-1)
+  t.ok(
+    new RegExp(`also started it: ${other}, [0-9.]+ s after you: they're told you lead`).test(
+      leads[0].stdout
+    ),
+    leads[0].stdout
+  )
 
   // parts are the lead's to hand out (q2s-claims-1); the item's author (a1) may split it too
   const notMine = await tm.as(other, ['task', 'split', id, 'flight minutes helper'])
@@ -455,6 +462,18 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.ok(/you lead/.test(started.stdout), started.stdout + started.stderr)
   t.ok(/spec: weight: 0\.40\/kg to 2 kg/.test(started.stdout), started.stdout)
 
+  // q0-v030-1's asks: wait until someone takes a task; a teammate who started after you, or
+  // stepped away, is named as such; --if-free stepping away is exit 0
+  await tm.as('a1', ['sync'])
+  const taken = await tm.as('a1', ['watch', '--task', sub, '--timeout', '20'])
+  t.is(taken.code, 0, taken.stderr)
+  t.ok(new RegExp(`${sub} taken: a2 leads it`).test(taken.stdout), taken.stdout)
+  const freeOnly = await tm.as('a1', ['task', 'start', sub, '--if-free'])
+  t.is(freeOnly.code, 0, 'stepping away is what --if-free asked for: ' + freeOnly.stderr)
+  t.ok(/withdrawn: a2 leads/.test(freeOnly.stdout), freeOnly.stdout)
+  const again = await tm.as('a2', ['task', 'start', sub])
+  t.ok(/stepped away: a1/.test(again.stdout), 'the lead sees who stepped away: ' + again.stdout)
+
   const shown = await tm.as('a2', ['task', 'show', sub])
   t.is(shown.code, 0, shown.stderr)
   t.ok(
@@ -471,6 +490,8 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.ok(/no checks ran: this repo declares none/.test(landed.stdout), landed.stdout)
   t.ok(new RegExp(`completes ${sub}`).test(landed.stdout), landed.stdout + landed.stderr)
   const seq = landed.stdout.match(/landed #(\d+)/)[1]
+  const closed = await tm.as('a1', ['watch', '--task', sub, '--until', 'done', '--timeout', '20'])
+  t.ok(new RegExp(`${sub} done in #${seq}`).test(closed.stdout), closed.stdout + closed.stderr)
 
   await tm.as('a1', ['sync'])
   const parent = await tm.as('a1', ['task', 'show', id])

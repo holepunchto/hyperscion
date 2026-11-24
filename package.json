@@ -2,7 +2,7 @@
   "name": "hyperscion",
   "private": true,
   "productName": "hs",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Peer-to-peer source control for agent-scale change volume, built on hyperbee2, autobee and blind peers.",
   "bin": {
     "hs": "bin.mjs"

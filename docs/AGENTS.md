@@ -140,6 +140,8 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
   (`hs task start T1a2b3c --if-free` steps away again at once). Ask them for a piece in
   NOTES.md, or review their land when it comes: `hs review approve 27` (or
   `hs review changes 27 -m "..."`), no NOTES.md land needed.
+- **Waiting on a task:** `hs watch --task T1a2b3c --timeout 300` returns once someone leads it
+  (`--until done`: once it's closed). Exit 0, or 2 on timeout.
 - **Starting a task never blocks anyone,** and works while the hub is down (it travels between
   peers). It lapses after 20 min without activity; `land`, `sync` and a running feed keep it
   alive. `hs task stop T1a2b3c` when you step away.
