@@ -42,6 +42,19 @@ test('land --check re-runs only when main moved where the check can see', async 
   t.ok(/outside what the check reads; landing on the checked state/.test(quiet.stdout))
   t.ok(/landed #\d+/.test(quiet.stdout), 'landed')
 
+  // main moves only in a union-merged notes file the land itself touches: no re-run either,
+  // since no check reads it (q0b-v032-1: a notes-only land checked twice over a teammate's note)
+  tm.write('a1', 'NOTES.md', tm.read('a1', 'NOTES.md') + '- a1 own note\n')
+  const notes = await tm.as('a1', [
+    'land',
+    '-m',
+    'a1 own note',
+    '--check',
+    a2lands('NOTES.md', markers + 'n')
+  ])
+  t.is(notes.code, 0, notes.stderr)
+  t.is(notes.stdout.split('checking main #').length - 1, 1, 'the check ran once\n' + notes.stdout)
+
   // main moves in /src/: the check runs again, and says why
   tm.write('a1', 'src/two.js', 'two\n')
   const busy = await tm.as('a1', [

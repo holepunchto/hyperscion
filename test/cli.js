@@ -38,6 +38,17 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
     timings.push([Date.now() - started, user + ' ' + args.join(' ')])
     return res
   }
+  // a setup sync: under the full integration load (18 files at once) a sync can finish with
+  // "no peers reachable" (exit 2) for a moment; retry that, never a real failure
+  const syncOk = async (dir, who) => {
+    let res = null
+    for (let i = 0; i < 3; i++) {
+      res = await hs(dir, ['sync'], who)
+      if (res.code === 0) break
+      await sleep(2000)
+    }
+    t.is(res.code, 0, `${who} sync: ${res.stdout}${res.stderr}`)
+  }
   t.teardown(() => {
     const slow = timings.filter(([ms]) => ms > 8000)
     if (slow.length) {
@@ -179,7 +190,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   await waitFor(() => feed2.exited())
 
   // 6. Show by default: a2 changes a file a1 owns; a1 is asked, reviews; a2 hears about it
-  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  await syncOk(A2, 'a2')
   fs.writeFileSync(path.join(A2, 'src', 'pricing.js'), 'price = 2\n')
   const show = await hs(A2, ['land', '-m', 'raise price'], 'a2')
   t.is(show.code, 0, 'Show lands immediately')
@@ -230,7 +241,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok((await hs(A1, ['review', 'list', '--all'], 'a1')).stdout.includes('A1 landed'))
 
   // 8. provisional -> final: the seeding hub acks, so a Ship land becomes final in seconds
-  t.is((await hs(A1, ['sync'], 'a1')).code, 0)
+  await syncOk(A1, 'a1')
   fs.writeFileSync(path.join(A1, 'src', 'final.js'), 'final\n')
   fs.appendFileSync(path.join(A1, 'NOTES.md'), '- [a1] final next\n')
   const d = await hs(A1, ['diff'], 'a1')
@@ -266,7 +277,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok(sp.stdout.includes('other path(s) not shown'))
 
   // 9. watch --count counts changesets, not the settlement lines around them
-  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  await syncOk(A2, 'a2')
   const waitAny = background(A2, ['watch', '--count', '1', '--timeout', '60'], {
     ...env,
     USER: 'a2'
@@ -278,7 +289,7 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   t.ok(waitAny.output().includes('counted'), 'the wait printed the changeset it counted')
 
   // 10. land --check tests main + your changes before landing, and refuses when it fails
-  t.is((await hs(A2, ['sync'], 'a2')).code, 0)
+  await syncOk(A2, 'a2')
   fs.writeFileSync(path.join(A1, 'src', 'checked.js'), 'checked\n')
   fs.writeFileSync(path.join(A2, 'src', 'peer.js'), 'peer\n')
   t.is((await hs(A2, ['land', '-m', 'peer'], 'a2')).code, 0)
