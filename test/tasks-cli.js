@@ -108,6 +108,23 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   tm.write(lead, 'src/pricing.js', '// per minute\n')
   const done = await tm.as(lead, ['land', '-m', 'CR-1 per minute', '--task', id])
   t.ok(new RegExp(`completes ${id}`).test(done.stdout), done.stdout + done.stderr)
+  if (stoodAside) {
+    // the one who stood aside reviews the closing land, and its approval makes it final
+    t.ok(
+      new RegExp(`showing to ${other} \\(they stood aside for this task\\)`).test(done.stdout),
+      done.stdout
+    )
+    const seqDone = done.stdout.match(/landed #(\d+)/)[1]
+    await tm.as(other, ['sync'])
+    const approved = await tm.as(other, ['review', 'approve', seqDone])
+    t.ok(
+      new RegExp(`#${seqDone}: approved; (now final|settled)`).test(approved.stdout),
+      approved.stdout
+    )
+    await tm.as(lead, ['sync'])
+    const st = await tm.as(lead, ['status'])
+    t.ok(new RegExp(`approved by ${other}`).test(st.stdout), st.stdout)
+  }
   const after = await tm.as(other, ['task', 'list', '--all'])
   t.ok(new RegExp(`${id} .*\\[done #\\d+\\]`).test(after.stdout), after.stdout)
   const open = (await tm.as(other, ['task'])).stdout
