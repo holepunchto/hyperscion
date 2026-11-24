@@ -57,7 +57,7 @@ test('apply never throws on hostile input', async (t) => {
     ['duplicate path', land({ base: genesis, entries: [goodEntry('/a'), goodEntry('/a')] })],
     [
       'garbage entry value',
-      land({ base: genesis, entries: [{ path: '/a', value: crypto.randomBytes(7) }] })
+      land({ base: genesis, entries: [{ path: '/a', value: garbageEntry() }] })
     ],
     ['blob without core', land({ base: genesis, entries: [{ path: '/a', value: entry(null) }] })],
     ['future base', land({ base: { seq: 10, hash: keys.ZERO }, entries: [goodEntry('/a')] })],
@@ -169,6 +169,19 @@ test('apply never throws on hostile input', async (t) => {
   for (let i = 0; i < 20_000; i++) many.push(goodEntry('/bulk/' + i))
   t.is(await run(land({ base: await meta(view), entries: many })), 'accepted', '20k-entry land')
 })
+
+// random bytes that don't decode as a drive entry: about 1 in 900 draws of 7 random bytes is a
+// well-formed entry without a blob (accepted, rightly), which failed the run on CI
+function garbageEntry() {
+  for (;;) {
+    const bytes = crypto.randomBytes(7)
+    try {
+      c.decode(driveEntry, bytes)
+    } catch {
+      return bytes
+    }
+  }
+}
 
 function entry(core) {
   return c.encode(driveEntry, {
