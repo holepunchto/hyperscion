@@ -583,6 +583,43 @@
       ]
     },
     {
+      "name": "last-seen",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 1,
+      "fields": [
+        {
+          "name": "length",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "clock",
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "name": "hello",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 0,
+      "fields": [
+        {
+          "name": "hsVersion",
+          "type": "string",
+          "version": 1
+        },
+        {
+          "name": "maxAbi",
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
       "name": "op",
       "namespace": "hs",
       "compact": false,
@@ -687,6 +724,11 @@
         {
           "name": "encrypted",
           "type": "bool",
+          "version": 1
+        },
+        {
+          "name": "clock",
+          "type": "uint",
           "version": 1
         }
       ]

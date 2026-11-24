@@ -110,3 +110,32 @@ test('upgrade: owner only, one ABI at a time; an older peer stops, then catches 
   await ws2.commit([{ path: '/b2.txt', content: b4a.from('b2\n') }])
   t.is((await ws2.land({ message: 'b2' })).outcome.status, 'accepted', 'and lands again')
 })
+
+test('fast-forward trusts settlers only, and refuses a view past its ABI', async (t) => {
+  t.timeout(60_000)
+  withAbi2(t)
+  const a = await peer(t, await tmp(t), { maxAbi: 2 })
+  t.teardown(() => a.close())
+  const h = await peer(t, await tmp(t), { key: a.repo.key, maxAbi: 2 })
+  t.teardown(() => h.close())
+  const unlink = link(a, h)
+  t.teardown(unlink)
+  await a.repo.addWriter(h.repo.writerKey, { indexer: true, handle: 'hub' })
+  await settle([a.repo, h.repo], { until: () => h.repo.writable })
+  await h.repo.ack()
+  await settle([a.repo, h.repo], { converge: true })
+
+  // the newest settler head: the hub's latest op, which a's own view knows as a settler
+  const head = await a.repo._mostRecentTrusted(a.repo.main.view, a.repo.main.view)
+  t.ok(head && b4a.equals(head.key, h.repo.writerKey), 'the hub is the head to boot from')
+  t.is(head.length, h.repo.main.local.length)
+
+  // a hub the reference view doesn't know as one is skipped
+  t.is(await a.repo._settlerIn(a.repo.main.view, b4a.alloc(32, 1)), false)
+
+  // a candidate at an ABI past this build is refused; at a known one it passes
+  await a.repo._checkCandidate(a.repo.main.view, 1)
+  t.is((await a.repo.upgrade(2)).outcome.status, 'accepted')
+  await t.exception(() => a.repo._checkCandidate(a.repo.main.view, 1), /past this build \(1\)/)
+  await a.repo._checkCandidate(a.repo.main.view, 2)
+})

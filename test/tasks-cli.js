@@ -491,6 +491,9 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   // the repo ABI (lib/abi.js): shown by info; upgrade-repo has nothing to do at the newest
   const info = await tm.as('a1', ['info'])
   t.ok(/^abi\s+1 \(this hs supports up to 1\)/m.test(info.stdout), info.stdout)
+  // doctor names this hs's version and each connected peer's (the hs/signal/1 hello)
+  const doc = await tm.as('a1', ['doctor'])
+  t.ok(/^versions\s+you \S+ \(ABI <= 1\); peers \S+ \(ABI <= 1\)/m.test(doc.stdout), doc.stdout)
   const up = await tm.as('a1', ['upgrade-repo', '--offline'])
   t.ok(/newest this hs supports: nothing to do/.test(up.stdout), up.stdout + up.stderr)
   const unknown = await tm.as('a1', ['task', 'frob'])
