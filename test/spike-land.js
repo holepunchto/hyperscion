@@ -10,7 +10,7 @@ const tmp = require('test-tmp')
 const driveEntry = require('hyperdrive/lib/encoding')
 const { getEncoding } = require('../lib/schema/spec')
 const keys = require('../lib/keys')
-const { apply, OP_LAND, OP_ADD_WRITER, STATUS } = require('../lib/apply')
+const { apply, OP_LAND, OP_ADD_WRITER, OP_GENESIS, STATUS } = require('../lib/apply')
 
 const Op = getEncoding('@hs/op')
 const Outcome = getEncoding('@hs/outcome')
@@ -104,6 +104,7 @@ async function pair(t) {
   }
 
   const disconnect = connect()
+  await a.append(c.encode(Op, { type: OP_GENESIS, genesis: { abi: 1 } })) // the repo's first op
   await a.append(
     c.encode(Op, { type: OP_ADD_WRITER, addWriter: { key: b.local.key, indexer: true } })
   )

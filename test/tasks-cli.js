@@ -488,6 +488,11 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.is(missing.code, 1)
   t.ok(/hs task show needs <task>/.test(missing.stderr), missing.stderr)
   t.ok(/usage: hs task show \[flags\] <task>/.test(missing.stderr), missing.stderr)
+  // the repo ABI (lib/abi.js): shown by info; upgrade-repo has nothing to do at the newest
+  const info = await tm.as('a1', ['info'])
+  t.ok(/^abi\s+1 \(this hs supports up to 1\)/m.test(info.stdout), info.stdout)
+  const up = await tm.as('a1', ['upgrade-repo', '--offline'])
+  t.ok(/newest this hs supports: nothing to do/.test(up.stdout), up.stdout + up.stderr)
   const unknown = await tm.as('a1', ['task', 'frob'])
   t.ok(/unknown command "frob" for hs task: one of list, show/.test(unknown.stderr), unknown.stderr)
 })
