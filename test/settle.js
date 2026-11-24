@@ -130,6 +130,8 @@ async function team(t) {
   await hub.addWriter(b.writerKey, { handle: 'b1' })
   await hub.addWriter(cc.writerKey, { handle: 'c1' })
   await settle()
+  // a slow runner may need longer than one settle() for the add-writer ops to arrive
+  for (let i = 0; i < 50 && !(b.writable && cc.writable); i++) await settle()
   t.ok(b.writable && cc.writable)
   return { hub, b, c: cc, settle }
 }

@@ -334,6 +334,12 @@ async function team(t) {
   await a.addWriter(b.writerKey, { handle: 'b1' })
   await a.addWriter(c.writerKey, { handle: 'c1' })
   await settle()
+  // settle() can see a calm moment before the add-writer ops reach b and c (darwin-x64 CI):
+  // wait for what the tests need, both writable, for up to 15 s
+  for (let i = 0; i < 300 && !(b.writable && c.writable); i++) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    await settle()
+  }
   t.ok(b.writable && c.writable, 'team ready')
   return { a, b, c, settle }
 }
