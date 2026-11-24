@@ -36,7 +36,11 @@ for (const event of ['uncaughtException', 'unhandledRejection']) {
 }
 
 // files: { 'path': 'content' } for the skeleton the hub lands first
-async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} } = {}) {
+// init: extra `hs init` flags (e.g. --no-encrypt for a repo published over git+pear)
+async function team(
+  t,
+  { agents = ['a1', 'a2'], files = {}, env: extraEnv = {}, init: initArgs = [] } = {}
+) {
   const testnet = await createTestnet(3, t.teardown)
   const env = {
     ...require('bare-process').env,
@@ -62,7 +66,7 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
   const bg = (cwd, args, user = 'hub') =>
     background(cwd, args, { ...env, USER: user, HS_AGENT: user })
 
-  const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
+  const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub, ...initArgs], 'owner')
   if (init.code !== 0) throw new Error('init: ' + init.stderr)
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
 

@@ -31,7 +31,10 @@ const bootstrap = run.bootstrap.split(',').map((hp) => {
   return { host, port: Number(port) }
 })
 const bare = require(path.join(ROOT, 'node_modules', 'bare-runtime'))()
-const key = Buffer.from(require(path.join(ROOT, 'node_modules', 'z32')).decode(config.key))
+const z32 = require(path.join(ROOT, 'node_modules', 'z32'))
+const key = Buffer.from(z32.decode(config.key))
+// the owner's config: repos are encrypted by default, so the writers need its key too
+const encryptionKey = config.encryptionKey ? Buffer.from(z32.decode(config.encryptionKey)) : null
 const out = fs.createWriteStream(path.join(dir, 'swarm.jsonl'), { flags: 'a' })
 const storeDir = path.join(dir, 'swarm-stores')
 
@@ -48,6 +51,7 @@ for (let i = 0; i < PROCS; i++) {
     mode: 'per-writer',
     dir: path.join(storeDir, 'p' + i),
     key: key.toString('hex'),
+    encryptionKey: encryptionKey ? encryptionKey.toString('hex') : null,
     bootstrap,
     bootstrapWeight: config.bootstrapWeight === 1 ? 1 : 2,
     hot: [],

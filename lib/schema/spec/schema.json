@@ -553,6 +553,36 @@
       ]
     },
     {
+      "name": "invite",
+      "namespace": "hs",
+      "compact": false,
+      "flagsPosition": 2,
+      "fields": [
+        {
+          "name": "kind",
+          "required": true,
+          "type": "uint",
+          "version": 1
+        },
+        {
+          "name": "key",
+          "required": true,
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "encryptionKey",
+          "type": "fixed32",
+          "version": 1
+        },
+        {
+          "name": "bootstrapWeight",
+          "type": "uint",
+          "version": 1
+        }
+      ]
+    },
+    {
       "name": "op",
       "namespace": "hs",
       "compact": false,

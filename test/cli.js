@@ -1,6 +1,7 @@
 // End-to-end through the real `hs` binary on a private DHT testnet: a hub holder admitting two
 // agents, then the agent-facing messages and watch behaviours from experiment 2's feedback.
 const test = require('brittle')
+const Invite = require('../lib/invite')
 const b4a = require('b4a')
 const fs = require('bare-fs')
 const path = require('bare-path')
@@ -47,7 +48,11 @@ test('cli: rebase messages, incoming summaries, watch waits, timeouts, stop and 
   const init = await hs(owner, ['init', '--as', 'owner', '--hub', hub], 'owner')
   t.is(init.code, 0, 'init')
   // a heavy throwaway genesis hands over to the hub (docs/history/finality-site-split.md): no light-bootstrap ~1
-  t.absent(/~1$/m.test(init.stdout.match(/^repo (\S+)/m)[1]), 'the invite is a heavy repo')
+  t.is(
+    Invite.decode(init.stdout.match(/^repo (\S+)/m)[1]).bootstrapWeight,
+    2,
+    'the invite is a heavy repo'
+  )
   const invite = init.stdout.match(/^repo (\S+)/m)[1]
 
   const seed = background(hub, ['seed', '--admit', admit], { ...env, USER: 'hub' })

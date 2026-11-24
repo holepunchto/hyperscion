@@ -8,6 +8,7 @@ const path = require('bare-path')
 const createTestnet = require('hyperdht/testnet')
 const tmp = require('test-tmp')
 const { run, background, waitFor } = require('./helpers/team')
+const { HubHome } = require('../lib/hubs')
 
 test('hubs: a writer that landed offline catches up with the lands made since', async (t) => {
   const testnet = await createTestnet(3, t.teardown)
@@ -35,7 +36,15 @@ test('hubs: a writer that landed offline catches up with the lands made since', 
   const phone = path.join(dir, 'phone')
   const cloned = await hs(
     dir,
-    ['clone', repos.r1.key, phone, '--as', 'phone', '--admit', path.join(home, 'admit', 'r1')],
+    [
+      'clone',
+      HubHome.invite(repos.r1),
+      phone,
+      '--as',
+      'phone',
+      '--admit',
+      path.join(home, 'admit', 'r1')
+    ],
     'phone'
   )
   t.is(cloned.code, 0, cloned.stderr)

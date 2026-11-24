@@ -112,7 +112,7 @@ test('outage with a swarm: a teammate land reaches a feed in seconds', async (t)
 })
 
 function startSwarm(t, tm) {
-  const { key } = Context.parseInvite(tm.invite)
+  const { key, encryptionKey, bootstrapWeight } = Context.parseInvite(tm.invite)
   const bootstrap = tm.env.HS_BOOTSTRAP.split(',').map((hp) => {
     const [host, port] = hp.split(':')
     return { host, port: Number(port) }
@@ -123,8 +123,9 @@ function startSwarm(t, tm) {
     mode: 'per-writer',
     dir: path.join(tm.dir, 'swarm'),
     key: b4a.toString(key, 'hex'),
+    encryptionKey: encryptionKey ? b4a.toString(encryptionKey, 'hex') : null,
     bootstrap,
-    bootstrapWeight: 1,
+    bootstrapWeight,
     hot: [],
     hotP: 0,
     think: THINK_S,

@@ -18,7 +18,7 @@ test(
   'gip: seed --gip serves main to git+pear peers, and import lands their commits',
   { timeout: 300000 },
   async (t) => {
-    const tm = await team(t, { agents: [] })
+    const tm = await team(t, { agents: [], init: ['--no-encrypt'] }) // a public repo
     const owner = path.join(tm.dir, 'owner')
     await tm.seed.stop() // the team's plain hub: this one also publishes
     tm.seed = null
@@ -168,13 +168,13 @@ test(
     const hs = (cwd, args) => run(cwd, args, env)
 
     // r1 published from the start, before the home is served; r2 turned on while served
-    const made = await hs(dir, ['hubs', 'new', 'r1', '--gip'])
+    const made = await hs(dir, ['hubs', 'new', 'r1', '--gip', '--no-encrypt'])
     t.is(made.code, 0, made.stderr)
     const link = made.stdout.match(/git\+pear (git\+pear:\/\/\S+)/)[1]
     t.ok(link.endsWith('/r1'), 'named after the repo: ' + link)
     const secret = await hs(dir, ['hubs', 'new', 's1', '--encrypt', '--gip'])
     t.is(secret.code, 1, 'an encrypted repo needs --public: ' + secret.stderr.trim())
-    t.is((await hs(dir, ['hubs', 'new', 'r2'])).code, 0)
+    t.is((await hs(dir, ['hubs', 'new', 'r2', '--no-encrypt'])).code, 0)
 
     const server = background(dir, ['hubs', 'serve'], env)
     t.teardown(() => server.stop(), { order: 1 })
