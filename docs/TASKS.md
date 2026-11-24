@@ -45,16 +45,23 @@ hs task drop T1a2b3c                             # nobody should build it
 ## Starting one
 
 ```sh
-hs task start T1a2b3c            # waits ~1.5 s for anyone starting it at the same moment
+hs task start T1a2b3c            # waits its turn (up to ~4 s), then ~1.5 s for a tie
 hs task start T1a2b3c --if-free  # start it only if nobody leads it; otherwise step away at once
 hs task start --new "Cache the distance matrix"   # file it and start it
 ```
 
+**A fair start.** Before claiming, `task start` waits a share of a ~4 s window that depends on
+the distance between your key and the task id (`HS_CLAIM_BACKOFF_MS` sets the window). When
+teammates start the same task at once, the closest goes first and the others see its start and
+stay off, with no claim of their own to take back. Each task orders writers differently, so no
+one always goes first. A task that names you as lead, one you file with `--new`, and `--take`
+start at once. If the task already has a lead, `task start` makes no claim at all.
+
 It ends with a verdict:
 
 - **`you lead T1a2b3c`** (exit 0): build it.
-- **`a2 leads T1a2b3c (started 0.4 s before you)`** (exit 2; with `--if-free`, exit 0 once it
-  has stepped away): don't build it too. Take a
+- **`a2 leads T1a2b3c ... you're not on it`** (exit 2; with `--if-free`, exit 0): don't build
+  it too. Take a
   subtask, ask the lead for a piece, or review their land when it comes.
 - **`!! nobody heard you start it`**: no peers were online, so you lead only on this machine.
   Start it again once you're online, before building.

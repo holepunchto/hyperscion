@@ -86,7 +86,13 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     const back = await tm.as(loser, ['task', 'start', id, '--if-free'])
     // stepping away is what --if-free asked for: exit 0 (q0-v030-1)
     t.is(back.code, 0, back.stdout)
-    t.ok(new RegExp(`withdrawn: ${lead} leads ${id}`).test(back.stdout), back.stdout)
+    // it already has a lead: no claim made (a fair start), or one taken back on a true tie
+    t.ok(
+      new RegExp(
+        `withdrawn: ${lead} leads ${id}|${lead} leads ${id}[\\s\\S]*you're not on it`
+      ).test(back.stdout),
+      back.stdout
+    )
   })
   const others = ['a1', 'a2', 'a3'].filter((a) => a !== lead)
 
@@ -328,7 +334,8 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     t.absent(/nobody heard/.test(bx.stderr), 'a peer on its side heard it')
     const by = await tm.as(y, ['task', 'start', id4, '--if-free'])
     t.ok(
-      by.code === 0 && new RegExp(`withdrawn: ${x} leads`).test(by.stdout),
+      by.code === 0 &&
+        new RegExp(`withdrawn: ${x} leads|${x} leads [\\s\\S]*you're not on it`).test(by.stdout),
       'site B agrees x leads: ' + by.stdout + by.stderr
     )
     const az = await tm.as(z, ['task', 'start', id4])

@@ -155,6 +155,8 @@ async function team(
 
 function run(cwd, args, env) {
   return new Promise((resolve) => {
+    // a short fair-start window (lib/claims.js backoffMs): tests start many tasks
+    env = { HS_CLAIM_BACKOFF_MS: '1000', ...(env || require('bare-process').env) }
     const p = spawn(os.execPath(), [BIN, ...args], { cwd, env })
     const out = []
     const err = []

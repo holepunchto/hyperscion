@@ -33,21 +33,21 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   const lead = leads[0] === c1 ? 'a1' : 'a2'
   const other = lead === 'a1' ? 'a2' : 'a1'
   const loser = leads[0] === c1 ? c2 : c1
-  t.ok(
-    new RegExp(`${lead} leads ${id} \\(started [0-9.]+ s before you\\)`).test(loser.stdout),
-    loser.stdout
-  )
+  t.ok(new RegExp(`${lead} leads ${id}`).test(loser.stdout), loser.stdout)
   t.ok(
     new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
     loser.stdout
   )
-  // the lead hears who started after it, and that they were told (q0-v030-1)
-  t.ok(
-    new RegExp(`also started it: ${other}, [0-9.]+ s after you: they're told you lead`).test(
-      leads[0].stdout
-    ),
-    leads[0].stdout
+  // a fair start (lib/claims.js backoffMs): the later writer sees the lead's start while it
+  // waits its turn and makes no claim; only when both turns end within network latency do
+  // both claim, and then the lead hears who started after it (q0-v030-1)
+  const stoodAside = /you're not on it: they started it while you waited your turn/.test(
+    loser.stdout
   )
+  const tie = new RegExp(
+    `also started it: ${other}, [0-9.]+ s after you: they're told you lead`
+  ).test(leads[0].stdout)
+  t.ok(stoodAside || tie, 'stood aside, or a true tie:\n' + loser.stdout + '\n' + leads[0].stdout)
 
   // parts are the lead's to hand out (q2s-claims-1); the item's author (a1) may split it too
   const notMine = await tm.as(other, ['task', 'split', id, 'flight minutes helper'])
@@ -87,7 +87,12 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
 
   const board = await tm.as(other, ['task'])
   t.ok(new RegExp(`lead ${lead}`).test(board.stdout), board.stdout)
-  t.ok(new RegExp(`also ${other}`).test(board.stdout), board.stdout)
+  if (stoodAside) {
+    t.absent(
+      new RegExp(`also ${other}`).test(board.stdout),
+      'no claim to take back: ' + board.stdout
+    )
+  }
 
   // the other lands into the item's paths: a note, not a refusal
   tm.write(other, 'src/pricing.js', '// mine\n')
@@ -468,9 +473,13 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   const taken = await tm.as('a1', ['watch', '--task', sub, '--timeout', '20'])
   t.is(taken.code, 0, taken.stderr)
   t.ok(new RegExp(`${sub} taken: a2 leads it`).test(taken.stdout), taken.stdout)
+  // it already has a lead: no claim at all, and --if-free makes that exit 0
   const freeOnly = await tm.as('a1', ['task', 'start', sub, '--if-free'])
-  t.is(freeOnly.code, 0, 'stepping away is what --if-free asked for: ' + freeOnly.stderr)
-  t.ok(/withdrawn: a2 leads/.test(freeOnly.stdout), freeOnly.stdout)
+  t.is(freeOnly.code, 0, 'staying off is what --if-free asked for: ' + freeOnly.stderr)
+  t.ok(/you're not on it: it already has a lead/.test(freeOnly.stdout), freeOnly.stdout)
+  // a co-lead who steps away is named as such
+  t.is((await tm.as('a1', ['task', 'start', sub, '--with', 'a2'])).code, 0)
+  await tm.as('a1', ['task', 'stop', sub])
   const again = await tm.as('a2', ['task', 'start', sub])
   t.ok(/stepped away: a1/.test(again.stdout), 'the lead sees who stepped away: ' + again.stdout)
 
