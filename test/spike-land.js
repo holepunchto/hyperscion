@@ -80,9 +80,13 @@ async function pair(t) {
   const sa = new Corestore(await tmp(t))
   const sb = new Corestore(await tmp(t))
 
-  const a = new Autobee(sa, null, { apply, optimistic: false })
+  // apply needs main's bootstrap writer: the repo's first owner (it adds b)
+  let bootstrap = null
+  const applyMain = (nodes, view, host) => apply(nodes, view, host, { bootstrap })
+  const a = new Autobee(sa, null, { apply: applyMain, optimistic: false })
   await a.ready()
-  const b = new Autobee(sb, a.key, { apply, optimistic: false })
+  bootstrap = a.key
+  const b = new Autobee(sb, a.key, { apply: applyMain, optimistic: false })
   await b.ready()
 
   t.teardown(async () => {

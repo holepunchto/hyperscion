@@ -129,7 +129,7 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
 
   // only the team owner can say a writer is a person
   const notOwner = await tm.as('a1', ['add-writer', annKey, '--as', 'ann', '--human', '--offline'])
-  t.ok(/only the team owner/.test(notOwner.stdout + notOwner.stderr), notOwner.stdout)
+  t.ok(/only an owner adds writers/.test(notOwner.stdout + notOwner.stderr), notOwner.stdout)
   const marked = await tm.hs(owner, ['add-writer', annKey, '--as', 'ann', '--human'], 'owner')
   t.ok(/add-writer: accepted/.test(marked.stdout), marked.stdout + marked.stderr)
 
@@ -448,7 +448,7 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
 
   const long = await tm.as('a1', ['task', 'split', id, 'too much', '--spec', 'x'.repeat(4001)])
   t.is(long.code, 1)
-  t.ok(/at most 4000 characters/.test(long.stderr), long.stderr)
+  t.ok(/at most 4000 bytes/.test(long.stderr), long.stderr)
 
   await tm.as('a2', ['sync'])
   const started = await tm.as('a2', ['task', 'start', sub])

@@ -7,6 +7,7 @@ const os = require('bare-os')
 const { spawn } = require('bare-subprocess')
 const createTestnet = require('hyperdht/testnet')
 const tmp = require('test-tmp')
+const { finished } = require('../../lib/proc')
 
 const BIN = path.join(__dirname, '..', '..', 'bin.mjs')
 
@@ -155,7 +156,7 @@ function run(cwd, args, env) {
     const err = []
     p.stdout.on('data', (d) => out.push(d))
     p.stderr.on('data', (d) => err.push(d))
-    p.on('exit', (code) =>
+    finished(p).then((code) =>
       resolve({
         code,
         stdout: b4a.toString(b4a.concat(out)),

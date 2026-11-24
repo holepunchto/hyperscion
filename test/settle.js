@@ -252,16 +252,20 @@ test('light bootstrap: a solo repo settles, the last hub can go, the owner only 
   link(hub, b)
   live.push(hub, b)
   await owner.addWriter(hub.writerKey, { indexer: true, handle: 'hub' })
-  await owner.addWriter(b.writerKey, { handle: 'b1' })
+  // b is an owner too (only owners remove writers since ABI 1), so it can drop a dead hub later
+  await owner.addWriter(b.writerKey, { handle: 'b1', owner: true })
   await settle()
   t.alike(await b.indexers(), [hub.writerKey], 'the hub is the only indexer')
+  const hubRemovesOwner = await hub.removeWriter(owner.writerKey)
+  t.is(hubRemovesOwner.outcome.status, 'invalid', 'a hub cannot remove an owner')
 
   // the owner can leave while the hub stays
-  const ownerGone = await hub.removeWriter(owner.writerKey)
+  const ownerGone = await owner.removeWriter(owner.writerKey)
   t.is(ownerGone.outcome.status, 'accepted', ownerGone.outcome.reason)
   await settle()
 
-  // the hub dies; b removes it (the last indexer): settlement falls back to every writer (b)
+  // the hub dies; b (an owner) removes it, the last indexer: settlement falls back to every
+  // writer (b)
   unlinkAll(hub)
   live.splice(live.indexOf(hub), 1)
   const wb = await b.workspace('wb')
