@@ -19,6 +19,7 @@ const cli = createCli()
 const trace = process.env.HS_TRACE ? startTrace() : null
 
 let running = true
+let quick = false
 Bare.on('beforeExit', () => {
   if (!running) return
   running = false
@@ -42,8 +43,12 @@ try {
     if (args) console.log('$ hs ' + args.map(quote).join(' '))
   }
   const program = args ? cli.parse(args) : null
+  // nothing ran that needs the event loop: help, --version, `hs` alone, `hs help ...`, a group
+  // typed alone (`hs hubs`)
+  quick = !program || program === cli || program.name === 'help' || !!program.printsOnly
   if (program && program.running) await program.running
 } catch (err) {
+  quick = true // a parse mistake (a command's own errors come back the same way, after running)
   // paparam hands command errors back as their stack text; users get the message only
   // (HS_DEBUG=1 for the stack)
   let msg = err && err.message ? err.message : String(err)
@@ -63,6 +68,14 @@ try {
 running = false
 Bare.exitCode = process.exitCode || 0
 if (trace) trace.end(Bare.exitCode)
+// Standalone binaries from bare-build 1.6 and 1.7 hang at exit after a command that did no
+// async work, on every run but the first (once the addons are unpacked in /tmp/hs-<hash>):
+// `hs help`, `hs --version`, parse errors. Such a command exits as soon as its output is out.
+if (quick && !self.isDev()) {
+  await drained(process.stdout)
+  await drained(process.stderr)
+  Bare.exit(Bare.exitCode)
+}
 
 function startTrace() {
   const started = Date.now()
@@ -89,6 +102,19 @@ function startTrace() {
       fs.appendFileSync(process.env.HS_TRACE, JSON.stringify(rec) + '\n')
     }
   }
+}
+
+// resolves once everything written to a stream has been handed to the OS
+function drained(stream) {
+  if (!stream || typeof stream.write !== 'function') return Promise.resolve()
+  return new Promise((resolve) => {
+    try {
+      if (stream.write('', () => resolve()) === false) stream.once('drain', resolve)
+    } catch {
+      resolve()
+    }
+    setTimeout(resolve, 1000) // never hold the exit for long
+  })
 }
 
 // remove .hs/busy.json if it names this process (walks up from cwd like Context.load)
