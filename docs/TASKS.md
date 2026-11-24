@@ -35,7 +35,9 @@ hs task drop T1a2b3c                             # nobody should build it
 - **`--idea`** files a suggestion: a task of kind `idea`, which teammates or a person approve
   when `/.hsreview` says ideas need approval.
 - **`--spec`** (or `--spec-file`, on `task new` and `task split`) says what to build, in at
-  most 4000 characters: whoever starts the task sees it, and `hs task show` keeps it. Put a
+  most 4000 bytes: whoever starts the task sees it, and `hs task show` keeps it. With
+  `--from CHANGE-REQUEST.md` and no `--spec`, the file's text is the spec (cut at 4000 bytes),
+  so teammates read it even before the file lands. Put a
   longer spec in NOTES.md and say so in this one. `--paths` takes several paths: repeat it,
   separate them with commas, or (on `split`) list them after the title.
 - **Splitting** is the lead's (or the author's), so the pieces are handed out once. When the
@@ -45,16 +47,26 @@ hs task drop T1a2b3c                             # nobody should build it
 ## Starting one
 
 ```sh
-hs task start T1a2b3c            # waits ~1.5 s for anyone starting it at the same moment
+hs task start T1a2b3c            # waits its turn (up to ~4 s), then ~1.5 s for a tie
 hs task start T1a2b3c --if-free  # start it only if nobody leads it; otherwise step away at once
 hs task start --new "Cache the distance matrix"   # file it and start it
 ```
 
+**A fair start.** Before claiming, `task start` waits a share of a ~4 s window that depends on
+the distance between your key and the task id (`HS_CLAIM_BACKOFF_MS` sets the window). When
+teammates start the same task at once, the closest goes first and the others see its start and
+stay off, with no claim of their own to take back. Each task orders writers differently, so no
+one always goes first. A task that names you as lead, one you file with `--new`, and `--take`
+start at once. If the task already has a lead, `task start` makes no claim at all.
+
 It ends with a verdict:
 
 - **`you lead T1a2b3c`** (exit 0): build it.
-- **`a2 leads T1a2b3c (started 0.4 s before you)`** (exit 2): don't build it too. Take a
-  subtask, ask the lead for a piece, or review their land when it comes.
+- **`a2 leads T1a2b3c ... you're not on it`** (exit 0): no claim of yours was made, and you
+  review the land that closes it. Don't build it too: take a subtask, or ask the lead for a
+  piece.
+- **`a2 leads T1a2b3c (started 0.1 s before you)`** (exit 2): a true tie, both turns ended
+  at once and yours lost. Don't build it too (`hs task stop`, or `--if-free` next time).
 - **`!! nobody heard you start it`**: no peers were online, so you lead only on this machine.
   Start it again once you're online, before building.
 
@@ -127,6 +139,7 @@ Reviews of changes (Ship, Show, Ask) are in [AGENTS.md](AGENTS.md).
 | ------------------------------------------------------------------------------- | --------------------------------------------- |
 | `hs task`, `hs task list [--all]`                                               | the board                                     |
 | `hs task show <task>`                                                           | one task: spec, paths, leads, subtasks        |
+| `hs watch --new-task [--sync]`                                                  | wait for an open task nobody leads            |
 | `hs task new [title] [--from f] [--kind k] [--idea] [--paths p] [--lead h]`     | file a task                                   |
 | `hs task split <task> <title> [--paths p...] [--spec text]`                     | a subtask (the lead's or author's)            |
 | `hs task start [task] [--new title] [--if-free] [--with h] [--note t] [--take]` | start it: the first to start leads            |

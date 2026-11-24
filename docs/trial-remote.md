@@ -31,10 +31,9 @@ cd ~/code/app-trial/swarm
 hs info            # the `invite` line
 ```
 
-**Treat the invite like a password.** Anyone who has it can read the repo. If the code is
-private and the invite may travel through chat or tickets, start the trial with
-`hs init --as me --hub ../hub --encrypt` instead. That keeps the repo's data encrypted at rest,
-and the invite then carries the key.
+**Treat the invite like a password.** Anyone who has it can read the repo. The repo's data
+is encrypted at rest by default, and the invite carries that key, so be careful where the
+invite travels (chat, tickets).
 
 ## 3. Clone on the remote machine
 

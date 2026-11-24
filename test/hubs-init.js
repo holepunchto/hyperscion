@@ -29,7 +29,10 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   const home = path.join(user, 'hubs')
   t.ok(made.stdout.includes('made a hub home: ' + home), 'defaults to ~/hubs')
   t.ok(made.stdout.includes("this machine's default"))
-  t.alike(JSON.parse(fs.readFileSync(path.join(home, 'hubs.json'), 'utf8')), { repos: {} })
+  t.alike(JSON.parse(fs.readFileSync(path.join(home, 'hubs.json'), 'utf8')), {
+    format: 1,
+    repos: {}
+  })
   t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), home)
 
   const again = await hs(['hubs', 'init'])
@@ -85,6 +88,18 @@ test('hubs init: an empty home, the default from then on', async (t) => {
   const back = await hs(['hubs', 'init'])
   t.ok(back.stdout.includes("it's this machine's default"), back.stdout)
   t.is(fs.readFileSync(path.join(user, '.config', 'hs', 'hub-home'), 'utf8').trim(), home)
+
+  // a hubs.json that doesn't parse is an error, never an empty home saved over it (it holds
+  // every repo's keys); one from a newer hs is refused too
+  const file = path.join(home, 'hubs.json')
+  fs.writeFileSync(file, '{ "repos": { "x": ')
+  const broken = await hs(['hubs', 'new', 'r9'])
+  t.is(broken.code, 1)
+  t.ok(broken.stderr.includes('does not parse'), broken.stderr)
+  t.is(fs.readFileSync(file, 'utf8'), '{ "repos": { "x": ', 'left as it was')
+  fs.writeFileSync(file, JSON.stringify({ format: 99, repos: {} }))
+  const newer = await hs(['hubs', 'list'])
+  t.ok(newer.stderr.includes('from a newer hs (format 99'), newer.stderr)
 })
 
 test('hubs new --dir: an existing folder becomes the worktree, files kept', async (t) => {

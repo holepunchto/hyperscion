@@ -18,7 +18,8 @@ seeds the repo of the worktree it runs in.
   holds and serves everything, which supports the hub: teammates can still fetch work while
   the hub is down. It doesn't settle anything, so its downtime never delays a land.
 - **Blind peers** (`hs blind-peer <key>`) support the hub the same way, as a hosted service.
-  They store the repo encrypted and can't read it.
+  They store the repo encrypted and can't read it, which holds because repos are encrypted
+  by default. A repo made with `--no-encrypt` is readable by any peer holding its blocks.
 - A teammate's running `hs watch` keeps a copy too, while it runs.
 
 Never run `hs seed` in the worktree you work in. It keeps the worktree busy, and the hub or an
@@ -33,7 +34,8 @@ cd ../my-hub && hs seed --admit ../admit    # keep this running
 
 Teammates clone with `hs clone <invite> <dir> --as <handle> --admit ../admit`, and the hub
 admits them by itself. The admit directory is a plain folder the clone drops its key into, so
-it has to be one both can reach (the same machine, or a shared folder). Otherwise stop
+it has to be one both can reach (the same machine, or a shared folder). **Anyone who can write
+a key into it gets write access**, so keep it private to the team. Otherwise stop
 `hs seed` and run `hs add-writer <key> --as <handle>` in the hub, with the key `hs info`
 prints in the teammate's clone.
 
@@ -149,3 +151,43 @@ been tested.
 ## Many repos on one machine
 
 One process can hub every repo on a machine: see [Hub homes](hub-homes.md).
+
+## Encryption, invites and who can write
+
+- **Repos are encrypted by default.** Every connection between peers is always encrypted. On
+  top of that, an encrypted repo's blocks are encrypted at rest, so a blind peer or anyone
+  who copies a store sees only ciphertext. `hs init --no-encrypt` (or `hs hubs new
+--no-encrypt`) makes a repo whose blocks anyone holding them can read. Use it for a
+  public repo, such as one published over git+pear. The choice is made when the repo is
+  created and can't change later.
+- **The invite is the read key.** It carries the repo key and, for an encrypted repo, the
+  encryption key. Anyone who has it can replicate and read the repo, so treat it like a
+  password: share it only with the team.
+- **Who changes who writes:**
+  - An owner adds and removes writers, renames them, and lets a removed one back.
+  - A hub admits new writers and hubs (admit folders, hub replacement) and removes other
+    hubs.
+  - Any writer can leave on its own (`hs remove-writer <its key>`).
+  - Every peer enforces this when applying main, so a writer can't change it by running
+    a modified hs.
+- **Removing a writer stops its writes, not its reads.** Every peer ignores what a removed
+  writer writes from then on. It keeps what it already replicated, and while it has the
+  invite it can keep reading. Nothing rotates keys yet.
+- **Admit folders are write access.** See [Running it](#running-it).
+
+## Versions: hs releases and the repo ABI
+
+Every peer applies main by the same rules, so the rules a repo uses can't depend on which hs
+each peer happens to run. A repo has an **ABI**, a number recorded in main (`hs info` shows
+it). Every peer judges every change by the repo's ABI, never by its own hs version. A newer
+hs in a repo at an older ABI behaves exactly like the older hs.
+
+- **New rules ship switched off.** A release can support a newer ABI, but repos stay where
+  they are until an owner runs `hs upgrade-repo`, which moves the repo one ABI at a time.
+- **Before upgrading, check the team.** `hs doctor` lists the hs version and newest ABI of
+  every connected peer, and says how many peers an upgrade would stop.
+- **A peer whose hs is too old stops instead of diverging.** It stops applying main, every
+  command says `this repo uses ABI N, newer than this hs supports`, and its writes are
+  refused, so nothing it writes is lost. After an update it catches up by itself.
+- **Hubs update themselves** (`--updates`, on for a hub-home service). So a hub is usually the
+  first peer able to apply a new ABI, and the last one an upgrade would stop.

@@ -62,8 +62,8 @@ unless main moves in between.
 **What land does that `hs check` doesn't:**
 
 - If main moves while a check runs, and the change is somewhere the check reads, land checks
-  again. Changes outside your sparse checkout, or under paths `/.hsattributes` marks `-check`,
-  don't trigger a re-run.
+  again. Changes outside your sparse checkout, under paths `/.hsattributes` marks `-check`, or to
+  `merge=union` files such as NOTES.md (unless marked `check`), don't trigger a re-run.
 - Land stops at the first failing check, while `hs check` runs them all.
 
 **A pass is remembered for this exact tree.** A check that already passed on the tree you're
@@ -127,9 +127,10 @@ It can't stop a writer who lies, any more than a commit message can. Real attest
 peers that re-run checks and sign the result, is where the reserved `act` kind and a
 separate check op would come in.
 
-**Every peer must run an hs that knows `checks=` before a repo adds one.** An older peer
-would accept lands a newer peer refuses, and their views of main would differ. Peers that
-don't know the land's `checks` field simply ignore it.
+**`checks=` is part of the repo rules every peer applies** (repo ABI 1; see
+[DESIGN.md §16](DESIGN.md#16-rules-versioning-the-repo-abi)). A future `/.hsreview`
+attribute will count only once an owner moves the repo to the ABI that introduces it
+(`hs upgrade-repo`), so peers on an older hs never disagree about a land: they stop instead.
 
 ## Why hs doesn't run the CI workflows (yet)
 

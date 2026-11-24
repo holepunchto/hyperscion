@@ -10,7 +10,16 @@ const tmp = require('test-tmp')
 const driveEntry = require('hyperdrive/lib/encoding')
 const { getEncoding } = require('../lib/schema/spec')
 const keys = require('../lib/keys')
-const { apply, OP_LAND, OP_ADD_WRITER, OP_PROPOSE, OP_REVIEW, STATUS } = require('../lib/apply')
+const {
+  apply,
+  OP_LAND,
+  OP_ADD_WRITER,
+  OP_PROPOSE,
+  OP_REVIEW,
+  OP_GENESIS,
+  OP_UPGRADE,
+  STATUS
+} = require('../lib/apply')
 
 const Op = getEncoding('@hs/op')
 const Outcome = getEncoding('@hs/outcome')
@@ -40,6 +49,19 @@ test('apply never throws on hostile input', async (t) => {
   const propose = (p) =>
     c.encode(Op, { type: OP_PROPOSE, propose: { ws: { key: WRITER, length: 1 }, ...p } })
   const review = (r) => c.encode(Op, { type: OP_REVIEW, review: r })
+
+  // the repo's first op: hostile input is judged by the real rules, not refused for want of it
+  t.is(await run(c.encode(Op, { type: OP_GENESIS, genesis: { abi: 1 } })), 'accepted', 'genesis')
+  t.is(
+    await run(c.encode(Op, { type: OP_GENESIS, genesis: { abi: 1 } })),
+    'invalid',
+    'a second genesis'
+  )
+  t.is(
+    await run(c.encode(Op, { type: OP_UPGRADE, upgrade: { abi: 5 } })),
+    'invalid',
+    'an upgrade that skips ABIs'
+  )
 
   const cases = [
     ['empty buffer', b4a.alloc(0)],
@@ -121,7 +143,8 @@ test('apply never throws on hostile input', async (t) => {
     t.ok(status === 'invalid' || status === 'stale-base', `${name} -> ${status}`)
   }
 
-  t.alike(await meta(view), { seq: 0, hash: keys.ZERO }, 'nothing was accepted')
+  const m0 = await meta(view)
+  t.alike({ seq: m0.seq, hash: m0.hash }, { seq: 0, hash: keys.ZERO }, 'nothing was accepted')
 
   // random mutations of valid propose and review ops
   for (const valid of [

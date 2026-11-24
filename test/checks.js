@@ -251,3 +251,14 @@ test('checks: /.hsreview checks= rules, alongside approvals', (t) => {
   t.is(rules.parseReview('contract.md approvals=1 checks=lint')[0].approvals, 1, 'review rule kept')
   t.is(rules.parseReview('/src/ checks=lint').length, 0, 'checks= alone is no review rule')
 })
+
+test('checks: union-merged coordination files are no check input, unless marked check', (t) => {
+  const merge = require('../lib/merge')
+  const rules = merge.parseAttributes(
+    'NOTES.md merge=union\nTASKS.md merge=union check\n/swarm/ -check'
+  )
+  t.is(merge.checkReads(rules, '/NOTES.md'), false, 'a teammate note never re-runs a check')
+  t.is(merge.checkReads(rules, '/TASKS.md'), true, 'unless the repo says check')
+  t.is(merge.checkReads(rules, '/swarm/x'), false)
+  t.is(merge.checkReads(rules, '/src/a.js'), true)
+})

@@ -8,6 +8,7 @@ const path = require('bare-path')
 const createTestnet = require('hyperdht/testnet')
 const tmp = require('test-tmp')
 const { run, background, waitFor, sleep } = require('./helpers/team')
+const { HubHome } = require('../lib/hubs')
 
 test('hubs: one process hubs many repos', async (t) => {
   const testnet = await createTestnet(3, t.teardown)
@@ -50,7 +51,8 @@ test('hubs: one process hubs many repos', async (t) => {
   const join = async (who, name) => {
     const wt = path.join(dir, who + '-' + name)
     const admit = path.join(home, 'admit', name)
-    const cloned = await hs(dir, ['clone', repos[name].key, wt, '--as', who, '--admit', admit], who)
+    const invite = HubHome.invite(repos[name])
+    const cloned = await hs(dir, ['clone', invite, wt, '--as', who, '--admit', admit], who)
     t.is(cloned.code, 0, `${who} clones ${name}: ${cloned.stderr}`)
     await waitFor(async () => {
       await hs(wt, ['fetch'], who)

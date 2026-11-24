@@ -10,7 +10,7 @@ const tmp = require('test-tmp')
 const driveEntry = require('hyperdrive/lib/encoding')
 const { getEncoding } = require('../lib/schema/spec')
 const keys = require('../lib/keys')
-const { apply, OP_LAND, OP_ADD_WRITER, STATUS } = require('../lib/apply')
+const { apply, OP_LAND, OP_ADD_WRITER, OP_GENESIS, STATUS } = require('../lib/apply')
 
 const Op = getEncoding('@hs/op')
 const Outcome = getEncoding('@hs/outcome')
@@ -80,9 +80,13 @@ async function pair(t) {
   const sa = new Corestore(await tmp(t))
   const sb = new Corestore(await tmp(t))
 
-  const a = new Autobee(sa, null, { apply, optimistic: false })
+  // apply needs main's bootstrap writer: the repo's first owner (it adds b)
+  let bootstrap = null
+  const applyMain = (nodes, view, host) => apply(nodes, view, host, { bootstrap })
+  const a = new Autobee(sa, null, { apply: applyMain, optimistic: false })
   await a.ready()
-  const b = new Autobee(sb, a.key, { apply, optimistic: false })
+  bootstrap = a.key
+  const b = new Autobee(sb, a.key, { apply: applyMain, optimistic: false })
   await b.ready()
 
   t.teardown(async () => {
@@ -104,6 +108,7 @@ async function pair(t) {
   }
 
   const disconnect = connect()
+  await a.append(c.encode(Op, { type: OP_GENESIS, genesis: { abi: 1 } })) // the repo's first op
   await a.append(
     c.encode(Op, { type: OP_ADD_WRITER, addWriter: { key: b.local.key, indexer: true } })
   )

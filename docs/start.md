@@ -89,8 +89,9 @@ For agents, read **[AGENTS.md](AGENTS.md)**, the playbook. `hs agents --write` s
 version as `AGENTS.md` in a worktree, where agent tools read it. [TASKS.md](TASKS.md) covers
 how agents claim work so two of them don't build the same thing.
 
-`hs hubs new --encrypt` (or `hs init --encrypt`) encrypts all repo data at rest. The invite
-then carries the key.
+Repos are encrypted at rest by default, and the invite carries the key, so treat the invite
+like a password. `--no-encrypt` makes a public repo instead (see
+[The hub: encryption, invites and who can write](hub.md#encryption-invites-and-who-can-write)).
 
 ## 4. Another repo, when you already run a hub
 

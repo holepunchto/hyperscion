@@ -55,6 +55,19 @@ by default, and `hs seed --updates` or `hs hubs serve --updates` opt in
 ([Updates and restarts](hub-homes.md#updates-and-restarts)). One-shot commands never update, so
 on a machine that doesn't run a hub, update by installing again.
 
+## Platforms
+
+Linux and macOS are fully supported. Windows builds and passes the quick tests, but there is no
+hub service on Windows (run `hs seed` or `hs hubs serve` in a terminal), and the walkthroughs
+use POSIX shell commands.
+
+## Privacy
+
+hs sends no telemetry and makes no HTTP calls. It finds peers on the HyperDHT, which exposes
+your IP address to the DHT and to the peers you connect to. Hubs that update themselves
+(`--updates`) also check the hs release link over the same network. Repos are encrypted at rest
+by default; see [The hub: encryption, invites and who can write](hub.md#encryption-invites-and-who-can-write).
+
 ## Uninstall
 
 If you ran a hub home as a service, run `hs hubs service uninstall` first. Then delete the

@@ -11,6 +11,10 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   await tm.as('a1', ['sync'])
   await tm.as('a2', ['sync'])
 
+  // nothing open: the board says how to wait for work (q0b-to5-3)
+  const empty = await tm.as('a2', ['task'])
+  t.ok(/no open tasks .*hs watch --new-task --sync/.test(empty.stdout), empty.stdout)
+
   const made = await tm.as('a1', [
     'task',
     'new',
@@ -21,26 +25,53 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   t.is(made.code, 0, made.stderr)
   const id = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
 
+  // waiting for work: returns with the task nobody leads, no file name to guess
+  const work = await tm.as('a2', ['watch', '--new-task', '--timeout', '30'])
+  t.is(work.code, 0, work.stderr)
+  t.ok(
+    new RegExp(`${id} "CR-1: price per flight minute" \\(filed by a1, nobody leads it\\)`).test(
+      work.stdout
+    ),
+    work.stdout
+  )
+  t.ok(
+    new RegExp(`paths: /src/pricing.js[\\s\\S]*start it: hs task start ${id}`).test(work.stdout),
+    work.stdout
+  )
+
   // the race at time zero: both claim at once
   const [c1, c2] = await Promise.all([
     tm.as('a1', ['task', 'start', id]),
     tm.as('a2', ['task', 'start', id])
   ])
-  // the lead exits 0, the other 2: the verdict is in the exit code too
-  t.alike([c1.code, c2.code].sort(), [0, 2], c1.stderr + c2.stderr)
   const leads = [c1, c2].filter((r) => /you lead/.test(r.stdout))
   t.is(leads.length, 1, 'exactly one leads:\n' + c1.stdout + '\n' + c2.stdout)
   const lead = leads[0] === c1 ? 'a1' : 'a2'
   const other = lead === 'a1' ? 'a2' : 'a1'
   const loser = leads[0] === c1 ? c2 : c1
-  t.ok(
-    new RegExp(`${lead} leads ${id} \\(started [0-9.]+ s before you\\)`).test(loser.stdout),
-    loser.stdout
-  )
-  t.ok(
-    new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
-    loser.stdout
-  )
+  t.ok(new RegExp(`${lead} leads ${id}`).test(loser.stdout), loser.stdout)
+
+  // a fair start (lib/claims.js backoffMs): the later writer sees the lead's start while it
+  // waits its turn and makes no claim; only when both turns end within network latency do
+  // both claim, and then the lead hears who started after it (q0-v030-1)
+  const stoodAside =
+    /you're not on it \((they started it while you waited your turn|it already had a lead)/.test(
+      loser.stdout
+    )
+  const tie = new RegExp(
+    `also started it: ${other}, [0-9.]+ s after you: they're told you lead`
+  ).test(leads[0].stdout)
+  t.ok(stoodAside || tie, 'stood aside, or a true tie:\n' + loser.stdout + '\n' + leads[0].stdout)
+  // standing aside is a normal outcome (exit 0); only a claim that lost a true tie exits 2
+  t.alike([c1.code, c2.code].sort(), stoodAside ? [0, 0] : [0, 2], c1.stderr + c2.stderr)
+  if (stoodAside) {
+    t.ok(/you review it: .* will ask you/.test(loser.stdout), loser.stdout)
+  } else {
+    t.ok(
+      new RegExp(`don't build it too\\. .*ask ${lead} for a piece`).test(loser.stdout),
+      loser.stdout
+    )
+  }
 
   // parts are the lead's to hand out (q2s-claims-1); the item's author (a1) may split it too
   const notMine = await tm.as(other, ['task', 'split', id, 'flight minutes helper'])
@@ -80,7 +111,12 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
 
   const board = await tm.as(other, ['task'])
   t.ok(new RegExp(`lead ${lead}`).test(board.stdout), board.stdout)
-  t.ok(new RegExp(`also ${other}`).test(board.stdout), board.stdout)
+  if (stoodAside) {
+    t.absent(
+      new RegExp(`also ${other}`).test(board.stdout),
+      'no claim to take back: ' + board.stdout
+    )
+  }
 
   // the other lands into the item's paths: a note, not a refusal
   tm.write(other, 'src/pricing.js', '// mine\n')
@@ -96,6 +132,33 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   tm.write(lead, 'src/pricing.js', '// per minute\n')
   const done = await tm.as(lead, ['land', '-m', 'CR-1 per minute', '--task', id])
   t.ok(new RegExp(`completes ${id}`).test(done.stdout), done.stdout + done.stderr)
+  if (stoodAside) {
+    // the one who stood aside reviews the closing land, and its approval makes it final
+    t.ok(
+      new RegExp(`showing to ${other} \\(they stood aside for this task\\)`).test(done.stdout),
+      done.stdout
+    )
+    const seqDone = done.stdout.match(/landed #(\d+)/)[1]
+    await tm.as(other, ['sync'])
+    const approved = await tm.as(other, ['review', 'approve', seqDone])
+    t.ok(
+      new RegExp(`#${seqDone}: approved; (now final|settled)`).test(approved.stdout),
+      approved.stdout
+    )
+    if (/now final/.test(approved.stdout)) {
+      // approving a land that is final already says so, instead of "now final" (q0b-to5-3)
+      const twice = await tm.as(other, ['review', 'approve', seqDone])
+      t.ok(
+        new RegExp(
+          `#${seqDone}: approved; already final \\(approved by ${other}\\); your review is recorded`
+        ).test(twice.stdout),
+        twice.stdout + twice.stderr
+      )
+    }
+    await tm.as(lead, ['sync'])
+    const st = await tm.as(lead, ['status'])
+    t.ok(new RegExp(`approved by ${other}`).test(st.stdout), st.stdout)
+  }
   const after = await tm.as(other, ['task', 'list', '--all'])
   t.ok(new RegExp(`${id} .*\\[done #\\d+\\]`).test(after.stdout), after.stdout)
   const open = (await tm.as(other, ['task'])).stdout
@@ -129,7 +192,7 @@ test('tasks phase 2: a person approves a gated task from hs inbox, and its autho
 
   // only the team owner can say a writer is a person
   const notOwner = await tm.as('a1', ['add-writer', annKey, '--as', 'ann', '--human', '--offline'])
-  t.ok(/only the team owner/.test(notOwner.stdout + notOwner.stderr), notOwner.stdout)
+  t.ok(/only an owner adds writers/.test(notOwner.stdout + notOwner.stderr), notOwner.stdout)
   const marked = await tm.hs(owner, ['add-writer', annKey, '--as', 'ann', '--human'], 'owner')
   t.ok(/add-writer: accepted/.test(marked.stdout), marked.stdout + marked.stderr)
 
@@ -448,12 +511,31 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
 
   const long = await tm.as('a1', ['task', 'split', id, 'too much', '--spec', 'x'.repeat(4001)])
   t.is(long.code, 1)
-  t.ok(/at most 4000 characters/.test(long.stderr), long.stderr)
+  t.ok(/at most 4000 bytes/.test(long.stderr), long.stderr)
 
   await tm.as('a2', ['sync'])
   const started = await tm.as('a2', ['task', 'start', sub])
   t.ok(/you lead/.test(started.stdout), started.stdout + started.stderr)
   t.ok(/spec: weight: 0\.40\/kg to 2 kg/.test(started.stdout), started.stdout)
+
+  // q0-v030-1's asks: wait until someone takes a task; a teammate who started after you, or
+  // stepped away, is named as such; --if-free stepping away is exit 0
+  await tm.as('a1', ['sync'])
+  const taken = await tm.as('a1', ['watch', '--task', sub, '--timeout', '20'])
+  t.is(taken.code, 0, taken.stderr)
+  t.ok(new RegExp(`${sub} taken: a2 leads it`).test(taken.stdout), taken.stdout)
+  // it already has a lead: no claim at all, and --if-free makes that exit 0
+  const freeOnly = await tm.as('a1', ['task', 'start', sub, '--if-free'])
+  t.is(freeOnly.code, 0, 'staying off is what --if-free asked for: ' + freeOnly.stderr)
+  t.ok(/you're not on it \(it already had a lead/.test(freeOnly.stdout), freeOnly.stdout)
+  // a co-lead who steps away is named as such
+  t.is((await tm.as('a1', ['task', 'start', sub, '--with', 'a2'])).code, 0)
+  await tm.as('a1', ['task', 'stop', sub])
+  const again = await tm.as('a2', ['task', 'start', sub])
+  t.ok(
+    /standing by to review: a1/.test(again.stdout),
+    'the lead sees who stands by: ' + again.stdout
+  )
 
   const shown = await tm.as('a2', ['task', 'show', sub])
   t.is(shown.code, 0, shown.stderr)
@@ -471,6 +553,22 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.ok(/no checks ran: this repo declares none/.test(landed.stdout), landed.stdout)
   t.ok(new RegExp(`completes ${sub}`).test(landed.stdout), landed.stdout + landed.stderr)
   const seq = landed.stdout.match(/landed #(\d+)/)[1]
+  // a reviewer waits for the closing land and takes it in, in one command (q0-v031-1)
+  const closed = await tm.as('a1', [
+    'watch',
+    '--task',
+    sub,
+    '--until',
+    'done',
+    '--sync',
+    '--timeout',
+    '20'
+  ])
+  t.ok(
+    new RegExp(`${sub} done in #${seq} \\(\`hs show ${seq}\` for the diff\\)`).test(closed.stdout),
+    closed.stdout + closed.stderr
+  )
+  t.is(tm.read('a1', 'src/pricing.js'), '// v2\n', 'and synced it in')
 
   await tm.as('a1', ['sync'])
   const parent = await tm.as('a1', ['task', 'show', id])
@@ -488,6 +586,26 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.is(missing.code, 1)
   t.ok(/hs task show needs <task>/.test(missing.stderr), missing.stderr)
   t.ok(/usage: hs task show \[flags\] <task>/.test(missing.stderr), missing.stderr)
+  // the repo ABI (lib/abi.js): shown by info; upgrade-repo has nothing to do at the newest
+  const info = await tm.as('a1', ['info'])
+  t.ok(/^abi\s+1 \(this hs supports up to 1\)/m.test(info.stdout), info.stdout)
+  // doctor names this hs's version and each connected peer's (the hs/signal/1 hello)
+  const doc = await tm.as('a1', ['doctor'])
+  t.ok(/^versions\s+you \S+ \(ABI <= 1\); peers \S+ \(ABI <= 1\)/m.test(doc.stdout), doc.stdout)
+  const up = await tm.as('a1', ['upgrade-repo', '--offline'])
+  t.ok(/newest this hs supports: nothing to do/.test(up.stdout), up.stdout + up.stderr)
+  // --from: the file's text is the spec, so a teammate reads it before the file lands, and
+  // watch --new-task prints it (q0b-to5-4)
+  tm.write('a1', 'CR-9.md', '# CR-9: weights\n\nPrice by the kilogram.\n')
+  const cr = await tm.as('a1', ['task', 'new', '--from', 'CR-9.md'])
+  const crId = cr.stdout.match(/task (T[0-9a-f]{6}) "CR-9: weights"/)[1]
+  const waited = await tm.as('a2', ['watch', '--new-task', '--timeout', '30'])
+  t.ok(
+    new RegExp(
+      `${crId} "CR-9: weights"[\\s\\S]*spec: # CR-9: weights[\\s\\S]*Price by the kilogram`
+    ).test(waited.stdout),
+    waited.stdout + waited.stderr
+  )
   const unknown = await tm.as('a1', ['task', 'frob'])
   t.ok(/unknown command "frob" for hs task: one of list, show/.test(unknown.stderr), unknown.stderr)
 })

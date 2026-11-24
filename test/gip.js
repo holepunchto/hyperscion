@@ -374,7 +374,7 @@ test('gip: the CLI refuses to publish an encrypted repo, and acks its own import
   }
   const dir = await tmp(t)
   await git(dir, ['init', '-q', '.'])
-  t.is((await run(dir, ['init', '--as', 'me'], e)).code, 0)
+  t.is((await run(dir, ['init', '--as', 'me', '--no-encrypt'], e)).code, 0) // a public repo
   t.ok(
     fs.readFileSync(path.join(dir, '.git/info/exclude'), 'utf8').includes('/.hs/'),
     '.hs out of git'

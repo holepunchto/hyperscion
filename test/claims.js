@@ -358,3 +358,29 @@ async function pair(t) {
 function sync(...repos) {
   return settleRepos(repos)
 }
+
+test('claims: a fair start orders writers per task, inside the window', (t) => {
+  const crypto = require('hypercore-crypto')
+  const writers = [1, 2, 3, 4, 5].map(() => crypto.randomBytes(32))
+  const a = crypto.randomBytes(32)
+  const b = crypto.randomBytes(32)
+  const on = (item) => writers.map((w) => claims.backoffMs(w, item, 4000))
+  t.alike(on(a), on(a), 'deterministic: the same writer waits the same on the same task')
+  t.ok(
+    on(a).every((ms) => ms >= 0 && ms < 4000),
+    'within the window'
+  )
+  const order = (ms) =>
+    ms
+      .map((m, i) => [m, i])
+      .sort((x, y) => x[0] - y[0])
+      .map((x) => x[1])
+  const orders = new Set()
+  for (let i = 0; i < 8; i++) orders.add(order(on(crypto.randomBytes(32))).join(','))
+  t.ok(orders.size > 1, 'different tasks order the writers differently')
+  t.ok(
+    on(b).some((ms, i) => ms !== on(a)[i]),
+    'it depends on the task'
+  )
+  t.is(claims.backoffMs(writers[0], a, 0), 0, 'a 0 window turns it off')
+})

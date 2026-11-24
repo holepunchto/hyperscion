@@ -200,8 +200,9 @@ at 4 writers / 200 workspaces.
     blind-peer: it holds an encrypted repo's oplog, tree and blobs as ciphertext and serves a
     fresh peer after the author left (`test/blind-peer.js`). Note that blind peers downgrade `announce: true` unless they trust
     the client, so discovery for `hs clone` also needs a seed online or trusted blind peers.
-- **Encryption.** `hs init --encrypt` creates a repo-wide key. The invite
-  (`<repoKey>.<encryptionKey>`) carries it. Autobee's per-core view encryption provider is used
+- **Encryption.** Repos get a repo-wide key by default (`--no-encrypt` opts out, for a public
+  repo; recorded in the genesis op, chosen once). The invite
+  (a z32 `@hs/invite`, `lib/invite.js`) carries it. Autobee's per-core view encryption provider is used
   for every core a tree traverses, including workspace cores (created with v3 manifests, which
   it requires) and blobs cores. _Tested_: blobs are not plaintext at rest, and two peers clone,
   read and land encrypted over a DHT testnet and over the public DHT (`scripts/e2e.sh … --encrypt`).
@@ -965,7 +966,7 @@ were invisible, and a stand-in that started during the outage saw an empty main.
 - Every feed mirrors everything. That's fine at experiment scale. A large repo would want a
   sparse feed (mirror only the paths you watch).
 
-## 14. Open design: work-in-progress intents (not built)
+## 14. Superseded by tasks: work-in-progress intents (never built)
 
 **Superseded by [history/tasks-design.md](history/tasks-design.md)** (milestone 8 proposal): items, claims as signed
 signals over the swarm plus records in main, a content-determined lead, and humans in the
@@ -1258,3 +1259,48 @@ has a 4 MB one), which would cut the preallocated log too.
 
 **Not built yet:** reclaiming a removed repo's space in the store, blind peers per repo, a
 Windows service, and restart-on-update for a single `hs seed` hub.
+
+## 16. Rules versioning: the repo ABI
+
+Every peer runs `apply` over every writer's ops. A change to what `apply` accepts is a
+consensus change: peers on different hs versions would compute different mains, and fork.
+Until the pre-release freeze (November 2026) nothing versioned the rules. Hubs auto-updated
+while agents didn't, and rule changes shipped silently. The design follows keet's room ABI
+(keet-core `schema/versions.js`, `lib/core/contract/admission.js`), which runs on the same
+autobee.
+
+- **The repo's ABI is one number in main** (`meta.abi`), set by the **genesis op**. Genesis
+  is the repo's first op, from the bootstrap writer, and records the rule inputs: the ABI it
+  starts at, the bootstrap weight autobee orders by, and whether the repo is encrypted.
+- **Every op is judged by the repo's ABI, never by the applying peer's build**
+  (`lib/abi.js`, `lib/schema/abi.json`).
+  - Each ABI pins the highest op type it admits and the schema version its ops decode at.
+    Fields newer than that are dropped identically on every peer, and op types past it are
+    INVALID everywhere.
+  - Behaviour that differs between ABIs is gated by `featureAt(repoAbi, name)`, so old ops
+    replay under the rules they were written for.
+  - `test/abi.js` fails when an op type or schema field changes without a new table row.
+- **An owner moves the repo on** with an `upgrade` op, one ABI at a time: every build agrees
+  on that bound, and nobody can freeze older peers with a far-off number. A release ships new
+  rules switched off. `hs init` starts repos at `abi.DEFAULT`, which may lag `abi.MAX`.
+- **An older peer stops; it doesn't fork.**
+  - When `meta.abi`, a genesis or an upgrade is past what the build supports, apply calls
+    autobee's `host.interrupt` before writing anything.
+  - An interrupted autobee resolves appends without writing them (`test/spike-interrupt.js`).
+    So `Repo._append` refuses to write while interrupted, and checks that each append really
+    landed.
+  - Reopened with a newer hs, the peer catches up to the same main (`test/abi-upgrade.js`).
+- **Fast-forward trusts settlers only.** hs supplies autobee's `mostRecentTrusted`: a peer
+  boots only from the newest settler (hub) head that its own view also knows as a settler.
+  - The heads come from a last-seen index apply keeps, ordered by a per-op clock.
+  - Autobee already trusts its indexers and the genesis writer, and with the hook supplied
+    nobody else.
+  - `warmup` refuses a candidate whose ABI is past the build, so an old peer never lands on
+    a newer view.
+- **Peers say their version.** The claims channel is `hs/signal/1`, and its handshake carries
+  `{ hsVersion, maxAbi }`. `hs doctor` lists them and warns about peers an upgrade would stop.
+- **Other formats carry versions too:**
+  - the invite is a schema-encoded struct with a `kind` (`lib/invite.js`);
+  - `hubs.json` and `.hs/config.json` carry `format`;
+  - the vendored drive-entry encoding, part of main's history, is pinned by golden bytes
+    (`test/drive-entry.js`).
