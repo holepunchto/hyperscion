@@ -59,8 +59,17 @@ test('hubs restart: without --restart-on-update an update only says so; hs hubs 
   server.updateApplied()
   await sleep(QUIET + 2000)
   t.absent(exited, 'no restart by itself')
-  const listed = await hs(['hubs', 'list', '--home', home.dir])
-  t.ok(/an update is applied: `hs hubs restart`/.test(listed.stdout), listed.stdout)
+  // the list reads status.json, which the server rewrites about once a second: poll it, and
+  // show everything it printed if the notice never comes (CI: empty output under load)
+  let listed = null
+  await waitFor(async () => {
+    listed = await hs(['hubs', 'list', '--home', home.dir])
+    return /an update is applied: `hs hubs restart`/.test(listed.stdout)
+  }, 30_000).catch(() => {})
+  t.ok(
+    /an update is applied: `hs hubs restart`/.test(listed.stdout),
+    `stdout: ${listed.stdout} stderr: ${listed.stderr} exit ${listed.code}`
+  )
 
   const asked = await hs(['hubs', 'restart', '--home', home.dir])
   t.is(asked.code, 0, asked.stderr)
