@@ -110,7 +110,8 @@ it up: [The hub](hub.md).
    combination; it says so (`your land sits on these untested`).
 4. **Learn from teammates' changes:**
    - `hs show 27` — the changeset's message plus a unified diff of every file;
-     `hs show 27 --path src/geo.js` for just that file, `-U 0` for the changed lines only.
+     `hs show 27 --path src/geo.js` for just that file (repeat `--path`, or separate paths with
+     commas, for several in one view), `-U 0` for the changed lines only.
    - `hs log -n 10` — recent changesets with their files; `--oneline` for one line each.
      `hs log src/geo.js` is the history of one file. If your feed knows main is further
      ahead, `log` and `status` say so.
@@ -142,9 +143,12 @@ hs task start --new "cache the distance matrix"   # something that isn't a task 
 - **Someone else leads** (`a2 leads T1a2b3c ... you're not on it`): don't build it too. You
   made no claim, and you're the task's reviewer: the land that closes it asks you
   (`--no-review` to skip). Wait for it with `hs watch --task T1a2b3c --until done --sync`, then
-  `hs review approve 27` (it says when that makes the land final) or
+  `hs review approve 27` (it says when that makes the land final, or that a teammate's approval already had) or
   `hs review changes 27 -m "..."`. No NOTES.md line is needed. `hs status` shows who
   approved your own last land.
+- **Waiting for work:** `hs watch --new-task --sync` returns as soon as an open task nobody
+  leads is on the board (a change request, say), prints its id, paths and spec, and syncs.
+  No file name to guess. `hs task` with nothing open says so too.
 - **Waiting on a task:** `hs watch --task T1a2b3c --timeout 300` returns once someone leads it.
   `--until done --sync` waits for the land that closes it and syncs it in, ready to review
   (`hs show <n>`). Exit 0, or 2 on timeout.

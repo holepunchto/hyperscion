@@ -11,6 +11,10 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   await tm.as('a1', ['sync'])
   await tm.as('a2', ['sync'])
 
+  // nothing open: the board says how to wait for work (q0b-to5-3)
+  const empty = await tm.as('a2', ['task'])
+  t.ok(/no open tasks .*hs watch --new-task --sync/.test(empty.stdout), empty.stdout)
+
   const made = await tm.as('a1', [
     'task',
     'new',
@@ -20,6 +24,20 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
   ])
   t.is(made.code, 0, made.stderr)
   const id = made.stdout.match(/task (T[0-9a-f]{6})/)[1]
+
+  // waiting for work: returns with the task nobody leads, no file name to guess
+  const work = await tm.as('a2', ['watch', '--new-task', '--timeout', '30'])
+  t.is(work.code, 0, work.stderr)
+  t.ok(
+    new RegExp(`${id} "CR-1: price per flight minute" \\(filed by a1, nobody leads it\\)`).test(
+      work.stdout
+    ),
+    work.stdout
+  )
+  t.ok(
+    new RegExp(`paths: /src/pricing.js[\\s\\S]*start it: hs task start ${id}`).test(work.stdout),
+    work.stdout
+  )
 
   // the race at time zero: both claim at once
   const [c1, c2] = await Promise.all([
@@ -127,6 +145,16 @@ test('tasks: a race has one lead, the board shows it, a land completes the task'
       new RegExp(`#${seqDone}: approved; (now final|settled)`).test(approved.stdout),
       approved.stdout
     )
+    if (/now final/.test(approved.stdout)) {
+      // approving a land that is final already says so, instead of "now final" (q0b-to5-3)
+      const twice = await tm.as(other, ['review', 'approve', seqDone])
+      t.ok(
+        new RegExp(
+          `#${seqDone}: approved; already final \\(approved by ${other}\\); your review is recorded`
+        ).test(twice.stdout),
+        twice.stdout + twice.stderr
+      )
+    }
     await tm.as(lead, ['sync'])
     const st = await tm.as(lead, ['status'])
     t.ok(new RegExp(`approved by ${other}`).test(st.stdout), st.stdout)

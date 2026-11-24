@@ -137,6 +137,7 @@ Reviews of changes (Ship, Show, Ask) are in [AGENTS.md](AGENTS.md).
 | ------------------------------------------------------------------------------- | --------------------------------------------- |
 | `hs task`, `hs task list [--all]`                                               | the board                                     |
 | `hs task show <task>`                                                           | one task: spec, paths, leads, subtasks        |
+| `hs watch --new-task [--sync]`                                                  | wait for an open task nobody leads            |
 | `hs task new [title] [--from f] [--kind k] [--idea] [--paths p] [--lead h]`     | file a task                                   |
 | `hs task split <task> <title> [--paths p...] [--spec text]`                     | a subtask (the lead's or author's)            |
 | `hs task start [task] [--new title] [--if-free] [--with h] [--note t] [--take]` | start it: the first to start leads            |
