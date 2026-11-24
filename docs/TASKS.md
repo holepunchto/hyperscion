@@ -35,7 +35,9 @@ hs task drop T1a2b3c                             # nobody should build it
 - **`--idea`** files a suggestion: a task of kind `idea`, which teammates or a person approve
   when `/.hsreview` says ideas need approval.
 - **`--spec`** (or `--spec-file`, on `task new` and `task split`) says what to build, in at
-  most 4000 bytes: whoever starts the task sees it, and `hs task show` keeps it. Put a
+  most 4000 bytes: whoever starts the task sees it, and `hs task show` keeps it. With
+  `--from CHANGE-REQUEST.md` and no `--spec`, the file's text is the spec (cut at 4000 bytes),
+  so teammates read it even before the file lands. Put a
   longer spec in NOTES.md and say so in this one. `--paths` takes several paths: repeat it,
   separate them with commas, or (on `split`) list them after the title.
 - **Splitting** is the lead's (or the author's), so the pieces are handed out once. When the

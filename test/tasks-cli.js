@@ -594,6 +594,18 @@ test('tasks: split with several paths and a spec, task show, hs help, usage erro
   t.ok(/^versions\s+you \S+ \(ABI <= 1\); peers \S+ \(ABI <= 1\)/m.test(doc.stdout), doc.stdout)
   const up = await tm.as('a1', ['upgrade-repo', '--offline'])
   t.ok(/newest this hs supports: nothing to do/.test(up.stdout), up.stdout + up.stderr)
+  // --from: the file's text is the spec, so a teammate reads it before the file lands, and
+  // watch --new-task prints it (q0b-to5-4)
+  tm.write('a1', 'CR-9.md', '# CR-9: weights\n\nPrice by the kilogram.\n')
+  const cr = await tm.as('a1', ['task', 'new', '--from', 'CR-9.md'])
+  const crId = cr.stdout.match(/task (T[0-9a-f]{6}) "CR-9: weights"/)[1]
+  const waited = await tm.as('a2', ['watch', '--new-task', '--timeout', '30'])
+  t.ok(
+    new RegExp(
+      `${crId} "CR-9: weights"[\\s\\S]*spec: # CR-9: weights[\\s\\S]*Price by the kilogram`
+    ).test(waited.stdout),
+    waited.stdout + waited.stderr
+  )
   const unknown = await tm.as('a1', ['task', 'frob'])
   t.ok(/unknown command "frob" for hs task: one of list, show/.test(unknown.stderr), unknown.stderr)
 })
