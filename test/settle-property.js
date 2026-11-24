@@ -6,6 +6,7 @@
 //   HS_SETTLE_TOPOLOGY=handover|hub   the hub granted by a heavy genesis that steps down (what
 //   `hs init --hub` builds), or by a light owner (repos from milestone 7 to docs/history/finality-site-split.md)
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const c = require('compact-encoding')
 const Corestore = require('corestore')
@@ -117,6 +118,7 @@ for (const TOPOLOGY of TOPOLOGIES) {
       for (const a of agents) await hub.addWriter(a.writerKey, { indexer: false })
     }
     await pump(30)
+    await settleRepos(repos, { until: () => agents.every((a) => a.writable) })
     t.ok(
       agents.every((a) => a.writable),
       'team ready'
@@ -204,6 +206,8 @@ for (const TOPOLOGY of TOPOLOGIES) {
       await hub.ack()
       await pump(30)
     }
+    // a slow runner may need longer than the fixed pumps to converge
+    await settleRepos(repos, { converge: true })
     await observe()
 
     const heads = await Promise.all(repos.map((r) => r.meta()))

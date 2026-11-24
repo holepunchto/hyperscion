@@ -149,10 +149,29 @@ async function land(db, base, files) {
   return { key: db.local.key, length: db.local.length }
 }
 
+// update until every db agrees on main's head and nothing changed for 300 ms (a fixed five
+// polls was a guess about replication speed that a slow runner can miss), at most 20 s
 async function sync(...dbs) {
-  for (let i = 0; i < 5; i++) {
+  const deadline = Date.now() + 20_000
+  let last = null
+  let since = Date.now()
+  while (Date.now() < deadline) {
     for (const db of dbs) await db.update()
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    const heads = []
+    for (const db of dbs) {
+      const res = await db.view.get(keys.meta)
+      const m = res ? c.decode(Meta, res.value) : { seq: 0, hash: keys.ZERO }
+      heads.push(m.seq + ':' + b4a.toString(m.hash, 'hex') + ':' + (db.writable ? 1 : 0))
+    }
+    const id = heads.join(',')
+    if (id !== last) {
+      last = id
+      since = Date.now()
+    } else if (Date.now() - since >= 300) {
+      const agree = heads.every((h) => h.split(':')[1] === heads[0].split(':')[1])
+      if (agree) return
+    }
+    await new Promise((resolve) => setTimeout(resolve, 20))
   }
 }
 

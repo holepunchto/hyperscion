@@ -1,6 +1,7 @@
 // Regression for experiment 1's near-silent revert: a file whose new version could not be
 // fetched must never look like a local edit, and local edits are never clobbered.
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const fs = require('bare-fs')
 const path = require('bare-path')
@@ -197,16 +198,6 @@ async function pair(t) {
   return { a, b, connect }
 }
 
-async function settle(...repos) {
-  let last = null
-  let stable = 0
-  for (let i = 0; i < 200 && stable < 3; i++) {
-    for (const r of repos) await r.update()
-    const metas = await Promise.all(repos.map((r) => r.meta()))
-    const id = metas.map((m) => m.seq + ':' + b4a.toString(m.hash, 'hex')).join(',')
-    const same = metas.every((m) => b4a.equals(m.hash, metas[0].hash))
-    stable = same && id === last ? stable + 1 : 0
-    last = id
-    await new Promise((resolve) => setTimeout(resolve, 25))
-  }
+function settle(...repos) {
+  return settleRepos(repos, { converge: true })
 }

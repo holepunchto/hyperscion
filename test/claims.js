@@ -1,6 +1,7 @@
 // Claims (docs/history/tasks-design.md), phase 1: items and claims as records in main, the board that
 // merges them with signals, the lead rule, and signal signatures.
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const Corestore = require('corestore')
 const tmp = require('test-tmp')
@@ -349,14 +350,11 @@ async function pair(t) {
     s2.destroy()
   })
   await a.addWriter(b.writerKey)
-  for (let i = 0; i < 50 && !b.writable; i++) await sync(a, b)
+  await settleRepos([a, b], { until: () => b.writable })
   t.ok(b.writable, 'b is a writer')
   return out
 }
 
-async function sync(...repos) {
-  for (let i = 0; i < 10; i++) {
-    for (const r of repos) await r.update()
-    await new Promise((resolve) => setTimeout(resolve, 20))
-  }
+function sync(...repos) {
+  return settleRepos(repos)
 }

@@ -12,7 +12,7 @@ test('site split: a final land is not reordered by the other site on heal', asyn
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
   await tm.split(['a1', 'a2'])
   const feeds = ['a1', 'a2'].map((a) => tm.bgAs(a, ['watch', '--json']))
-  await sleep(3000)
+  await tm.feedsUp(['a1', 'a2'])
   tm.write('a1', 'b.txt', 'site b\n')
   const b = await tm.as('a1', ['land', '-m', 'site b'])
   t.ok(/provisional/.test(b.stdout), 'site B has no hub: ' + b.stdout)
@@ -46,7 +46,7 @@ test('site split: every undone land comes back, not only the last', async (t) =>
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
   await tm.split(['a1', 'a2'])
   const feeds = ['a1', 'a2'].map((a) => tm.bgAs(a, ['watch', '--json']))
-  await sleep(3000)
+  await tm.feedsUp(['a1', 'a2'])
   tm.write('a1', 'a.txt', 'a\nsite b edit\n')
   tm.write('a1', 'code.txt', 'the code\n')
   await tm.as('a1', ['land', '-m', 'code'])
@@ -91,7 +91,7 @@ test("site split: restoring my land doesn't replay a teammate's land as mine", a
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
   await tm.split(['a1', 'a2'])
   const feeds = ['a1', 'a2'].map((a) => tm.bgAs(a, ['watch', '--json']))
-  await sleep(3000)
+  await tm.feedsUp(['a1', 'a2'])
   tm.write('a2', 'notes.txt', 'a2 notes\n')
   tm.write('a2', 'a.txt', 'a\na2 line\n')
   await tm.as('a2', ['land', '-m', 'a2 notes'])
@@ -151,7 +151,7 @@ test('site split longer than the claim lease: a running feed keeps a claim live'
   const feed = tm.bgAs('a1', ['watch', '--json'])
   const quiet = tm.bgAs('a2', ['watch', '--json'])
   const zfeed = tm.bgAs('a3', ['watch', '--json'])
-  await sleep(3000)
+  await tm.feedsUp(['a1', 'a2', 'a3'])
   t.ok(
     /you lead/.test((await tm.as('a1', ['task', 'start', kept])).stdout),
     'a1 leads kept on site B'
@@ -199,7 +199,7 @@ test('site split longer than the claim lease: waiting in wait-final keeps a clai
   for (const a of ['a1', 'a2', 'a3']) await tm.as(a, ['sync'])
   await tm.split(['a1', 'a2'])
   const peer = tm.bgAs('a2', ['watch', '--json']) // a1 has a teammate on its side
-  await sleep(3000)
+  await tm.feedsUp(['a2'])
   t.ok(/you lead/.test((await tm.as('a1', ['task', 'start', id])).stdout), 'a1 leads on site B')
   tm.write('a1', 'b.txt', 'b\n')
   await tm.as('a1', ['land', '-m', 'b'])

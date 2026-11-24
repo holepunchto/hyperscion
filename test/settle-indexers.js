@@ -7,6 +7,7 @@
 //   HS_SETTLE_SEED=<n> HS_SETTLE_ROUNDS=<n> brittle-bare test/settle-indexers.js
 //   HS_SETTLE_REQUIRE_MAJORITY_FAIL=1 also asserts the majority rule was violated
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const Corestore = require('corestore')
 const tmp = require('test-tmp')
@@ -73,6 +74,7 @@ test(`several indexers: settled changesets are never reordered (seed ${SEED}, ${
   for (const ix of indexers.slice(1)) await repos[0].addWriter(ix.writerKey, { indexer: true })
   for (const a of agents) await repos[0].addWriter(a.writerKey)
   await pump(40)
+  await settleRepos(repos, { until: () => repos.every((r) => r.writable) })
   t.ok(
     repos.every((r) => r.writable),
     'team ready'
@@ -155,6 +157,8 @@ test(`several indexers: settled changesets are never reordered (seed ${SEED}, ${
     for (const ix of indexers) await ix.ack()
     await pump(30)
   }
+  // a slow runner may need longer than the fixed pumps to converge
+  await settleRepos(repos, { converge: true })
   await observe()
 
   const heads = await Promise.all(repos.map((r) => r.meta()))

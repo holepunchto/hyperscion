@@ -1,6 +1,7 @@
 // Review as signals: handles, Ask (proposals + quorum approvals), Show (requests), and the
 // opt-in /.hsreview policy that apply enforces deterministically.
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const Corestore = require('corestore')
 const tmp = require('test-tmp')
@@ -311,35 +312,13 @@ async function team(t) {
     const s2 = other.store.replicate(false)
     s1.pipe(s2).pipe(s1)
   }
-  const settle = async () => {
-    let last = null
-    let stable = 0
-    for (let i = 0; i < 300 && stable < 3; i++) {
-      for (const r of repos) await r.update()
-      const metas = await Promise.all(
-        repos.map((r) => r.eventCount().then((n) => n + ':' + r.head().length))
-      )
-      const ws = await Promise.all(repos.map((r) => r.meta()))
-      const id = ws.map((m) => m.seq).join(',') + '|' + metas.map((m) => m.split(':')[0]).join(',')
-      const same =
-        ws.every((m) => m.seq === ws[0].seq) &&
-        new Set(metas.map((m) => m.split(':')[0])).size === 1
-      stable = same && id === last ? stable + 1 : 0
-      last = id
-      await new Promise((resolve) => setTimeout(resolve, 25))
-    }
-  }
+  const settle = () => settleRepos(repos)
 
   await a.addWriter(a.writerKey, { indexer: true, handle: 'a1' })
   await a.addWriter(b.writerKey, { handle: 'b1' })
   await a.addWriter(c.writerKey, { handle: 'c1' })
+  await settleRepos(repos, { until: () => b.writable && c.writable })
   await settle()
-  // settle() can see a calm moment before the add-writer ops reach b and c (darwin-x64 CI):
-  // wait for what the tests need, both writable, for up to 15 s
-  for (let i = 0; i < 300 && !(b.writable && c.writable); i++) {
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    await settle()
-  }
   t.ok(b.writable && c.writable, 'team ready')
   return { a, b, c, settle }
 }

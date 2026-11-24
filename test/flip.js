@@ -1,5 +1,6 @@
 // A land that is accepted locally but loses a reorg must not lose the workspace's changes.
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const Corestore = require('corestore')
 const tmp = require('test-tmp')
@@ -166,17 +167,7 @@ async function pair(t) {
   return { a, b, connect }
 }
 
-// update until every repo agrees on main's head for a few consecutive polls
-async function settle(...repos) {
-  let last = null
-  let stable = 0
-  for (let i = 0; i < 200 && stable < 3; i++) {
-    for (const r of repos) await r.update()
-    const metas = await Promise.all(repos.map((r) => r.meta()))
-    const id = metas.map((m) => m.seq + ':' + b4a.toString(m.hash, 'hex')).join(',')
-    const same = metas.every((m) => b4a.equals(m.hash, metas[0].hash))
-    stable = same && id === last ? stable + 1 : 0
-    last = id
-    await new Promise((resolve) => setTimeout(resolve, 25))
-  }
+// update until every repo agrees on main's head and nothing has changed for a while
+function settle(...repos) {
+  return settleRepos(repos, { converge: true })
 }

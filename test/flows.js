@@ -197,7 +197,7 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
       '--timeout',
       '60'
     ])
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await waitFor(() => /watching main/.test(waiting.output()), 60_000)
     tm.write(x, 'src/x.js', 'x\n')
     await tm.as(x, ['land', '-m', 'x'])
     await waitFor(() => waiting.exited(), 60_000)
@@ -314,8 +314,15 @@ test('flows: claim, split, approve, merge, re-land and wait, scored', async (t) 
     for (const a of [x, y, z]) await tm.as(a, ['sync'])
     await tm.split([x, y])
     const feeds = [x, y].map((a) => tm.bgAs(a, ['watch', '--json']))
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-    const bx = await tm.as(x, ['task', 'start', id4])
+    // both feeds up, then start until a peer on site B hears it: a fixed 3 s head start was a
+    // guess about how fast the feeds find each other (starting again keeps the first time)
+    await tm.feedsUp([x, y], 0)
+    let bx = null
+    for (let i = 0; i < 20; i++) {
+      bx = await tm.as(x, ['task', 'start', id4])
+      if (!/nobody heard/.test(bx.stderr)) break
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
     t.is(bx.code, 0, 'heard on site B: ' + bx.stdout + bx.stderr)
     t.absent(/nobody heard/.test(bx.stderr), 'a peer on its side heard it')
     const by = await tm.as(y, ['task', 'start', id4, '--if-free'])

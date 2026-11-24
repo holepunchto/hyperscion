@@ -91,10 +91,16 @@ test('hubs: one process hubs many repos', async (t) => {
   t.ok(/lead a1/.test(board.stdout), 'a2 sees a1 leading: ' + board.stdout)
 
   // hubs list, served and not
-  await sleep(1500) // the server writes status.json every second
-  const listed = JSON.parse((await hs(dir, ['hubs', 'list', '--json'])).stdout)
+  // the server writes status.json every second: poll until it shows r2 settled through #3
+  let listed = null
+  let r2row = null
+  for (let i = 0; i < 60; i++) {
+    listed = JSON.parse((await hs(dir, ['hubs', 'list', '--json'])).stdout)
+    r2row = (listed.repos || []).find((r) => r.name === 'r2')
+    if (listed.served && r2row && r2row.seq === 3 && r2row.settled === r2row.seq) break
+    await sleep(500)
+  }
   t.ok(listed.served && listed.served.pid, 'list knows the server')
-  const r2row = listed.repos.find((r) => r.name === 'r2')
   t.is(r2row.settled, r2row.seq, 'r2 settled through main')
   t.is(r2row.seq, 3, 'r2 main: a1, a2 and the owner')
 

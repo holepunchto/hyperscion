@@ -102,7 +102,8 @@ test('outage with a swarm: a teammate land reaches a feed in seconds', async (t)
     )
   }
   t.ok(pushed, 'a feed took the land before `hs land` exited')
-  t.ok(landMs < 15_000, `the land is quick even with the hub down (${landMs} ms)`)
+  // the slow path is the 30 s push timeout: well clear of it, with room for a slow runner
+  t.ok(landMs < 25_000, `the land is quick even with the hub down (${landMs} ms)`)
   t.ok(
     read && read.code === 0 && readMs < 15_000,
     `a teammate reads it within seconds (${readMs} ms)`

@@ -322,10 +322,11 @@ test('approvals bind to my lines: a teammate approved section merging in keeps m
     '--timeout',
     '60'
   ])
-  await new Promise((resolve) => setTimeout(resolve, 3000))
+  const { waitFor } = require('./helpers/team')
+  // the waiter has its starting point (a --new wait counts only what lands after it)
+  await waitFor(() => /watching main/.test(waiting.output()), 60_000)
   tm.write('a1', 'src/x.js', 'x\n')
   await tm.as('a1', ['land', '-m', 'x'])
-  const { waitFor } = require('./helpers/team')
   await waitFor(() => waiting.exited(), 60_000)
   t.is(tm.read('a2', 'src/x.js'), 'x\n', waiting.output())
 

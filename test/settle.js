@@ -1,5 +1,6 @@
 // Provisional -> settled -> final: seen markers, indexer acks, and how review feeds "final".
 const test = require('brittle')
+const { settle: settleRepos } = require('./helpers/settle')
 const b4a = require('b4a')
 const c = require('compact-encoding')
 const crypto = require('hypercore-crypto')
@@ -120,18 +121,12 @@ async function team(t) {
     const s2 = other.store.replicate(false)
     s1.pipe(s2).pipe(s1)
   }
-  const settle = async () => {
-    for (let i = 0; i < 20; i++) {
-      for (const r of repos) await r.update()
-      await new Promise((resolve) => setTimeout(resolve, 15))
-    }
-  }
+  const settle = () => settleRepos(repos)
   await hub.addWriter(hub.writerKey, { indexer: true, handle: 'hub' })
   await hub.addWriter(b.writerKey, { handle: 'b1' })
   await hub.addWriter(cc.writerKey, { handle: 'c1' })
+  await settleRepos(repos, { until: () => b.writable && cc.writable })
   await settle()
-  // a slow runner may need longer than one settle() for the add-writer ops to arrive
-  for (let i = 0; i < 50 && !(b.writable && cc.writable); i++) await settle()
   t.ok(b.writable && cc.writable)
   return { hub, b, c: cc, settle }
 }
@@ -166,12 +161,7 @@ test('a hub gone for good: another indexer removes it and settlement resumes', a
   link(founder, hub)
   link(b, hub)
   const live = [founder, b, hub]
-  const settle = async () => {
-    for (let i = 0; i < 25; i++) {
-      for (const r of live) await r.update()
-      await new Promise((resolve) => setTimeout(resolve, 15))
-    }
-  }
+  const settle = () => settleRepos(live)
   await founder.addWriter(b.writerKey, { handle: 'b1' })
   await founder.addWriter(hub.writerKey, { indexer: true, handle: 'hub' })
   await settle()
@@ -230,12 +220,7 @@ test('light bootstrap: a solo repo settles, the last hub can go, the owner only 
   }
   const [owner, hub, b] = repos
   const live = [owner]
-  const settle = async () => {
-    for (let i = 0; i < 25; i++) {
-      for (const r of live) await r.update()
-      await new Promise((resolve) => setTimeout(resolve, 15))
-    }
-  }
+  const settle = () => settleRepos(live)
   const links = []
   const link = (x, y) => {
     const s1 = x.store.replicate(true)

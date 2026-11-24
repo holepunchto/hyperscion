@@ -119,6 +119,13 @@ async function team(t, { agents = ['a1', 'a2'], files = {}, env: extraEnv = {} }
     read(name, file) {
       const abs = path.join(self.agents[name], file)
       return fs.existsSync(abs) ? fs.readFileSync(abs, 'utf8') : null
+    },
+    // background feeds (`hs watch`, --json too) running: each writes .hs/watch.pid once its
+    // network is up. Then `headStart` ms to find each other, instead of a guessed sleep
+    async feedsUp(names, headStart = 2000) {
+      const pid = (n) => path.join(self.agents[n], '.hs', 'watch.pid')
+      await waitFor(() => names.every((n) => fs.existsSync(pid(n))), 60_000)
+      await sleep(headStart)
     }
   }
 
