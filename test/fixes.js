@@ -1,0 +1,96 @@
+// Correctness fixes from experiment 4: restore drops committed edits, status shows leftover
+// conflict markers, lands never have empty messages, proposals diff against their base, and
+// an approval survives landing with --check onto unrelated teammates' work.
+const test = require('brittle')
+const { team } = require('./helpers/team')
+
+test('fixes: restore, markers, messages, proposal diffs, approvals across rebases', async (t) => {
+  const tm = await team(t, {
+    files: { 'src/a.js': 'a\n', 'CONTRACTS.md': '# contracts\n', 'NOTES.md': '# notes\n' }
+  })
+  await tm.as('a1', ['sync'])
+  await tm.as('a2', ['sync'])
+
+  // restore: an edit that `commit` (or a rejected land) already put in the workspace
+  tm.write('a1', 'src/a.js', 'edited\n')
+  await tm.as('a1', ['commit'])
+  const restored = await tm.as('a1', ['restore', 'src/a.js'])
+  t.is(tm.read('a1', 'src/a.js'), 'a\n', 'restore brings back the version on main')
+  t.ok(/dropped 1 committed, unlanded change/.test(restored.stdout), restored.stdout)
+  const st = await tm.as('a1', ['status'])
+  t.ok(st.stdout.includes('clean'), 'nothing left to land\n' + st.stdout)
+
+  // status points at files that still carry conflict markers
+  tm.write('a1', 'src/a.js', '<<<<<<< ours\nx\n=======\ny\n>>>>>>> theirs\n')
+  t.ok(/CONFLICT\s+\/src\/a.js/.test((await tm.as('a1', ['status'])).stdout))
+  await tm.as('a1', ['restore', 'src/a.js'])
+
+  // no -m: the land still says what it is
+  tm.write('a1', 'src/b.js', 'b\n')
+  t.is((await tm.as('a1', ['land'])).code, 0)
+  t.ok(
+    /update \/src\/b\.js/.test((await tm.as('a1', ['log', '-n', '1'])).stdout),
+    'default message'
+  )
+
+  // a wait answered by something already on main says so; --new waits for new lands only
+  const old = await tm.as('a2', ['watch', '--path', '/src/b.js', '--count', '1', '--timeout', '30'])
+  t.is(old.code, 0)
+  t.ok(/already on main before this wait/.test(old.stderr), old.stderr)
+  const fresh = await tm.as('a2', [
+    'watch',
+    '--path',
+    '/src/b.js',
+    '--count',
+    '1',
+    '--new',
+    '--timeout',
+    '3'
+  ])
+  t.is(fresh.code, 2, '--new ignores what already landed')
+
+  // a proposal, then a teammate's later land on the same file: the review diff shows only
+  // the proposal's own change, not the teammate's lines as deletions
+  tm.write('a2', 'CONTRACTS.md', '# contracts\nplan(day) -> Plan\n')
+  const prop = await tm.as('a2', ['review', 'ask', '-m', 'pin Plan', '-r', 'a1'])
+  t.is(prop.code, 0, prop.stderr)
+  tm.write('a1', 'NOTES.md', '# notes\n- [a1] unrelated\n')
+  t.is((await tm.as('a1', ['land', '-m', 'note'])).code, 0)
+  const shown = await tm.as('a1', ['show', 'A1'])
+  t.ok(shown.stdout.includes('+plan(day) -> Plan'), 'the proposal change')
+  t.absent(/^-/m.test(shown.stdout.replace(/^--- .*$/m, '')), 'no phantom deletions')
+
+  // approve, then the author lands with --check, which rebases onto a1's unrelated note
+  // first: the approved files are untouched, so the approval still counts
+  t.is((await tm.as('a1', ['review', 'approve', 'A1'])).code, 0)
+  const landed = await tm.as('a2', ['land', '--check', 'true'])
+  t.ok(/landed A1 as #\d+/.test(landed.stdout), landed.stdout + landed.stderr)
+
+  // an offline land that loses its number to a teammate's settled land is told the new one
+  await tm.as('a1', ['sync'])
+  tm.write('a2', 'src/race.js', 'a2\n')
+  const won = await tm.as('a2', ['land', '-m', 'a2 first'])
+  const k = Number(won.stdout.match(/landed #(\d+)/)[1])
+  tm.write('a1', 'src/offline.js', 'a1\n')
+  const off = await tm.as('a1', ['land', '--offline', '-m', 'a1 offline'])
+  t.ok(off.stdout.includes(`landed #${k}`), 'offline land took the same number locally')
+  const back = await tm.as('a1', ['sync'])
+  t.ok(back.stdout.includes(`your land #${k} is now #${k + 1}`), back.stdout)
+
+  // --author: wait for a specific teammate's change, not anyone's
+  const theirs = await tm.as('a1', [
+    'watch',
+    '--path',
+    '/src',
+    '--author',
+    'a2',
+    '--since',
+    '0',
+    '--count',
+    '1',
+    '--timeout',
+    '15'
+  ])
+  t.is(theirs.code, 0, theirs.stderr)
+  t.ok(theirs.stdout.includes('a2 first') && !theirs.stdout.includes('/src/b.js'), theirs.stdout)
+})

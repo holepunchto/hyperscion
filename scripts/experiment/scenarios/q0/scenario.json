@@ -1,0 +1,24 @@
+{
+  "name": "Q0: coordination only",
+  "about": "The coordination experiment from the October 2026 retrospective. A finished, green drone planner (one package per trip) and one change request with no owner named (pricing per flight minute; the split between scheduler, pricing and report is ambiguous). No swarm, no outage: only how three agents decide who does what. Arms (setup.sh): hs (full surface), hs-min (claims and land only, docs/AGENTS-min.md), hs-plain (no hs coordination: a TASKS.md board, docs/AGENTS-plain.md).",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other.\n",
+  "roles": {
+    "a1": "**a1 maintains `src/model.js` and `src/geo.js`.**",
+    "a2": "**a2 maintains `src/scheduler.js`.**",
+    "a3": "**a3 maintains `src/pricing.js`, `src/report.js`, `src/cli.js` and `test/integration.test.js`.**"
+  },
+  "schedule": [{ "at": 0.5, "do": "change-request", "files": "change-request" }],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main and `npm test` passes there, or at minute 3 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Q0bp: coordination with no owners, across a partition",
+  "about": "q0b with a1 cut off (no network, feed stopped) from 0.45 to 1.6, just after the change request lands at 0.3: a1 decides who builds it on what it knew before the cut, the others decide without hearing from a1. Tests conflicting claims made on both sides of a partition: claims (one lead by the same rule when they meet) against a TASKS.md board.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other. Your network may drop for a while; keep going.\n",
+  "roles": {
+    "a1": "**You work on the whole codebase; there are no module owners.**",
+    "a2": "**You work on the whole codebase; there are no module owners.**",
+    "a3": "**You work on the whole codebase; there are no module owners.**"
+  },
+  "schedule": [
+    {
+      "at": 0.3,
+      "do": "change-request",
+      "files": "change-request"
+    },
+    {
+      "at": 0.45,
+      "do": "offline",
+      "agent": "a1"
+    },
+    {
+      "at": 1.6,
+      "do": "online",
+      "agent": "a1"
+    }
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main and `npm test` passes there, or at minute 3 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
+}

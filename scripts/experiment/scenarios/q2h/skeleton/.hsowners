@@ -1,0 +1,11 @@
+# Who owns what (README.md). Landing changes to someone else's files asks them to review (Show).
+src/model.js a1
+src/geo.js a1
+test/model.test.js a1
+test/geo.test.js a1
+src/scheduler.js a2
+test/scheduler.test.js a2
+src/pricing.js a3
+src/report.js a3
+src/cli.js a3
+test/integration.test.js a3

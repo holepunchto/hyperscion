@@ -1,0 +1,3 @@
+# every peer refuses a land into these paths that didn't pass these checks (hs help check)
+/src/          checks=test,contracts
+CONTRACTS.md   checks=contracts

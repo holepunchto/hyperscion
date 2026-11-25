@@ -1,0 +1,38 @@
+{
+  "name": "Q0bo: coordination with no owners, through an outage",
+  "about": "q0b with the hub down while the change request lands and agents decide who builds it (down at 0.7, CR at 0.8, back at 1.6): claims travel as signals between peers, a TASKS.md claim moves at land speed and can be undone. Compares hs-min with hs-plain.",
+  "agents": 3,
+  "localDht": true,
+  "template": "quick",
+  "extra": ["pm"],
+  "acceptance": ["--per-minute"],
+  "claims": true,
+  "brief": "\n**This is a very short run (about 3 minutes of work).** The planner already works and `npm test` passes. Shortly after you start, the product manager lands a change request (`CHANGE-REQUEST.md` on main, and a `- [pm] CHANGE REQUEST ...` line in NOTES.md). Nobody is assigned: the team decides who does what. Build it once, between you, without stepping on each other. The shared server may be down for a while; keep going.\n",
+  "roles": {
+    "a1": "**You work on the whole codebase; there are no module owners.**",
+    "a2": "**You work on the whole codebase; there are no module owners.**",
+    "a3": "**You work on the whole codebase; there are no module owners.**"
+  },
+  "schedule": [
+    {
+      "at": 0.7,
+      "do": "origin-down"
+    },
+    {
+      "at": 0.8,
+      "do": "change-request",
+      "files": "change-request"
+    },
+    {
+      "at": 1.6,
+      "do": "origin-up"
+    }
+  ],
+  "duplication": {
+    "label": "CR-1 flight-minute computations",
+    "all": ["flight.?min", "speedKmh"],
+    "fallback": ["\\.flight_?\\w*min\\w*\\s*(\\?\\?|\\|\\|)"]
+  },
+  "skipAuthors": "^sw\\d",
+  "stop": "Stop as soon as the change request is on main and `npm test` passes there, or at minute 3 (`date` against when you started), whichever comes first. Don't wait for teammates to finish."
+}

@@ -1,0 +1,203 @@
+{
+  "city": "Port Lumen",
+  "dayLengthMinutes": 480,
+  "serviceMinutes": 4,
+  "depots": [
+    {
+      "id": "west",
+      "name": "West Dock",
+      "lat": 52.37,
+      "lon": 4.84
+    },
+    {
+      "id": "east",
+      "name": "East Yard",
+      "lat": 52.365,
+      "lon": 4.94
+    }
+  ],
+  "drones": [
+    {
+      "id": "w1",
+      "depot": "nowhere",
+      "maxPayloadKg": 4,
+      "rangeKm": 20,
+      "speedKmh": 60
+    },
+    {
+      "id": "w2",
+      "depot": "west",
+      "maxPayloadKg": 6,
+      "rangeKm": 14,
+      "speedKmh": 50
+    },
+    {
+      "id": "e1",
+      "depot": "east",
+      "maxPayloadKg": 3,
+      "rangeKm": 26,
+      "speedKmh": 80
+    }
+  ],
+  "date": "2026-11-02",
+  "packages": [
+    {
+      "id": "h01",
+      "weightKg": 2.35,
+      "destination": {
+        "lat": 52.3415,
+        "lon": 4.863
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h02",
+      "weightKg": 1.01,
+      "destination": {
+        "lat": 52.38419,
+        "lon": 4.9112
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h03",
+      "weightKg": 3.15,
+      "destination": {
+        "lat": 52.34522,
+        "lon": 4.88063
+      },
+      "priority": "standard",
+      "window": [45, 135]
+    },
+    {
+      "id": "h04",
+      "weightKg": 0.6,
+      "destination": {
+        "lat": 52.35396,
+        "lon": 4.90224
+      },
+      "priority": "express"
+    },
+    {
+      "id": "h05",
+      "weightKg": 2.1,
+      "destination": {
+        "lat": 52.38296,
+        "lon": 4.91416
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h06",
+      "weightKg": 1.64,
+      "destination": {
+        "lat": 52.36695,
+        "lon": 4.86338
+      },
+      "priority": "standard",
+      "window": [33, 123]
+    },
+    {
+      "id": "h07",
+      "weightKg": 2.73,
+      "destination": {
+        "lat": 52.34958,
+        "lon": 4.88071
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h08",
+      "weightKg": 1.19,
+      "destination": {
+        "lat": 52.35292,
+        "lon": 4.92162
+      },
+      "priority": "express"
+    },
+    {
+      "id": "h09",
+      "weightKg": 0.63,
+      "destination": {
+        "lat": 52.3628,
+        "lon": 4.87308
+      },
+      "priority": "standard",
+      "window": [206, 296]
+    },
+    {
+      "id": "h10",
+      "weightKg": 2.23,
+      "destination": {
+        "lat": 52.38843,
+        "lon": 4.91757
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h11",
+      "weightKg": 2.02,
+      "destination": {
+        "lat": 52.39839,
+        "lon": 4.87542
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h12",
+      "weightKg": 2.07,
+      "destination": {
+        "lat": 52.38976,
+        "lon": 4.90422
+      },
+      "priority": "express",
+      "window": [215, 305]
+    },
+    {
+      "id": "h13",
+      "weightKg": 2.15,
+      "destination": {
+        "lat": 52.38227,
+        "lon": 4.8355
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h14",
+      "weightKg": 1.03,
+      "destination": {
+        "lat": 52.35736,
+        "lon": 4.83958
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h15",
+      "weightKg": 9.0,
+      "destination": {
+        "lat": 52.37,
+        "lon": 4.88
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h16",
+      "weightKg": 1.0,
+      "destination": {
+        "lat": 52.7,
+        "lon": 5.4
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "h17",
+      "weightKg": 1.0,
+      "destination": {
+        "lat": 52.44,
+        "lon": 4.99
+      },
+      "priority": "express",
+      "window": [0, 1]
+    }
+  ]
+}

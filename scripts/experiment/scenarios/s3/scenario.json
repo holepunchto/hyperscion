@@ -1,0 +1,34 @@
+{
+  "name": "S3 faults",
+  "about": "S1 plus faults: a4 offline min 5-12, hub/origin down min 8-11, a3 killed at min 12 and replaced by a3b.",
+  "extra": ["a3b"],
+  "brief": "\n**Things can go wrong during the run** (machines, network, the shared server), as in a real team. Keep working as well as you can and record what happened in your report.\n",
+  "roles": {
+    "a3b": "**You are a3b. You take over from a3, whose machine died partway through the run;** whatever a3 had not landed is lost and a3 is gone for good. a3's role was: **a3 owns `src/scheduler.js` (+ `test/scheduler.test.js`).** The core: `plan(day)` assigns packages to drones and builds trips. Respect payload per trip, range per trip, service minutes, the day length, delivery windows and express priority; allow several trips per drone; report every undeliverable package in `unassigned` with a clear reason. Greedy is fine. **Define and land the `Plan` shape early** (CONTRACTS.md \"scheduler\" section + a first version), because a4 and a5 consume it. You depend on a1 (model) and a2 (geo): use their real APIs once landed (wait with `hs watch --path ... --count 1` if needed), shim against the contract until then, and say in NOTES.md what you need. Start from what is on main: the history, a3's messages and NOTES.md lines, and anything a3 shared but hadn't landed (open proposals or review branches, if your tool has them). Add a NOTES.md line saying you have taken over the scheduler, then finish a3's job. Teammates may still address a3: you answer for a3 now."
+  },
+  "schedule": [
+    {
+      "at": 5,
+      "do": "offline",
+      "agent": "a4"
+    },
+    {
+      "at": 8,
+      "do": "origin-down"
+    },
+    {
+      "at": 11,
+      "do": "origin-up"
+    },
+    {
+      "at": 12,
+      "do": "online",
+      "agent": "a4"
+    },
+    {
+      "at": 12,
+      "do": "kill",
+      "agent": "a3"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# what `hs check` and every `hs land` run (hs help check)
+test     run npm test
+default  test

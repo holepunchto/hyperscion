@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-14",
+  "city": "Port Lumen",
+  "dayLengthMinutes": 600,
+  "serviceMinutes": 3,
+  "depots": [
+    {
+      "id": "north",
+      "name": "North Pier",
+      "lat": 52.395,
+      "lon": 4.88673
+    },
+    {
+      "id": "south",
+      "name": "Southgate",
+      "lat": 52.33789,
+      "lon": 4.90537
+    }
+  ],
+  "drones": [
+    {
+      "id": "d1",
+      "depot": "north",
+      "maxPayloadKg": 5,
+      "rangeKm": 18,
+      "speedKmh": 60
+    },
+    {
+      "id": "d2",
+      "depot": "north",
+      "maxPayloadKg": 2.5,
+      "rangeKm": 25,
+      "speedKmh": 75
+    },
+    {
+      "id": "d3",
+      "depot": "south",
+      "maxPayloadKg": 5,
+      "rangeKm": 18,
+      "speedKmh": 60
+    },
+    {
+      "id": "d4",
+      "depot": "south",
+      "maxPayloadKg": 8,
+      "rangeKm": 12,
+      "speedKmh": 45
+    }
+  ],
+  "packages": [
+    {
+      "id": "p01",
+      "weightKg": 3.36,
+      "destination": {
+        "lat": 52.37294,
+        "lon": 4.86542
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p02",
+      "weightKg": 2.58,
+      "destination": {
+        "lat": 52.38661,
+        "lon": 4.90957
+      },
+      "priority": "standard",
+      "window": [112, 256]
+    },
+    {
+      "id": "p03",
+      "weightKg": 3.23,
+      "destination": {
+        "lat": 52.32985,
+        "lon": 4.91648
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p04",
+      "weightKg": 3.69,
+      "destination": {
+        "lat": 52.33606,
+        "lon": 4.89188
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p05",
+      "weightKg": 3,
+      "destination": {
+        "lat": 52.37697,
+        "lon": 4.94933
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p06",
+      "weightKg": 1.71,
+      "destination": {
+        "lat": 52.40035,
+        "lon": 4.86584
+      },
+      "priority": "express",
+      "window": [128, 223]
+    },
+    {
+      "id": "p07",
+      "weightKg": 4.24,
+      "destination": {
+        "lat": 52.37516,
+        "lon": 4.92302
+      },
+      "priority": "standard",
+      "window": [82, 209]
+    },
+    {
+      "id": "p08",
+      "weightKg": 2.44,
+      "destination": {
+        "lat": 52.36293,
+        "lon": 4.84578
+      },
+      "priority": "standard",
+      "window": [109, 210]
+    },
+    {
+      "id": "p09",
+      "weightKg": 3.09,
+      "destination": {
+        "lat": 52.40819,
+        "lon": 4.89214
+      },
+      "priority": "express"
+    },
+    {
+      "id": "p10",
+      "weightKg": 1.49,
+      "destination": {
+        "lat": 52.3578,
+        "lon": 4.87905
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p11",
+      "weightKg": 2.88,
+      "destination": {
+        "lat": 52.34599,
+        "lon": 4.94854
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p12",
+      "weightKg": 2.97,
+      "destination": {
+        "lat": 52.38209,
+        "lon": 4.89234
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p13",
+      "weightKg": 4.25,
+      "destination": {
+        "lat": 52.3607,
+        "lon": 4.91999
+      },
+      "priority": "express"
+    },
+    {
+      "id": "p14",
+      "weightKg": 1.77,
+      "destination": {
+        "lat": 52.35475,
+        "lon": 4.87437
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p15",
+      "weightKg": 0.77,
+      "destination": {
+        "lat": 52.39873,
+        "lon": 4.82919
+      },
+      "priority": "standard",
+      "window": [23, 202]
+    },
+    {
+      "id": "p16",
+      "weightKg": 1.22,
+      "destination": {
+        "lat": 52.38191,
+        "lon": 4.83877
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p17",
+      "weightKg": 0.88,
+      "destination": {
+        "lat": 52.40797,
+        "lon": 4.94538
+      },
+      "priority": "standard"
+    },
+    {
+      "id": "p18",
+      "weightKg": 4.11,
+      "destination": {
+        "lat": 52.3935,
+        "lon": 4.85766
+      },
+      "priority": "express",
+      "window": [22, 82]
+    },
+    {
+      "id": "p19",
+      "weightKg": 11.5,
+      "destination": {
+        "lat": 52.37234,
+        "lon": 4.8814
+      },
+      "priority": "standard"
+    }
+  ]
+}
