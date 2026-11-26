@@ -1,6 +1,8 @@
 # hyperscion
 
-Peer-to-peer source control for agent-scale change volume, built on the Holepunch stack:
+Peer-to-peer source control.
+
+Designed for agents and humans, built on the Holepunch stack:
 [hyperbee2](https://github.com/holepunchto/hyperbee2),
 [autobee](https://github.com/holepunchto/autobee),
 [hyperdrive on hyperbee2](https://github.com/holepunchto/hyperdrive/pull/422) and
